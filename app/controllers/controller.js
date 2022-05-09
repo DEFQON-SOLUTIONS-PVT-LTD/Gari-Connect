@@ -14,6 +14,26 @@ const accountSid = env.TWILIO_ACCOUNT_SID;
 const authToken = env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
+exports.makecall = (req, res) => {
+  debugger;
+  try {
+    debugger;
+    client.calls
+    .create({
+       url: 'http://demo.twilio.com/docs/voice.xml',
+       to: req.body.userphone,
+       from: env.TWILIO_PHONE_NUMBER
+     })
+    .then(call => console.log(call.sid));
+  }
+  catch (error) {
+    res.status(403).json({
+      message: "Forbidden!",
+      error: errorResponse(error.message)
+    });
+  }
+}
+
 exports.forgotpassword = (req, res) => {
   let forgotpwd = {};
   try {

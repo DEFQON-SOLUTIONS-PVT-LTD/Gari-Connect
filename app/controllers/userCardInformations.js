@@ -4,7 +4,7 @@ const { messages } = require('../common/messages');
 const { successResponse, errorResponse } = require('../common/response');
 const { saveUserCardValidation, updateUserCardValidation } = require('../validations/validation');
 const Usercard = db.UserCard;
-
+const logs = require('../controllers/logging.js');
 //const Op = db.Sequelize.Op;
 // Create user card inforamtion 
 exports.create = (req, res) => {
@@ -14,6 +14,7 @@ exports.create = (req, res) => {
         let usercard = Usercard.findOne({ where: {card_number: req.body.card_number} }).then(function(user_card_row) {
             if (usercard) {
               if(user_card_row!=null){
+                logs("UserCardInformation","Create","Error", "You cannot add this card with this No. = " + req.body.card_number);
                 errordetails = {
                     message: "You cannot add this card with this No. = " + req.body.card_number,
                     status: false
@@ -33,6 +34,7 @@ exports.create = (req, res) => {
                 // Save to Postgress database
                 Usercard.create(user_card).then(result => {
                     // send uploading message to client
+                    logs("UserCardInformation","Create","Info", "Create Successfully a User Card Information with id = " + result.id);
                     res.status(200).json({
                         message: "Create Successfully a User Card Information with id = " + result.id,
                         cardinfo: successResponse(result),
@@ -43,6 +45,7 @@ exports.create = (req, res) => {
         })
        
     } catch (error) {
+        logs("UserCardInformation","Create","Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -60,6 +63,7 @@ exports.updateCardInfo = async (req, res) => {
 
         if (!usercardinfo) {
             // return a response to client
+            logs("UserCardInformation","updateCardInfo","Info", "Not Found for updating a card information with id = " + userCardInformationId);
             res.status(404).json({
                 message: "Not Found for updating a card information with id = " + userCardInformationId,
                 cardinfo: "",
@@ -79,18 +83,20 @@ exports.updateCardInfo = async (req, res) => {
 
             // return the response to client
             if (!result) {
+                logs("UserCardInformation","updateCardInfo","Error", "Error -> Can not update a card information with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a card information with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-
+            logs("UserCardInformation","updateCardInfo","Info", "Update successfully a card information");
             res.status(200).json({
                 message: "Update successfully a card information  ",
                 make: updatedObject,
             });
         }
     } catch (error) {
+        logs("UserCardInformation","updateCardInfo","Error", error.message);
         res.status(500).json({
             message: "Error -> Can not update a user card",
             //error: error.message
@@ -103,6 +109,7 @@ exports.getCardInfos = (req, res) => {
 
     Usercard.findAll()
         .then(cardInfos => {
+            logs("UserCardInformation","getCardInfos","Info", "Get all Cards Infos Successfully!");
             res.status(200).json({
                 message: "Get all Cards Infos Successfully!",
                 makes: cardInfos
@@ -110,7 +117,7 @@ exports.getCardInfos = (req, res) => {
         })
         .catch(error => {
             // log on console
-            console.log(error);
+            logs("UserCardInformation","getCardInfos","Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -123,14 +130,15 @@ exports.getCardInfoById = (req, res) => {
     let userCardInformationId = req.params.id;
     Usercard.findByPk(userCardInformationId)
         .then(cardinfo => {
+            logs("UserCardInformation","getCardInfoById","Info", "Successfully Get a Card Information with id = " + userCardInformationId);
             res.status(200).json({
-                message: " Successfully Get a Card Information with id = " + userCardInformationId,
+                message: "Successfully Get a Card Information with id = " + userCardInformationId,
                 cardinfos: cardinfo
             });
         })
         .catch(error => {
             // log on console
-            console.log(error);
+           logs("UserCardInformation","getCardInfoById","Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -146,10 +154,11 @@ exports.deleteById = async (req, res) => {
                 user_card_information_id: req.params.id
             }
         });
+        logs("UserCardInformation","deleteById","Info", "Card Informations Deleted");
         res.json({
             "message": "Card Informations Deleted"
         });
     } catch (err) {
-        console.log(err);
+        logs("UserCardInformation","deleteById","Error", err);
     }
 }
