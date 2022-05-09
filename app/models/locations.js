@@ -1,0 +1,58 @@
+const Sequelize = require('sequelize');
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define('locations', {
+    locationId: {
+      autoIncrement: true,
+      autoIncrementIdentity: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true
+    },
+    address: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    floor: {
+      type: DataTypes.STRING(30),
+      allowNull: true
+    },
+    zip_code: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    uuid: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    cityId: {
+      type: DataTypes.SMALLINT,
+      allowNull: true,
+      references: {
+        model: 'city',
+        key: 'cityId'
+      }
+    },
+    latitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
+    },
+    longitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
+    }
+  }, {
+    sequelize,
+    tableName: 'locations',
+    schema: 'public',
+    timestamps: true,
+    indexes: [
+      {
+        name: "location_pkey",
+        unique: true,
+        fields: [
+          { name: "locationId" },
+        ]
+      },
+    ]
+  });
+};
