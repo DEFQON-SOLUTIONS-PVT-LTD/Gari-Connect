@@ -9,6 +9,7 @@ const Authuser = db.Authuser;
 const { encrypt, decrypt } = require('../config/crypto_hash.js');
 const { saveAuthUserValidation, updateForgotPasswordValidation } = require('../validations/validation');
 const { Users } = require('../config/db.config.js');
+const logs = require('../controllers/logging.js');
 
 const accountSid = env.TWILIO_ACCOUNT_SID;
 const authToken = env.TWILIO_AUTH_TOKEN;
@@ -17,7 +18,6 @@ const client = require('twilio')(accountSid, authToken);
 exports.makecall = (req, res) => {
   debugger;
   try {
-    debugger;
     client.calls
     .create({
        url: 'http://demo.twilio.com/docs/voice.xml',
@@ -40,6 +40,7 @@ exports.forgotpassword = (req, res) => {
     let checkUserByPhone = User.findOne({ where: {phoneno: req.body.phone_no} }).then(function(user_row) {
       if (checkUserByPhone) {
         if(user_row==null){
+          logs("MainController","forgotpassword","Info", "Phone No. does not exists with this No. = " + req.body.phone_no);
           errordetails = {
             message: "Phone No. does not exists with this No. = " + req.body.phone_no,
             status: false
@@ -82,6 +83,7 @@ exports.forgotpassword = (req, res) => {
             forgotpwd.otp_expiry= expiry_time;
             Authuser.create(forgotpwd).then(result => {
               // send uploading message to client
+              logs("MainController","forgotpassword","Info", "OTP sent to = " + req.body.phone_no+". Please verify to continue ");
               res.status(200).json({
                 message: "OTP sent to = " + req.body.phone_no+". Please verify to continue ",
                 customer: successResponse(result),
@@ -93,6 +95,7 @@ exports.forgotpassword = (req, res) => {
   
   }
   catch (error) {
+    logs("MainController","forgotpassword","Error", error.message);
     res.status(403).json({
       message: "Forbidden!",
       error: errorResponse(error.message)
@@ -107,6 +110,7 @@ exports.authuser = (req, res) => {
     let checkUserByPhone = User.findOne({ where: {phoneno: req.body.phone_no} }).then(function(user_row) {
       if (checkUserByPhone) {
         if(user_row!=null){
+          logs("MainController","authuser","Info", "Phone No. Already in use try to login with this No. = " + req.body.phone_no);
           errordetails = {
             message: "Phone No. Already in use try to login with this No. = " + req.body.phone_no,
             status: false
@@ -151,6 +155,7 @@ exports.authuser = (req, res) => {
         
             // Save to MySQL database
             Authuser.create(authuser).then(result => {
+              logs("MainController","authuser","Info", "Phone No. saved and otp sent to = " + req.body.phone_no);
               // send uploading message to client
               res.status(200).json({
                 message: "Phone No. saved and otp sent to = " + req.body.phone_no,
@@ -163,6 +168,7 @@ exports.authuser = (req, res) => {
   
   }
   catch (error) {
+    logs("MainController","authuser","Error", error.message);
     res.status(403).json({
       message: "Forbidden!",
       error: errorResponse(error.message)
@@ -190,11 +196,13 @@ exports.setForgotPassword = (req, res) => {
 
           // return the response to client
             if (!result) {
+          logs("MainController","setForgotPassword","Error", "Error -> Can not reset the password with phone no. = " + req.body.phone_no);
                 res.status(500).json({
                     message: "Error -> Can not reset the password with phone no. = " + req.body.phone_no,
                     error: "Can NOT Updated",
                 });
             }
+            logs("MainController","setForgotPassword","Info", "Password reset successfully.");
             res.status(200).json({
               message: "Password reset successfully.",
               status: true,
@@ -203,6 +211,7 @@ exports.setForgotPassword = (req, res) => {
           
 
         }else{
+          logs("MainController","setForgotPassword","Error", "Somethinng went wrong.");
           res.status(500).json({
             status:false,
             message: "Somethinng went wrong.",
@@ -212,6 +221,7 @@ exports.setForgotPassword = (req, res) => {
     })
   }
   catch (error) {
+    logs("MainController","setForgotPassword","Error", error.message);
     res.status(403).json({
       message: "Forbidden!",
       error: errorResponse(error.message)
@@ -230,11 +240,13 @@ exports.verifyOtp = (req, res) => {
           console.log(expiryDate <= dateNow.getTime());
           if ( expiryDate <= dateNow.getTime())
           {
+            logs("MainController","verifyOtp","Info", "Your OTP code has been expired! Click below to resend.");
             res.status(403).json({
               status:false,
               message: "Your OTP code has been expired! Click below to resend.",
           });
           }else{
+            logs("MainController","verifyOtp","Info", "OTP code verified.");
             res.status(200).json({
               message: "OTP code verified.",
               status: true
@@ -242,6 +254,7 @@ exports.verifyOtp = (req, res) => {
           }
 
         }else{
+          logs("MainController","verifyOtp","Error", "Somethinng went wrong.");
           res.status(500).json({
             status:false,
             message: "Somethinng went wrong.",
@@ -251,6 +264,7 @@ exports.verifyOtp = (req, res) => {
     })
   }
   catch (error) {
+    logs("MainController","verifyOtp","Error", error.message);
     res.status(403).json({
       message: "Forbidden!",
       error: errorResponse(error.message)
@@ -285,9 +299,11 @@ exports.signin = (req, res) => {
   })
     .then(user => {
       if (!user) {
+        logs("MainController","signin","Error", "User Not found.");
         return res.status(404).send({ message: "User Not found." });
       }
       if(!user.is_active){
+        logs("MainController","signin","Error", "User is not approved!");
         return res.status(401).send({
           accessToken: null,
           message: "User is not approved!"
@@ -296,6 +312,7 @@ exports.signin = (req, res) => {
      if(user.isGoogleUser==0 || user.isFacebookUser==0 ){
       passwordIsValid = decrypt(user.password)
       if (passwordIsValid != req.body.password) {
+        logs("MainController","signin","Error", "Invalid Password!");
         return res.status(401).send({
           accessToken: null,
           message: "Invalid Password!"
@@ -305,12 +322,14 @@ exports.signin = (req, res) => {
       var token = jwt.sign({ id: user.userId }, env.secretkey, {
         expiresIn: 86400 // 24 hours
       });
+      logs("MainController","signin","Info", token);
       res.status(200).send({
         data: user,
         accessToken: token
       });
     })
     .catch(err => {
+      logs("MainController","signin","Error", err.message);
       res.status(500).send({ message: err.message });
     });
 };
@@ -327,12 +346,14 @@ exports.create = (req, res) => {
     // Save to MySQL database
     Customer.create(customer).then(result => {
       // send uploading message to client
+      logs("MainController","create","info", "Upload Successfully a Customer with id = " + result.id);
       res.status(200).json({
-        message: "Upload Successfully a Customer with id = " + result.id,
+        message: "Create Successfully a Customer with id = " + result.id,
         customer: successResponse(result),
       });
     });
   } catch (error) {
+    logs("MainController","create","Error", error.message);
     res.status(500).json({
       message: "Fail!",
       error: errorResponse(error.message)
@@ -344,6 +365,7 @@ exports.retrieveAllCustomers = (req, res) => {
   // find all Customer information from 
   Customer.findAll()
     .then(customerInfos => {
+    logs("MainController","retrieveAllCustomers","info", "Get all Customers' Infos Successfully!");
       res.status(200).json({
         message: "Get all Customers' Infos Successfully!",
         customers: customerInfos
@@ -351,8 +373,7 @@ exports.retrieveAllCustomers = (req, res) => {
     })
     .catch(error => {
       // log on console
-      console.log(error);
-
+      logs("MainController","retrieveAllCustomers","Error", error.message);
       res.status(500).json({
         message: "Error!",
         error: error
@@ -365,15 +386,15 @@ exports.getCustomerById = (req, res) => {
   let customerId = req.params.id;
   Customer.findByPk(customerId)
     .then(customer => {
+      logs("MainController","getCustomerById","Info", "Successfully Get a Customer with id = " + customerId);
       res.status(200).json({
-        message: " Successfully Get a Customer with id = " + customerId,
+        message: "Successfully Get a Customer with id = " + customerId,
         customers: customer
       });
     })
     .catch(error => {
       // log on console
-      console.log(error);
-
+      logs("MainController","getCustomerById","Info", error.message);
       res.status(500).json({
         message: "Error!",
         error: error
@@ -390,13 +411,15 @@ exports.filteringByAge = (req, res) => {
     where: { age: age }
   })
     .then(results => {
+      logs("MainController","filteringByAge","Info", "Get all Customers with age = " + age);
       res.status(200).json({
         message: "Get all Customers with age = " + age,
         customers: results,
       });
     })
     .catch(error => {
-      console.log(error);
+  
+      logs("MainController","filteringByAge","Info", error.message);
       res.status(500).json({
         message: "Error!",
         error: error
@@ -488,6 +511,7 @@ exports.updateById = async (req, res) => {
 
     if (!customer) {
       // return a response to client
+      logs("MainController","filteringByAge","Info", "Not Found for updating a customer with id = " + customerId);
       res.status(404).json({
         message: "Not Found for updating a customer with id = " + customerId,
         customer: "",
@@ -505,18 +529,20 @@ exports.updateById = async (req, res) => {
 
       // return the response to client
       if (!result) {
+        logs("MainController","updateById","Error", "Error -> Can not update a customer with id = " + req.params.id);
         res.status(500).json({
           message: "Error -> Can not update a customer with id = " + req.params.id,
           error: "Can NOT Updated",
         });
       }
-
+      logs("MainController","updateById","Info", "Update successfully a Customer with id = " + customerId);
       res.status(200).json({
         message: "Update successfully a Customer with id = " + customerId,
         customer: updatedObject,
       });
     }
   } catch (error) {
+    logs("MainController","updateById","Error", "Error -> Can not update a customer with id = " + req.params.id);
     res.status(500).json({
       message: "Error -> Can not update a customer with id = " + req.params.id,
       error: error.message
@@ -530,18 +556,21 @@ exports.deleteById = async (req, res) => {
     let customer = await Customer.findByPk(customerId);
 
     if (!customer) {
+      logs("MainController","deleteById","Info", "Does Not exist a Customer with id = " + customerId);
       res.status(404).json({
         message: "Does Not exist a Customer with id = " + customerId,
         error: "404",
       });
     } else {
       await customer.destroy();
+      logs("MainController","deleteById","Info", "Delete Successfully a Customer with id = " + customerId);
       res.status(200).json({
         message: "Delete Successfully a Customer with id = " + customerId,
         customer: customer,
       });
     }
   } catch (error) {
+    logs("MainController","deleteById","Info", "Error -> Can NOT delete a customer with id = " + req.params.id);
     res.status(500).json({
       message: "Error -> Can NOT delete a customer with id = " + req.params.id,
       error: error.message,
