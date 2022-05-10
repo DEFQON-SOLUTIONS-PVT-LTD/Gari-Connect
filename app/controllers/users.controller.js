@@ -1,6 +1,7 @@
 const db = require('../config/db.config.js');
 const { messages } = require('../common/messages');
 const { successResponse, errorResponse } = require('../common/response');
+const logs = require('../controllers/logging.js');
 const { 
     saveUserValidation,
     updateUserValidation,
@@ -35,12 +36,14 @@ exports.addstaff = (req, res) => {
         // Save to Postgress database
         User.create(staff).then(result => {
             // send uploading message to client
+            logs("User","addstaff","Info", "Staff is added successfully!");
             res.status(200).json({
                 message: "Staff is added successfully!",
                 staff: successResponse(result),
             });
         });
     } catch (error) {
+        logs("User","addstaff","Info", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -56,6 +59,7 @@ exports.updateStaff = async (req, res) => {
         let user = await User.findByPk(userId);
 
         if (!user) {
+            logs("User","updateStaff","Info", "Not Found for updating a staff with id = " + userId);
             // return a response to client
             res.status(404).json({
                 message: "Not Found for updating a staff with id = " + userId,
@@ -80,18 +84,20 @@ exports.updateStaff = async (req, res) => {
 
             // return the response to client
             if (!result) {
+                logs("User","updateStaff","Info", "Error -> Can not update a staff with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a staff with id = " + req.params.id,
                     error: "Can not Updated",
                 });
             }
-
+            logs("User","updateStaff","Info", "Update successfully a staff with id = " + userId);
             res.status(200).json({
                 message: "Update successfully a staff with id = " + userId,
                 user: updatedObject,
             });
         }
     } catch (error) {
+        logs("User","updateStaff","Error", "Error -> Can not update a staff with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a staff with id = " + req.params.id,
             // error: error.message
@@ -109,6 +115,7 @@ exports.updatePersonalInfo = async (req, res) => {
 
         if (!user) {
             // return a response to client
+            logs("User","updatePersonalInfo","Error", "Not Found for updating a personal info with id = " + userId);
             res.status(404).json({
                 message: "Not Found for updating a personal info with id = " + userId,
                 user: "",
@@ -129,18 +136,21 @@ exports.updatePersonalInfo = async (req, res) => {
 
             // return the response to client
             if (!result) {
+                logs("User","updatePersonalInfo","Error", "Error -> Can not update a personal info with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a personal info with id = " + req.params.id,
                     error: "Can not Updated",
                 });
             }
-
+            logs("User","updatePersonalInfo","Error", "Update successfully a personal inforamtion with id = " + userId);
             res.status(200).json({
                 message: "Update successfully a personal inforamtion with id = " + userId,
                 user: updatedObject,
             });
         }
     } catch (error) {
+        logs("User","updatePersonalInfo","Error", error.message);
+
         res.status(500).json({
             message: "Error -> Can not update a personal inforamtion with id = " + req.params.id,
             // error: error.message
@@ -159,6 +169,7 @@ exports.updatePassword = async (req, res) => {
                 let userId = userrow.userId;
                 passwordIsValid = decrypt(userrow.password)
                 if (passwordIsValid != req.body.current_password) {
+                    logs("User","updatePassword","Error", "Current Password is incorrect!");
                     return res.status(401).send({
                     message: "Current Password is incorrect!"
                     });
@@ -173,11 +184,14 @@ exports.updatePassword = async (req, res) => {
       
                 // return the response to client
                   if (!result) {
+                    logs("User","updatePassword","Info", "Error -> Can not change the password with phone no. = " + req.body.phone_no);
                       res.status(500).json({
                           message: "Error -> Can not change the password with phone no. = " + req.body.phone_no,
                           error: "Can NOT Updated",
                       });
                   }
+                  logs("User","updatePassword","Info", "Password changed successfully.");
+
                   res.status(200).json({
                     message: "Password changed successfully.",
                     status: true,
@@ -186,6 +200,7 @@ exports.updatePassword = async (req, res) => {
                 
       
               }else{
+                logs("User","updatePassword","Error", "Somethinng went wrong.");
                 res.status(500).json({
                   status:false,
                   message: "Somethinng went wrong.",
@@ -195,6 +210,7 @@ exports.updatePassword = async (req, res) => {
           })
         
     } catch (error) {
+        logs("User","updatePassword","Error", error.message);
         res.status(500).json({
             message: "Error -> Can not password a staff with Phone = " + req.body.phone_no,
             // error: error.message
@@ -246,12 +262,14 @@ exports.getAllStaff = (req, res) => {
         })
         .then(staffInfos => {
             if(staffInfos.length== 0){
+                logs("User","getAllStaff","Info", "No Staff found!");
                 res.status(404).json({
                     message: "No Staff found!",
                     staff: false
                 });
                 return false;
             }
+            logs("User","getAllStaff","Info", "Retrieved all Staff Info Successfully!");
             res.status(200).json({
                 message: "Retrieved all Staff Info Successfully!",
                 user: staffInfos
@@ -259,7 +277,7 @@ exports.getAllStaff = (req, res) => {
         })
         .catch(error => {
             // log on console
-            console.log(error);
+            logs("User","getAllStaff","Info", error);
 
             res.status(500).json({
                 message: "Error!",
@@ -278,6 +296,7 @@ exports.createSocialUser = (req, res) => {
         })
             .then(guser => {
                 if (guser) {
+                    logs("User","createSocialUser","Info", "User already exists. Please try to login.");
                     return res.status(404).send({ message: "User already exists. Please try to login." });
                 } else {
                     // Building model object from upoading request's body
@@ -302,8 +321,9 @@ exports.createSocialUser = (req, res) => {
                  // Save to Postgress database
                 User.create(user).then(result => {
                     // send uploading message to client
+                    logs("User","createSocialUser","Info", "Successfully Created a User with id = " + result.id);
                     res.status(200).json({
-                        message: " Successfully Created a User with id = " + result.id,
+                        message: "Successfully Created a User with id = " + result.id,
                         user: successResponse(result),
                     });
                 
@@ -312,6 +332,8 @@ exports.createSocialUser = (req, res) => {
     });
             
     } catch (error) {
+        logs("User","createSocialUser","Error", error.message);
+
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -348,12 +370,14 @@ exports.create = (req, res) => {
         // Save to Postgress database
         User.create(user).then(result => {
             // send uploading message to client
+            logs("User","create","Info", "Successfully Created a User with id = " + result.id);
             res.status(200).json({
-                message: " Successfully Created a User with id = " + result.id,
+                message: "Successfully Created a User with id = " + result.id,
                 user: successResponse(result),
             });
         });
     } catch (error) {
+        logs("User","create","Info", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -370,6 +394,7 @@ exports.updateUser = async (req, res) => {
 
         if (!user) {
             // return a response to client
+            logs("User","create","Info", "Not Found for updating a user with id = " + userId);
             res.status(404).json({
                 message: "Not Found for updating a user with id = " + userId,
                 user: "",
@@ -402,12 +427,13 @@ exports.updateUser = async (req, res) => {
 
             // return the response to client
             if (!result) {
+                logs("User","create","Info", "Error -> Can not update a user with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a user with id = " + req.params.id,
                     error: "Can not Updated",
                 });
             }
-
+            logs("User","create","Info", "Update successfully a user with id = " + userId);
             res.status(200).json({
                 message: "Update successfully a user with id = " + userId,
                 user: updatedObject,
@@ -433,7 +459,8 @@ exports.getUsers = (req, res) => {
         })
         .catch(error => {
             // log on console
-            console.log(error);
+            logs("User","create","Info", error);
+
 
             res.status(500).json({
                 message: "Error!",
@@ -446,15 +473,17 @@ exports.getUserById = (req, res) => {
     let userId = req.params.id;
     User.findByPk(userId)
         .then(user => {
+            logs("User","getUserById","Info", "Successfully Get a user with id = " + userId);
+
             res.status(200).json({
-                message: " Successfully Get a user with id = " + userId,
+                message: "Successfully Get a user with id = " + userId,
                 user: user
             });
         })
         .catch(error => {
             // log on console
             console.log(error);
-
+            logs("User","getUserById","Error", error);
             res.status(500).json({
                 message: "Error!",
                 error: error
@@ -469,6 +498,7 @@ exports.deleteById = async (req, res) => {
                 userId: req.params.id
             }
         });
+        logs("User","deleteById","Info", "User Deleted");
         res.json({
             "message": "user Deleted"
         });
@@ -482,6 +512,7 @@ exports.deleteStaffById = async (req, res) => {
         let user = await User.findByPk(userId);
 
         if (!user) {
+            logs("User","deleteStaffById","Info", "Not Found for deleting a staff with id = " + userId);
             // return a response to client
             res.status(404).json({
                 message: "Not Found for deleting a staff with id = " + userId,
@@ -503,11 +534,13 @@ exports.deleteStaffById = async (req, res) => {
 
             // return the response to client
             if (!result) {
+                logs("User","deleteStaffById","Error", "Error -> Can not delete a staff with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not delete a staff with id = " + req.params.id,
                     error: "Can not Updated",
                 });
             }
+            logs("User","deleteStaffById","Info", "Deleted successfully a staff with id = " + req.params.id);
             res.status(200).json({
                 message: "Deleted successfully a staff with id = " + req.params.id,
                 user: updatedObject,
@@ -552,6 +585,6 @@ exports.deleteStaffById = async (req, res) => {
         }
        
     } catch (err) {
-        console.log(err);
+        logs("User","deleteStaffById","Error", err);
     }
 }

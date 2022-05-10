@@ -21,6 +21,11 @@ const userReview = require('../controllers/userReview.controller.js');
 const bookings = require('../controllers/bookings.controller.js');
 const vehicleType = require('../controllers/vehicleType.controller.js');
 const dashboard = require('../controllers/dashboard.controller.js');
+
+router.post(
+    '/api/auth/makecall',
+     customers.makecall
+     );
 //define routes for the whole app
 router.post('/api/auth/token', customers.authenticate);
 router.post(

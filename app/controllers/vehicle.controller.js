@@ -5,6 +5,7 @@ const { saveVehicleValidation, updateVehicleValidation } = require('../validatio
 const VoiceResponse = require('twilio/lib/twiml/VoiceResponse');
 const Vehicle = db.Vehicle;
 const crypto = require('crypto');
+const logs = require('../controllers/logging.js');
 //const Op = db.Sequelize.Op;
 
 exports.create = (req, res) => {
@@ -37,12 +38,14 @@ exports.create = (req, res) => {
         // Save to MySQL database
         Vehicle.create(vehicle).then(result => {
             // send uploading message to client
+            logs("Vehicle","create","Info", "Create Successfully a vehicle with id = " + result.id);
             res.status(200).json({
                 message: "Create Successfully a vehicle with id = " + result.id,
                 vehicle: successResponse(result),
             });
         });
     } catch (error) {
+        logs("Vehicle","create","Info", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -60,6 +63,7 @@ exports.updateVehicle = async (req, res) => {
 
         if (!vehicle) {
             // return a response to client
+            logs("Vehicle","updateVehicle","Info", "Not Found for updating a vehicle with id = " + vehicleId);
             res.status(404).json({
                 message: "Not Found for updating a vehicle with id = " + vehicleId,
                 vehicle: "",
@@ -91,18 +95,20 @@ exports.updateVehicle = async (req, res) => {
 
             // return the response to client
             if (!result) {
+                logs("Vehicle","updateVehicle","Error", "Error -> Can not update a vehicle with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a vehicle with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-
+            logs("Vehicle","updateVehicle","Error", "Update successfully a vehicle with id = " + vehicleId);
             res.status(200).json({
                 message: "Update successfully a vehicle with id = " + vehicleId,
                 vehicle: updatedObject,
             });
         }
     } catch (error) {
+        logs("Vehicle","updateVehicle","Error", error.message);
         res.status(500).json({
             message: "Error -> Can not update a vehicle with id = " + req.params.id,
             // error: error.message
@@ -115,6 +121,7 @@ exports.getVehicle = (req, res) => {
 
     Vehicle.findAll()
         .then(vehicleInfos => {
+            logs("Vehicle","getVehicle","Info", "Get all vehicle' Infos Successfully!");
             res.status(200).json({
                 message: "Get all vehicle' Infos Successfully!",
                 vehicle: vehicleInfos
@@ -122,7 +129,7 @@ exports.getVehicle = (req, res) => {
         })
         .catch(error => {
             // log on console
-            console.log(error);
+            logs("Vehicle","getVehicle","Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -135,6 +142,7 @@ exports.getVehicleById = (req, res) => {
     let vehicleId = req.params.id;
     Vehicle.findByPk(vehicleId)
         .then(vehicle => {
+            logs("Vehicle","getVehicleById","Info", "Successfully Get a vehicle with id = " + vehicleId);
             res.status(200).json({
                 message: " Successfully Get a vehicle with id = " + vehicleId,
                 vehicles: vehicle
@@ -142,7 +150,7 @@ exports.getVehicleById = (req, res) => {
         })
         .catch(error => {
             // log on console
-            console.log(error);
+            logs("Vehicle","getVehicleById","Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -158,11 +166,12 @@ exports.deleteById = async (req, res) => {
                 vehicleId: req.params.id
             }
         });
+        logs("Vehicle","getVehicleById","Info", "vehicle Deleted");
         res.json({
             "message": "vehicle Deleted"
         });
     } catch (err) {
-        console.log(err);
+        logs("Vehicle","getVehicleById","Error", err);
     }
 }
 
@@ -172,6 +181,7 @@ exports.IsFavourite = async (req, res) => {
         let vehicle = await Vehicle.findByPk(vehicleId);
         if (!vehicle) {
             // return a response to client
+            logs("Vehicle","IsFavourite","Info", "Vehicle Not Found with id = " + vehicleId);
             res.status(404).json({
                 message: "Vehicle Not Found with id = " + vehicleId,
                 vehicle: "",
@@ -187,11 +197,13 @@ exports.IsFavourite = async (req, res) => {
                 let result = await vehicle.update(updatedObject, { returning: true, where: { vehicleId: vehicleId } });
                 // return the response to client
                 if (!result) {
+                    logs("Vehicle","IsFavourite","Info", "Error -> vehicle Can not updated with id = " + req.params.id);
                     res.status(500).json({
                         message: "Error -> vehicle Can not updated with id = " + req.params.id,
                         error: "Can NOT Updated",
                     });
                 }
+                logs("Vehicle","IsFavourite","Info", "vehicle successfully updated with id = " + vehicleId);
                 res.status(200).json({
                     message: "vehicle successfully updated with id = " + vehicleId,
                     Vehicle: updatedObject,
@@ -205,11 +217,13 @@ exports.IsFavourite = async (req, res) => {
                     }
                     let result = await vehicle.update(updatedObject, { returning: true, where: { vehicleId: vehicleId } });
                     if (!result) {
+                        logs("Vehicle","IsFavourite","Info", "Error -> vehicle Can not unfavourite with id = " + req.params.id);
                         res.status(500).json({
                             message: "Error -> vehicle Can not unfavourite with id = " + req.params.id,
                             error: "Can NOT Updated",
                         });
                     }
+                    logs("Vehicle","IsFavourite","Info", "vehicle successfully unfavourite with id = " + vehicleId);
                     res.status(200).json({
                         message: "vehicle successfully unfavourite with id = " + vehicleId,
                         Vehicle: updatedObject,
@@ -223,11 +237,13 @@ exports.IsFavourite = async (req, res) => {
                     }
                     let result = await vehicle.update(updatedObject, { returning: true, where: { vehicleId: vehicleId } });
                     if (!result) {
+                        logs("Vehicle","IsFavourite","Info", "Error -> vehicle Can not Isfavourite with id = " + req.params.id);
                         res.status(500).json({
                             message: "Error -> vehicle Can not Isfavourite with id = " + req.params.id,
                             error: "Can NOT Updated",
                         });
                     }
+                    logs("Vehicle","IsFavourite","Info", "vehicle successfully Isfavourite with id = " + vehicleId);
                     res.status(200).json({
                         message: "vehicle successfully Isfavourite with id = " + vehicleId,
                         Vehicle: updatedObject,
@@ -237,6 +253,7 @@ exports.IsFavourite = async (req, res) => {
         }
     }
     catch (error) {
+        logs("Vehicle","IsFavourite","Error", "Error -> Booking Can not be Reject  with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Booking Can not be Reject  with id = " + req.params.id,
             //error: error.message
@@ -250,6 +267,7 @@ exports.CancelBooking = async (req, res) => {
         let vehicle = await Vehicle.findByPk(vehicleId);
         if (!vehicle) {
             // return a response to client
+            logs("Vehicle","CancelBooking","Info", "Vehicle Not Found with id = " + vehicleId);
             res.status(404).json({
                 message: "Vehicle Not Found with id = " + vehicleId,
                 vehicle: "",
@@ -265,11 +283,13 @@ exports.CancelBooking = async (req, res) => {
                 let result = await vehicle.update(updatedObject, { returning: true, where: { vehicleId: vehicleId } });
                 // return the response to client
                 if (!result) {
+                    logs("Vehicle","CancelBooking","Info", "Error -> vehicle Can not updated with id = " + req.params.id);
                     res.status(500).json({
                         message: "Error -> vehicle Can not updated with id = " + req.params.id,
                         error: "Can NOT Updated",
                     });
                 }
+                logs("Vehicle","CancelBooking","Info", "vehicle successfully updated with id = " + vehicleId);
                 res.status(200).json({
                     message: "vehicle successfully updated with id = " + vehicleId,
                     Vehicle: updatedObject,
@@ -283,11 +303,13 @@ exports.CancelBooking = async (req, res) => {
                     }
                     let result = await vehicle.update(updatedObject, { returning: true, where: { vehicleId: vehicleId } });
                     if (!result) {
+                        logs("Vehicle","CancelBooking","Info", "Error -> vehicle Can not IsCancel with id = " + req.params.id);
                         res.status(500).json({
                             message: "Error -> vehicle Can not IsCancel with id = " + req.params.id,
                             error: "Can NOT Updated",
                         });
                     }
+                    logs("Vehicle","CancelBooking","Info", "vehicle successfully IsCancel with id = " + vehicleId);
                     res.status(200).json({
                         message: "vehicle successfully IsCancel with id = " + vehicleId,
                         Vehicle: updatedObject,
@@ -301,11 +323,13 @@ exports.CancelBooking = async (req, res) => {
                     }
                     let result = await vehicle.update(updatedObject, { returning: true, where: { vehicleId: vehicleId } });
                     if (!result) {
+                        logs("Vehicle","CancelBooking","Info", "Error -> vehicle Can not Cancel with id = " + req.params.id);
                         res.status(500).json({
                             message: "Error -> vehicle Can not Cancel with id = " + req.params.id,
                             error: "Can NOT Updated",
                         });
                     }
+                    logs("Vehicle","CancelBooking","Info", "vehicle successfully Cancel with id = " + vehicleId);
                     res.status(200).json({
                         message: "vehicle successfully Cancel with id = " + vehicleId,
                         Vehicle: updatedObject,
@@ -315,6 +339,7 @@ exports.CancelBooking = async (req, res) => {
         }
     }
     catch (error) {
+        logs("Vehicle","CancelBooking","Error", "Error -> Vehicle Can not be Cancel  with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Vehicle Can not be Cancel  with id = " + req.params.id,
             //error: error.message
@@ -325,14 +350,16 @@ exports.CancelBooking = async (req, res) => {
 exports.getVehicleList = (req, res, next) => {
     db.sequelize.query('CALL get_vehicleList(); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
+            logs("Vehicle","CancelBooking","Error", "Get all VehicleList Infos Successfully! ");
             res.status(200).json({
-                message: " Get all VehicleList Infos Successfully! ",
+                message: "Get all VehicleList Infos Successfully! ",
                 result: result[0],
             });
         })
         .catch(error => {
             // log on console
             console.log(error);
+            logs("Vehicle","CancelBooking","Error", error);
             res.status(500).json({
                 message: "Error!",
                 error: error

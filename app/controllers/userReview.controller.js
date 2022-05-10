@@ -4,6 +4,7 @@ const { successResponse, errorResponse } = require('../common/response');
 const { saveUserReviewValidation, updateUserReviewValidation } = require('../validations/validation');
 const UserReviews = db.UserReviews;
 const crypto = require('crypto');
+const logs = require('../controllers/logging.js');
 
 //const Op = db.Sequelize.Op;
 exports.create = (req, res) => {
@@ -24,12 +25,14 @@ exports.create = (req, res) => {
         // Save to MySQL database
         UserReviews.create(review).then(result => {
             // send uploading message to client
+            logs("UserReviews","create","Info", "Successfully Created a Review");
             res.status(200).json({
                 message: "Successfully Created a Review",
                 review: successResponse(result),
             });
         });
     } catch (error) {
+        logs("UserReviews","create","Info", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -48,6 +51,7 @@ exports.updateUserReview = async (req, res) => {
 
         if (!userReview) {
             // return a response to client
+            logs("UserReview","updateUserReview","Info", "Not Found for updating a user review with id = " + user_review_id);
             res.status(404).json({
                 message: "Not Found for updating a user review with id = " + user_review_id,
                 review: "",
@@ -64,18 +68,20 @@ exports.updateUserReview = async (req, res) => {
 
             // return the response to client
             if (!result) {
+                logs("UserReview","updateUserReview","Info", "Error -> Can not update a user review with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a user review with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-
+            logs("UserReview","updateUserReview","Info", "Update successfully a user review with id = " + user_review_id);
             res.status(200).json({
                 message: "Update successfully a user review with id = " + user_review_id,
                 userReview: updatedObject,
             });
         }
     } catch (error) {
+        logs("UserReview","updateUserReview","Error", "Error -> Can not update a user review with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a user review with id = " + req.params.id,
             //error: error.message
@@ -88,12 +94,14 @@ exports.getUserReviews = (req, res) => {
 
     UserReviews.findAll()
         .then(result => {
+            logs("UserReview","getUserReviews","Error", "Get all user reviews Successfully");
             res.status(200).json({
                 message: "Get all user reviews Successfully",
                 reviews: result
             });
         })
         .catch(err => {
+            logs("UserReview","getUserReviews","Error", err);
             res.status(500).json({
                 message: "Error has occurred!",
                 error: err
@@ -105,12 +113,14 @@ exports.getUserReviewById = (req, res) => {
     let user_review_id = req.params.id;
     UserReviews.findByPk(user_review_id)
         .then(result => {
+            logs("UserReview","getUserReviewById","Info", "Successfully got user review with id = " + user_review_id);
             res.status(200).json({
                 message: "Successfully got user review with id = " + user_review_id,
                 review: result
             });
         })
         .catch(err => {
+            logs("UserReview","getUserReviewById","Error", err);
             res.status(500).json({
                 message: "Error has occurred!",
                 error: err
@@ -125,10 +135,11 @@ exports.deleteReviewById = async (req, res) => {
                 user_review_id: req.params.id
             }
         });
+        logs("UserReview","deleteReviewById","Info", "Review deleted");
         res.json({
             message: "Review deleted"
         });
     } catch (err) {
-        console.log(err);
+        logs("UserReview","deleteReviewById","Error", err);
     }
 }
