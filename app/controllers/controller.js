@@ -10,21 +10,54 @@ const { encrypt, decrypt } = require('../config/crypto_hash.js');
 const { saveAuthUserValidation, updateForgotPasswordValidation } = require('../validations/validation');
 const { Users } = require('../config/db.config.js');
 const logs = require('../controllers/logging.js');
-
+const { create } = require('xmlbuilder2');
+const fs = require('fs');
 const accountSid = env.TWILIO_ACCOUNT_SID;
 const authToken = env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
 exports.makecall = (req, res) => {
-  debugger;
   try {
-    client.calls
-    .create({
-       url: 'http://demo.twilio.com/docs/voice.xml',
-       to: req.body.userphone,
-       from: env.TWILIO_PHONE_NUMBER
-     })
-    .then(call => console.log(call.sid));
+    var rand = Math.floor(Math.random() * 10000) + 1;
+    const root = create({ version: '1.0', encoding: 'UTF-8' })
+    .ele('Response')
+      .ele('Say').txt('Welcome to Gari Connect! Your Shatay Taat is '+rand+'. once again your Shatay Taat is '+rand+'. Thanks!').up()
+    .up();
+  
+  // convert the XML tree to string
+  const xml = root.end({ prettyPrint: true });
+console.log(__dirname);
+var rootdir = 'C:/Users/Raza/Documents/Techinoid/Gari-Connect/';
+fs.writeFile(rootdir+"/make-call.xml", xml, (err) => {
+  if (err)
+    console.log(err);
+  else {
+    console.log("File written successfully\n");
+    console.log("The written has the following contents:");
+  }
+});
+
+    // client.calls
+    // .create({
+    //    url: '/make-call.xml',
+    //    to: req.body.userphone,
+    //    from: env.TWILIO_PHONE_NUMBER
+    //  },function(err, call){
+    //    if(err){
+    //      console.log(err);
+    //    }else{
+    //     console.log(call.sid);
+    //    }
+    //  })
+    // .then(
+      
+    //   call => console.log(call.sid)
+    //   );
+
+      res.status(200).json({
+        message: "Call Started!",
+        data: successResponse(xml)
+      });
   }
   catch (error) {
     res.status(403).json({
