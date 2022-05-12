@@ -318,6 +318,7 @@ exports.createSocialUser = (req, res) => {
                 user.permissionId = req.body.permissionId;
                 user.roleId = req.body.roleId;
                 user.cityId = req.body.cityId;
+                user.gender = req.body.gender;
                  // Save to Postgress database
                 User.create(user).then(result => {
                     // send uploading message to client
@@ -365,6 +366,7 @@ exports.create = (req, res) => {
         user.permissionId = req.body.permissionId;
         user.roleId = req.body.roleId;
         user.cityId = req.body.cityId;
+        user.gender =req.body.gender;
 
 
         // Save to Postgress database
@@ -421,6 +423,7 @@ exports.updateUser = async (req, res) => {
                 permissionId: req.body.permissionId,
                 roleId: req.body.roleId,
                 cityId: req.body.cityId,
+                gender: req.body.gender,
                 updatedat: new Date(),
             }
             let result = await user.update(updatedObject, { returning: true, where: { userId: userId } });

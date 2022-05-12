@@ -26,6 +26,10 @@ router.post(
     '/api/auth/makecall',
      customers.makecall
      );
+router.post(
+    '/api/auth/whatsapp',
+    customers.whatsappVerification
+);
 //define routes for the whole app
 router.post('/api/auth/token', customers.authenticate);
 router.post(

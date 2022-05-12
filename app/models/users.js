@@ -101,6 +101,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.SMALLINT,
       allowNull: true,
       defaultValue: 0
+    },
+    gender: {
+      type: DataTypes.STRING(20),
+      allowNull: true
     }
   }, {
     sequelize,

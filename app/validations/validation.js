@@ -242,6 +242,7 @@ const saveUserValidation = (data) => {
         permissionId: Joi.string().required(),
         roleId: Joi.string().required(),
         cityId: Joi.string().required(),
+        gender: Joi.string().required(),
     });
     return schema.validate(data);
 };
@@ -279,6 +280,7 @@ const updateUserValidation = (data) => {
         permissionId: Joi.string().required(),
         roleId: Joi.string().required(),
         cityId: Joi.string().required(),
+        gender: Joi.string().required(),
     });
     return schema.validate(data);
 };

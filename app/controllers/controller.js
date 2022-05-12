@@ -17,6 +17,7 @@ const authToken = env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
 exports.makecall = (req, res) => {
+  let twillioCall = {};
   try {
     var rand = Math.floor(Math.random() * 10000) + 1;
     const root = create({ version: '1.0', encoding: 'UTF-8' })
@@ -26,16 +27,15 @@ exports.makecall = (req, res) => {
   
   // convert the XML tree to string
   const xml = root.end({ prettyPrint: true });
-console.log(__dirname);
-var rootdir = 'C:/Users/Raza/Documents/Techinoid/Gari-Connect/';
-fs.writeFile(rootdir+"/make-call.xml", xml, (err) => {
-  if (err)
-    console.log(err);
-  else {
-    console.log("File written successfully\n");
-    console.log("The written has the following contents:");
-  }
-});
+  var rootdir = 'C:/Users/Raza/Documents/Techinoid/Gari-Connect/';
+  fs.writeFile(rootdir+"/make-call.xml", xml, (err) => {
+    if (err)
+      console.log(err);
+    else {
+      console.log("File written successfully\n");
+      console.log("The written has the following contents:");
+    }
+  });
 
     // client.calls
     // .create({
@@ -53,10 +53,33 @@ fs.writeFile(rootdir+"/make-call.xml", xml, (err) => {
       
     //   call => console.log(call.sid)
     //   );
-
-      res.status(200).json({
-        message: "Call Started!",
-        data: successResponse(xml)
+      let authUserPhone = Authuser.findOne({ where: {phone_no: req.body.userphone} }).then(function(userrow) {
+          if (authUserPhone) {
+                if(userrow!=null){
+                Authuser.destroy({
+                  where: {
+                      authuserId: userrow.authuserId
+                  }
+              });
+            }
+          }
+      })
+      var expiryTime = 60;
+      var expiry_time;
+      expiry_time = new Date();
+      //expires in one minute.
+      expiry_time.setSeconds(expiry_time.getSeconds() + expiryTime);
+      
+      twillioCall.phone_no = req.body.userphone;
+      twillioCall.otp_code = rand;
+      twillioCall.otp_expiry= expiry_time;
+      Authuser.create(twillioCall).then(result => {
+        // send uploading message to client
+        logs("MainController","MakeCall","Info", "OTP sent to = " + req.body.userphone+". Please verify to continue ");
+        res.status(200).json({
+          message: "OTP sent to = " + req.body.userphone+". Please verify to continue ",
+          customer: successResponse(result),
+        });
       });
   }
   catch (error) {
@@ -66,6 +89,64 @@ fs.writeFile(rootdir+"/make-call.xml", xml, (err) => {
     });
   }
 }
+
+exports.whatsappVerification = (req, res) => {
+  let whatsappVerify = {};
+  try {
+    var expiryTime = 60;
+    var rand = Math.floor(Math.random() * 10000) + 1;
+   
+      let authUserPhone = Authuser.findOne({ where: {phone_no: req.body.userphone} }).then(function(userrow) {
+          if (authUserPhone) {
+                if(userrow!=null){
+                Authuser.destroy({
+                  where: {
+                      authuserId: userrow.authuserId
+                  }
+              });
+            }
+          }
+      })
+      client.messages
+      .create({
+         from: 'whatsapp:'+env.TWILIO_WHATSAPP_NUMBER,
+         body: 'Your OTP code is : ' + rand + ' Do not share with anyone at any risk. This code will expires in '+ expiryTime + ' Seconds',
+         to: 'whatsapp:'+req.body.userphone
+       },function(err, message){
+           if(err){
+             console.log(err);
+           }else{
+            console.log(message.sid);
+           }
+         }
+       )
+      .then(message => console.log(message.sid)).done();
+     
+      var expiry_time;
+      expiry_time = new Date();
+      //expires in one minute.
+      expiry_time.setSeconds(expiry_time.getSeconds() + expiryTime);
+      
+      whatsappVerify.phone_no = req.body.userphone;
+      whatsappVerify.otp_code = rand;
+      whatsappVerify.otp_expiry= expiry_time;
+      Authuser.create(whatsappVerify).then(result => {
+        // send uploading message to client
+        logs("MainController","whatsappVerify","Info", "OTP sent to = " + req.body.userphone+". Please verify to continue ");
+        res.status(200).json({
+          message: "OTP sent to = " + req.body.userphone+". Please verify to continue ",
+          customer: successResponse(result),
+        });
+      });
+  }
+  catch (error) {
+    res.status(403).json({
+      message: "Forbidden!",
+      error: errorResponse(error.message)
+    });
+  }
+}
+
 
 exports.forgotpassword = (req, res) => {
   let forgotpwd = {};
@@ -135,7 +216,6 @@ exports.forgotpassword = (req, res) => {
     });
   }
 }
-
 
 exports.authuser = (req, res) => {
   let authuser = {};
