@@ -348,36 +348,54 @@ exports.create = (req, res) => {
         // Validate
         const { error } = saveUserValidation(req.body);
         if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
-        // Building model object from upoading request's body
-        const hashpassword = encrypt(req.body.password);
-        user.firstname = req.body.firstname;
-        user.lastname = req.body.lastname;
-        user.phoneno = req.body.phoneno;
-        user.email = req.body.email;
-        user.password = hashpassword;
-        user.address = req.body.address;
-        user.photo = req.body.photo;
-        user.cnic = req.body.cnic;
-        user.cnic_validity = req.body.cnic_validity;
-        user.driving_license_number = req.body.driving_license_number;
-        user.license_validity= req.body.license_validity;
-        user.is_active = req.body.is_active;
-        user.uuid = crypto.randomUUID();
-        user.permissionId = req.body.permissionId;
-        user.roleId = req.body.roleId;
-        user.cityId = req.body.cityId;
-        user.gender =req.body.gender;
+
+        let checkUserByPhone = User.findOne({ where: {phoneno: req.body.phoneno} }).then(function(user_row) {
+            if (checkUserByPhone) {
+              if(user_row!=null){
+                logs("MainController","authuser","Info", "Phone No. Already in use try to login with this No. = " + req.body.phoneno);
+                errordetails = {
+                  message: "Phone No. Already in use try to login with this No. = " + req.body.phoneno,
+                  status: false
+                }
+                res.status(400).json({
+                    message: "Fail!",
+                    error: errordetails
+                });
+              }else{
+                // Building model object from upoading request's body
+                const hashpassword = encrypt(req.body.password);
+                user.firstname = req.body.firstname;
+                user.lastname = req.body.lastname;
+                user.phoneno = req.body.phoneno;
+                user.email = req.body.email;
+                user.password = hashpassword;
+                user.address = req.body.address;
+                user.photo = req.body.photo;
+                user.cnic = req.body.cnic;
+                user.cnic_validity = req.body.cnic_validity;
+                user.driving_license_number = req.body.driving_license_number;
+                user.license_validity= req.body.license_validity;
+                user.is_active = req.body.is_active;
+                user.uuid = crypto.randomUUID();
+                user.permissionId = req.body.permissionId;
+                user.roleId = req.body.roleId;
+                user.cityId = req.body.cityId;
+                user.gender =req.body.gender;
 
 
-        // Save to Postgress database
-        User.create(user).then(result => {
-            // send uploading message to client
-            logs("User","create","Info", "Successfully Created a User with id = " + result.id);
-            res.status(200).json({
-                message: "Successfully Created a User with id = " + result.id,
-                user: successResponse(result),
+                // Save to Postgress database
+                User.create(user).then(result => {
+                    // send uploading message to client
+                    logs("User","create","Info", "Successfully Created a User with id = " + result.id);
+                    res.status(200).json({
+                        message: "Successfully Created a User with id = " + result.id,
+                        user: successResponse(result),
+                    });
+                });
+            }
+            }
             });
-        });
+
     } catch (error) {
         logs("User","create","Info", error.message);
         res.status(500).json({
