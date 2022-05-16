@@ -429,6 +429,11 @@ router.get(
     [authJwt.verifyToken],
      bookings.getBooking
      );
+     router.get(
+        '/api/vehicle/getvehiclebyfilter',
+        [authJwt.verifyToken],
+         vehicle.getVehicleByFilters
+         );
 router.get(
     '/api/bookings/getbyid/:id',
     [authJwt.verifyToken],

@@ -137,7 +137,25 @@ exports.getVehicle = (req, res) => {
             });
         });
 }
-
+exports.getVehicleByFilters = (req, res, next) => {
+    let statusId = req.body.statusId;
+    db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + '); FETCH ALL FROM "rs_resultone";', res, next)
+        .then(result => {
+            logs("Vehicles","getVehicleByFilters","Info", "Get all filtered Lists Successfully! ");
+            res.status(200).json({
+                message: "Get all booking Infos Successfully! ",
+                result: result[0],
+            });
+        })
+        .catch(error => {
+            // log on console
+            logs("Vehicles","getVehicleByFilters","Error", error.message);
+            res.status(500).json({
+                message: "Error!",
+                error: error
+            });
+        });
+}
 exports.getVehicleById = (req, res) => {
     let vehicleId = req.params.id;
     Vehicle.findByPk(vehicleId)
