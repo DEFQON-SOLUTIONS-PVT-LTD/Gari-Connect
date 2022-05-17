@@ -138,8 +138,33 @@ exports.getVehicle = (req, res) => {
         });
 }
 exports.getVehicleByFilters = (req, res, next) => {
+   
     let statusId = req.body.statusId;
-    db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + '); FETCH ALL FROM "rs_resultone";', res, next)
+    var makeId = 0;
+    var locationId = 0;
+    var modelId = 0;
+    var vehicle_type_id = 0;
+    if(makeId<req.body.makeId){
+        makeId = req.body.makeId;
+    }else{
+        makeId = 0;
+    }
+    if(locationId<req.body.locationId){
+        locationId = req.body.locationId;
+    }else{
+        locationId = 0;
+    }
+    if(modelId<req.body.modelId){
+        modelId = req.body.modelId;
+    }else{
+        modelId = 0;
+    }
+    if(vehicle_type_id<req.body.vehicle_type_id){
+        vehicle_type_id = req.body.vehicle_type_id;
+    }else{
+        vehicle_type_id = 0;
+    }
+    db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + ',' + makeId + ',' + locationId + ',' + modelId + ',' + vehicle_type_id + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicles","getVehicleByFilters","Info", "Get all filtered Lists Successfully! ");
             res.status(200).json({
