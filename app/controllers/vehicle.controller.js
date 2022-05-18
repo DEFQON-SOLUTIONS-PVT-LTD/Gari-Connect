@@ -143,6 +143,7 @@ exports.getVehicleByFilters = (req, res, next) => {
     var makeId = 0;
     var locationId = 0;
     var modelId = 0;
+    var rating = 0;
     var vehicle_type_id = 0;
     if(makeId<req.body.makeId){
         makeId = req.body.makeId;
@@ -164,11 +165,16 @@ exports.getVehicleByFilters = (req, res, next) => {
     }else{
         vehicle_type_id = 0;
     }
-    db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + ',' + makeId + ',' + locationId + ',' + modelId + ',' + vehicle_type_id + '); FETCH ALL FROM "rs_resultone";', res, next)
+    if(rating<req.body.rating){
+        rating = req.body.rating;
+    }else{
+        rating = 0;
+    }
+    db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + ',' + makeId + ',' + locationId + ',' + modelId + ',' + vehicle_type_id + ',' + rating + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicles","getVehicleByFilters","Info", "Get all filtered Lists Successfully! ");
             res.status(200).json({
-                message: "Get all booking Infos Successfully! ",
+                message: "Get all booking Infos Successfully!",
                 result: result[0],
             });
         })
