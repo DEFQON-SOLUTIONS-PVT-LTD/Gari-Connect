@@ -145,6 +145,9 @@ exports.getVehicleByFilters = (req, res, next) => {
     var modelId = 0;
     var rating = 0;
     var vehicle_type_id = 0;
+    var price_range1 = 0;
+    var price_range2 = 0;
+    var sorting = "";
     if(makeId<req.body.makeId){
         makeId = req.body.makeId;
     }else{
@@ -170,7 +173,22 @@ exports.getVehicleByFilters = (req, res, next) => {
     }else{
         rating = 0;
     }
-    db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + ',' + makeId + ',' + locationId + ',' + modelId + ',' + vehicle_type_id + ',' + rating + '); FETCH ALL FROM "rs_resultone";', res, next)
+    if(price_range1<req.body.price_range1){
+        price_range1 = req.body.price_range1;
+    }else{
+        price_range1 = 0;
+    }
+    if(price_range2<req.body.price_range2){
+        price_range2 = req.body.price_range2;
+    }else{
+        price_range2 = 0;
+    }
+    if(req.body.sorting!=""){
+        sorting = req.body.sorting;
+    }else{
+        sorting = "ASC";
+    }
+    db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + ',' + makeId + ',' + locationId + ',' + modelId + ',' + vehicle_type_id + ',' + rating + ',' + price_range1 + ',' + price_range2 + ',' + sorting + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicles","getVehicleByFilters","Info", "Get all filtered Lists Successfully! ");
             res.status(200).json({
