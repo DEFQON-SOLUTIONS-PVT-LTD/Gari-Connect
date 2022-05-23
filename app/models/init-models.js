@@ -28,6 +28,7 @@ var _vehicle_reviews = require("./vehicle_reviews");
 var _vehicle_types = require("./vehicle_types");
 var _vehicles = require("./vehicles");
 var _logs = require("./logs");
+var _subscribers = require("./subscribers");
 
 function initModels(sequelize) {
   var State = _State(sequelize, DataTypes);
@@ -59,6 +60,7 @@ function initModels(sequelize) {
   var vehicle_types = _vehicle_types(sequelize, DataTypes);
   var vehicles = _vehicles(sequelize, DataTypes);
   var logs = _logs(sequelize, DataTypes);
+  var subscribers = _subscribers(sequelize, DataTypes);
 
   city.belongsTo(State, { as: "state", foreignKey: "stateId"});
   State.hasMany(city, { as: "cities", foreignKey: "stateId"});
@@ -149,6 +151,7 @@ function initModels(sequelize) {
     vehicle_types,
     vehicles,
     logs,
+    subscribers,
   };
 }
 module.exports = initModels;

@@ -407,6 +407,13 @@ const updatePersonalInfoValidation = (data) => {
     });
     return schema.validate(data);
 };
+const saveSubscriberValidation = (data) => {
+    const schema = Joi.object({
+        email: Joi.string().email().trim(true).required(),
+    });
+    return schema.validate(data);
+};
+
 module.exports = {
     saveCategoryValidations,
     updateCategoryValidation,
@@ -442,4 +449,5 @@ module.exports = {
     updateStaffValidation,
     updatePasswordValidation,
     updatePersonalInfoValidation,
+    saveSubscriberValidation,
 }

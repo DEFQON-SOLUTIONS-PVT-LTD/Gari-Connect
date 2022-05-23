@@ -21,6 +21,7 @@ const userReview = require('../controllers/userReview.controller.js');
 const bookings = require('../controllers/bookings.controller.js');
 const vehicleType = require('../controllers/vehicleType.controller.js');
 const dashboard = require('../controllers/dashboard.controller.js');
+const subscriber = require('../controllers/subscriber.controller.js');
 
 router.post(
     '/api/auth/makecall',
@@ -480,6 +481,12 @@ router.delete(
     [authJwt.verifyToken],
      support.deleteById
      );
+
+     router.post(
+        '/api/subscribe/email',
+        [authJwt.verifyToken],
+        subscriber.create
+         );
 
 router.post('/api/vehicleType/create', vehicleType.create);
 router.put('/api/vehicleType/update', vehicleType.updateVehicleType);
