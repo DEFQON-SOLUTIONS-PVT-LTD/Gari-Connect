@@ -18,6 +18,7 @@ exports.create = (req, res) => {
         // Building model object from upoading request's body
         vehicle.locationId = req.body.locationId;
         vehicle.plate_number = req.body.plate_number;
+        vehicle.description = req.body.description;
         vehicle.seats = req.body.seats;
         vehicle.vehicle_type_id = req.body.vehicle_type_id;
         vehicle.green_vehicle_id = req.body.green_vehicle_id;
@@ -75,6 +76,7 @@ exports.updateVehicle = async (req, res) => {
                 vehicleId: req.body.vehicleId,
                 locationId: req.body.locationId,
                 plate_number: req.body.plate_number,
+                description: req.body.description,
                 seats: req.body.seats,
                 vehicle_type_id: req.body.vehicle_type_id,
                 green_vehicle_id: req.body.green_vehicle_id,
@@ -192,7 +194,7 @@ exports.getVehicleByFilters = (req, res, next) => {
         .then(result => {
             logs("Vehicles","getVehicleByFilters","Info", "Get all filtered Lists Successfully! ");
             res.status(200).json({
-                message: "Get all booking Infos Successfully!",
+                message: "Get all Vehicles Infos Successfully!",
                 result: result[0],
             });
         })
@@ -205,20 +207,20 @@ exports.getVehicleByFilters = (req, res, next) => {
             });
         });
 }
-exports.getVehicleById = (req, res) => {
-    let vehicleId = req.params.id;
-    Vehicle.findByPk(vehicleId)
-        .then(vehicle => {
+exports.getVehicleById = (req, res, next) => {
+    let bookingStatusId = req.body.statusId;
+    let vehicleId = req.body.vehicleId;
+    db.sequelize.query('CALL getVehicleDetail(' + bookingStatusId + ',' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
+        .then(result => {
             logs("Vehicle","getVehicleById","Info", "Successfully Get a vehicle with id = " + vehicleId);
             res.status(200).json({
-                message: " Successfully Get a vehicle with id = " + vehicleId,
-                vehicles: vehicle
+                message: "Get Vehicle Detail Page Successfully!",
+                result: result[0],
             });
         })
         .catch(error => {
             // log on console
             logs("Vehicle","getVehicleById","Error", error.message);
-
             res.status(500).json({
                 message: "Error!",
                 error: error

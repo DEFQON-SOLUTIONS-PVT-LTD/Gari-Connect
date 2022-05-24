@@ -178,6 +178,7 @@ const saveVehicleValidation = (data) => {
     const schema = Joi.object({
         locationId: Joi.string().required(),
         plate_number: Joi.string().required(),
+        description: Joi.string().required(),
         seats: Joi.string().required(),
         vehicle_type_id: Joi.string().required(),
         green_vehicle_id: Joi.string().required(),
@@ -200,6 +201,7 @@ const updateVehicleValidation = (data) => {
         vehicleId: Joi.string().required(),
         locationId: Joi.string().required(),
         plate_number: Joi.string().required(),
+        description: Joi.string().required(),
         seats: Joi.string().required(),
         vehicle_type_id: Joi.string().required(),
         green_vehicle_id: Joi.string().required(),

@@ -119,6 +119,10 @@ module.exports = function(sequelize, DataTypes) {
     cancel: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,

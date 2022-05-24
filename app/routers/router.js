@@ -385,7 +385,7 @@ router.get(
      vehicle.getVehicle
      );
 router.get(
-    '/api/vehicle/getbyid/:id',
+    '/api/vehicle/getbyid',
     [authJwt.verifyToken],
      vehicle.getVehicleById
      );
