@@ -11,6 +11,14 @@ module.exports = function(sequelize, DataTypes) {
     name: {
       type: DataTypes.STRING(20),
       allowNull: true
+    },
+    start_date: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    end_date: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,

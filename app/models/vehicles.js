@@ -56,25 +56,9 @@ module.exports = function(sequelize, DataTypes) {
         key: 'transmissionId'
       }
     },
-    featureId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'features',
-        key: 'featureId'
-      }
-    },
     main_image: {
       type: DataTypes.STRING(255),
       allowNull: true
-    },
-    guidelineId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'guidelines',
-        key: 'guidelineId'
-      }
     },
     userId: {
       type: DataTypes.INTEGER,
@@ -119,6 +103,14 @@ module.exports = function(sequelize, DataTypes) {
     cancel: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    IsDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,
@@ -133,21 +125,9 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "fki_featureId",
-        fields: [
-          { name: "featureId" },
-        ]
-      },
-      {
         name: "fki_green_vehicle_id",
         fields: [
           { name: "green_vehicle_id" },
-        ]
-      },
-      {
-        name: "fki_guidelineId",
-        fields: [
-          { name: "guidelineId" },
         ]
       },
       {

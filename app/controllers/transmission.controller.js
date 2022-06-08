@@ -23,7 +23,7 @@ exports.create = (req, res) => {
 
         // Save to MySQL database
         Transmission.create(transmission).then(result => {
-            logs("Transmission","Create","Info", "Successfully created transmission");
+            logs("Transmission", "Create", "Info", "Successfully created transmission");
             // send uploading message to client
             res.status(200).json({
                 message: "Successfully created transmission",
@@ -31,7 +31,7 @@ exports.create = (req, res) => {
             });
         });
     } catch (error) {
-        logs("Transmission","Create","Info", error.message);
+        logs("Transmission", "Create", "Info", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -48,7 +48,7 @@ exports.updateTransmission = async (req, res) => {
         let transmission = await Transmission.findByPk(transmissionId);
 
         if (!transmission) {
-            logs("Transmission","Create","Info", "Not Found for updating a transmission with id = " + transmissionId);
+            logs("Transmission", "Create", "Info", "Not Found for updating a transmission with id = " + transmissionId);
             // return a response to client
             res.status(404).json({
                 message: "Not Found for updating a transmission with id = " + transmissionId,
@@ -68,20 +68,20 @@ exports.updateTransmission = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("Transmission","updateTransmission","Error", "Error -> Can not update a transmission with id = " + req.params.id);
+                logs("Transmission", "updateTransmission", "Error", "Error -> Can not update a transmission with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a transmission with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("Transmission","updateTransmission","Info", "Update successfully a transmission with id = " + transmissionId);
+            logs("Transmission", "updateTransmission", "Info", "Update successfully a transmission with id = " + transmissionId);
             res.status(200).json({
                 message: "Update successfully a transmission with id = " + transmissionId,
                 transmission: updatedObject,
             });
         }
     } catch (error) {
-        logs("Transmission","updateTransmission","Error", "Error -> Can not update a transmission with id = " + req.params.id);
+        logs("Transmission", "updateTransmission", "Error", "Error -> Can not update a transmission with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a transmission with id = " + req.params.id,
             //error: error.message
@@ -94,7 +94,7 @@ exports.getTransmission = (req, res) => {
 
     Transmission.findAll()
         .then(transmissionInfos => {
-            logs("Transmission","getTransmission","Info", "Get all transmission' Infos Successfully!");
+            logs("Transmission", "getTransmission", "Info", "Get all transmission' Infos Successfully!");
             res.status(200).json({
                 message: "Get all transmission' Infos Successfully!",
                 transmission: transmissionInfos
@@ -102,7 +102,7 @@ exports.getTransmission = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Transmission","getTransmission","Info", error.message);
+            logs("Transmission", "getTransmission", "Info", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -115,7 +115,7 @@ exports.getTransmissionById = (req, res) => {
     let transmissionId = req.params.id;
     Transmission.findByPk(transmissionId)
         .then(transmission => {
-            logs("Transmission","getTransmissionById","Info", "Successfully Get a transmission with id = " + transmissionId);
+            logs("Transmission", "getTransmissionById", "Info", "Successfully Get a transmission with id = " + transmissionId);
             res.status(200).json({
                 message: "Successfully Get a transmission with id = " + transmissionId,
                 transmission: transmission
@@ -123,7 +123,7 @@ exports.getTransmissionById = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Transmission","getTransmissionById","Info", error.message);
+            logs("Transmission", "getTransmissionById", "Info", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -134,16 +134,39 @@ exports.getTransmissionById = (req, res) => {
 
 exports.deleteById = async (req, res) => {
     try {
-        await Transmission.destroy({
-            where: {
-                transmissionId: req.params.id
+        // Validate
+        let transmissionId = req.params.id;
+        let transmission = await Transmission.findByPk(transmissionId);
+        if (!transmission) {
+            logs("Transmission", "create", "Info", "Not Found for Delete a transmission with id = " + transmissionId);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a transmission with id = " + transmissionId,
+                error: "404"
+            });
+        } else {
+            let updatedObject = {
+                IsDeleted: "1"
             }
+            let result = await transmission.update(updatedObject, { returning: true, where: { transmissionId: transmissionId } });
+            // return the response to client
+            if (!result) {
+                logs("Transmission", "deleteById", "Error", "Error -> Can not transmission a model with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a transmission with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
+            }
+            logs("Transmission", "deleteById", "Info", "delete successfully a transmission with id = " + transmissionId);
+            res.status(200).json({
+                message: "delete successfully a transmission with id = " + transmissionId
+            });
+        }
+    } catch (error) {
+        logs("Transmission", "deleteById", "Info", "Error -> Can not delete a transmission with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a transmission with id = " + req.params.id,
+            error: errorResponse(error.message)
         });
-        logs("Transmission","deleteById","Info", "transmission Deleted");
-        res.json({
-            "message": "transmission Deleted"
-        });
-    } catch (err) {
-        logs("Transmission","deleteById","Error", err);
     }
 }

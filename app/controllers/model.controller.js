@@ -26,7 +26,7 @@ exports.create = (req, res) => {
 
         // Save to MySQL database
         Model.create(model).then(result => {
-            logs("Model","Create","Info", "Create Successfully a model with id = " + result.id);
+            logs("Model", "Create", "Info", "Create Successfully a model with id = " + result.id);
             // send uploading message to client
             res.status(200).json({
                 message: "Create Successfully a model with id = " + result.id,
@@ -34,7 +34,7 @@ exports.create = (req, res) => {
             });
         });
     } catch (error) {
-        logs("Model","Create","Error", error.message);
+        logs("Model", "Create", "Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -51,7 +51,7 @@ exports.updateModel = async (req, res) => {
         let model = await Model.findByPk(modelId);
 
         if (!model) {
-            logs("Model","updateModel","Info", "Not Found for updating a model with id = " + modelId);
+            logs("Model", "updateModel", "Info", "Not Found for updating a model with id = " + modelId);
             // return a response to client
             res.status(404).json({
                 message: "Not Found for updating a model with id = " + modelId,
@@ -73,20 +73,20 @@ exports.updateModel = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("Model","updateModel","Error", "Error -> Can not update a model with id = " + req.params.id);
+                logs("Model", "updateModel", "Error", "Error -> Can not update a model with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a model with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("Model","updateModel","Error", "Update successfully a model with id = " + modelId);
+            logs("Model", "updateModel", "Error", "Update successfully a model with id = " + modelId);
             res.status(200).json({
                 message: "Update successfully a model with id = " + modelId,
                 model: updatedObject,
             });
         }
     } catch (error) {
-        logs("Model","updateModel","Error", "Error -> Can not update a model with id = " + req.params.id);
+        logs("Model", "updateModel", "Error", "Error -> Can not update a model with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a model with id = " + req.params.id,
             //error: error.message
@@ -99,7 +99,7 @@ exports.getModel = (req, res) => {
 
     Model.findAll()
         .then(modelInfos => {
-            logs("Model","getModel","Info", "Get all models' Infos Successfully!");
+            logs("Model", "getModel", "Info", "Get all models' Infos Successfully!");
             res.status(200).json({
                 message: "Get all models Infos Successfully!",
                 models: modelInfos
@@ -107,7 +107,7 @@ exports.getModel = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Model","getModel","Error", error.message);
+            logs("Model", "getModel", "Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -120,7 +120,7 @@ exports.getModelById = (req, res) => {
     let modelId = req.params.id;
     Model.findByPk(modelId)
         .then(model => {
-            logs("Model","getModelById","Info", "Successfully Get a model with id = " + modelId);
+            logs("Model", "getModelById", "Info", "Successfully Get a model with id = " + modelId);
             res.status(200).json({
                 message: "Successfully Get a model with id = " + modelId,
                 models: model
@@ -128,7 +128,7 @@ exports.getModelById = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Model","getModelById","Error", error.message);
+            logs("Model", "getModelById", "Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -139,16 +139,39 @@ exports.getModelById = (req, res) => {
 
 exports.deleteById = async (req, res) => {
     try {
-        await Model.destroy({
-            where: {
-                modelId: req.params.id
+        // Validate
+        let modelId = req.params.id;
+        let model = await Model.findByPk(modelId);
+        if (!model) {
+            logs("Model", "create", "Info", "Not Found for Delete a model with id = " + modelId);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a model with id = " + modelId,
+                error: "404"
+            });
+        } else {
+            let updatedObject = {
+                IsDeleted: "1"
             }
+            let result = await model.update(updatedObject, { returning: true, where: { modelId: modelId } });
+            // return the response to client
+            if (!result) {
+                logs("Model", "deleteById", "Error", "Error -> Can not delete a model with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a model with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
+            }
+            logs("Model", "deleteById", "Info", "delete successfully a model with id = " + modelId);
+            res.status(200).json({
+                message: "delete successfully a model with id = " + modelId
+            });
+        }
+    } catch (error) {
+        logs("Model", "deleteById", "Info", "Error -> Can not delete a model with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a model with id = " + req.params.id,
+            error: errorResponse(error.message)
         });
-        logs("Model","deleteById","Info","Model Deleted");
-        res.json({
-            "message": "Model Deleted"
-        });
-    } catch (err) {
-        logs("Model","deleteById","Info",err);
     }
 }

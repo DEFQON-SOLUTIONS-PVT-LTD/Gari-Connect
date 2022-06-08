@@ -1,4 +1,0 @@
-<Response>
-    <Say voice="alice">Hi! We are from Gari Connect. Please listen your OTP code and enter.</Say>
-    <Play>https://demo.twilio.com/docs/classic.mp3</Play>
-</Response>

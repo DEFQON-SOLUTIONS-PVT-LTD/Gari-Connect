@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     status: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       allowNull: true
     }
   }, {
