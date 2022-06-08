@@ -45,4 +45,6 @@ db.Booking = require('../models/booking.js')(sequelize, Sequelize);
 db.VehicleType = require('../models/vehicle_types.js')(sequelize, Sequelize);
 db.Logs = require('../models/logs.js')(sequelize, Sequelize);
 db.Subscribers = require('../models/subscribers.js')(sequelize, Sequelize);
+db.vehicle_to_features = require('../models/vehicle_to_features.js')(sequelize, Sequelize);
+db.vehicle_to_guidelines = require('../models/vehicle_to_guidelines.js')(sequelize, Sequelize);
 module.exports = db;

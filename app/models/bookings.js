@@ -63,6 +63,10 @@ module.exports = function(sequelize, DataTypes) {
     trip_endDate: {
       type: DataTypes.DATEONLY,
       allowNull: true
+    },
+    IsDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

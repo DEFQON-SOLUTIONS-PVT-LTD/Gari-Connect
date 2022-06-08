@@ -11,41 +11,41 @@ exports.create = (req, res) => {
     let user_card = {};
 
     try {
-        let usercard = Usercard.findOne({ where: {card_number: req.body.card_number} }).then(function(user_card_row) {
+        let usercard = Usercard.findOne({ where: { card_number: req.body.card_number } }).then(function (user_card_row) {
             if (usercard) {
-              if(user_card_row!=null){
-                logs("UserCardInformation","Create","Error", "You cannot add this card with this No. = " + req.body.card_number);
-                errordetails = {
-                    message: "You cannot add this card with this No. = " + req.body.card_number,
-                    status: false
-                  }
-                  return res.status(400).send(errorResponse(errordetails, {}));
-                }else{
-                     // Validate
-                const { error } = saveUserCardValidation(req.body);
-                if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
-                // Building Card Information object from upoading request's body
-                user_card.card_number = req.body.card_number;
-                user_card.card_expiry = req.body.card_expiry;
-                user_card.cvv = req.body.cvv;
-                user_card.is_active = req.body.is_active;
-                user_card.userId = req.body.userId;
+                if (user_card_row != null) {
+                    logs("UserCardInformation", "Create", "Error", "You cannot add this card with this No. = " + req.body.card_number);
+                    errordetails = {
+                        message: "You cannot add this card with this No. = " + req.body.card_number,
+                        status: false
+                    }
+                    return res.status(400).send(errorResponse(errordetails, {}));
+                } else {
+                    // Validate
+                    const { error } = saveUserCardValidation(req.body);
+                    if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+                    // Building Card Information object from upoading request's body
+                    user_card.card_number = req.body.card_number;
+                    user_card.card_expiry = req.body.card_expiry;
+                    user_card.cvv = req.body.cvv;
+                    user_card.is_active = req.body.is_active;
+                    user_card.userId = req.body.userId;
 
-                // Save to Postgress database
-                Usercard.create(user_card).then(result => {
-                    // send uploading message to client
-                    logs("UserCardInformation","Create","Info", "Create Successfully a User Card Information with id = " + result.id);
-                    res.status(200).json({
-                        message: "Create Successfully a User Card Information with id = " + result.id,
-                        cardinfo: successResponse(result),
+                    // Save to Postgress database
+                    Usercard.create(user_card).then(result => {
+                        // send uploading message to client
+                        logs("UserCardInformation", "Create", "Info", "Create Successfully a User Card Information with id = " + result.id);
+                        res.status(200).json({
+                            message: "Create Successfully a User Card Information with id = " + result.id,
+                            cardinfo: successResponse(result),
+                        });
                     });
-                });
                 }
             }
         })
-       
+
     } catch (error) {
-        logs("UserCardInformation","Create","Error", error.message);
+        logs("UserCardInformation", "Create", "Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -63,7 +63,7 @@ exports.updateCardInfo = async (req, res) => {
 
         if (!usercardinfo) {
             // return a response to client
-            logs("UserCardInformation","updateCardInfo","Info", "Not Found for updating a card information with id = " + userCardInformationId);
+            logs("UserCardInformation", "updateCardInfo", "Info", "Not Found for updating a card information with id = " + userCardInformationId);
             res.status(404).json({
                 message: "Not Found for updating a card information with id = " + userCardInformationId,
                 cardinfo: "",
@@ -73,30 +73,30 @@ exports.updateCardInfo = async (req, res) => {
             // update new change to database
             let updatedObject = {
                 user_card_information_id: req.body.user_card_information_id,
-                card_number : req.body.card_number,
-                card_expiry : req.body.card_expiry,
-                cvv : req.body.cvv,
-                is_active : req.body.is_active,
-                userId : req.body.userId
+                card_number: req.body.card_number,
+                card_expiry: req.body.card_expiry,
+                cvv: req.body.cvv,
+                is_active: req.body.is_active,
+                userId: req.body.userId
             }
             let result = await usercardinfo.update(updatedObject, { returning: true, where: { user_card_information_id: userCardInformationId } });
 
             // return the response to client
             if (!result) {
-                logs("UserCardInformation","updateCardInfo","Error", "Error -> Can not update a card information with id = " + req.params.id);
+                logs("UserCardInformation", "updateCardInfo", "Error", "Error -> Can not update a card information with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a card information with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("UserCardInformation","updateCardInfo","Info", "Update successfully a card information");
+            logs("UserCardInformation", "updateCardInfo", "Info", "Update successfully a card information");
             res.status(200).json({
                 message: "Update successfully a card information  ",
                 make: updatedObject,
             });
         }
     } catch (error) {
-        logs("UserCardInformation","updateCardInfo","Error", error.message);
+        logs("UserCardInformation", "updateCardInfo", "Error", error.message);
         res.status(500).json({
             message: "Error -> Can not update a user card",
             //error: error.message
@@ -109,7 +109,7 @@ exports.getCardInfos = (req, res) => {
 
     Usercard.findAll()
         .then(cardInfos => {
-            logs("UserCardInformation","getCardInfos","Info", "Get all Cards Infos Successfully!");
+            logs("UserCardInformation", "getCardInfos", "Info", "Get all Cards Infos Successfully!");
             res.status(200).json({
                 message: "Get all Cards Infos Successfully!",
                 makes: cardInfos
@@ -117,7 +117,7 @@ exports.getCardInfos = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("UserCardInformation","getCardInfos","Error", error.message);
+            logs("UserCardInformation", "getCardInfos", "Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -130,7 +130,7 @@ exports.getCardInfoById = (req, res) => {
     let userCardInformationId = req.params.id;
     Usercard.findByPk(userCardInformationId)
         .then(cardinfo => {
-            logs("UserCardInformation","getCardInfoById","Info", "Successfully Get a Card Information with id = " + userCardInformationId);
+            logs("UserCardInformation", "getCardInfoById", "Info", "Successfully Get a Card Information with id = " + userCardInformationId);
             res.status(200).json({
                 message: "Successfully Get a Card Information with id = " + userCardInformationId,
                 cardinfos: cardinfo
@@ -138,7 +138,7 @@ exports.getCardInfoById = (req, res) => {
         })
         .catch(error => {
             // log on console
-           logs("UserCardInformation","getCardInfoById","Error", error.message);
+            logs("UserCardInformation", "getCardInfoById", "Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -149,16 +149,39 @@ exports.getCardInfoById = (req, res) => {
 
 exports.deleteById = async (req, res) => {
     try {
-        await Usercard.destroy({
-            where: {
-                user_card_information_id: req.params.id
+        // Validate
+        let userCardInformationId = req.params.id;
+        if (!userCardInformationId) {
+            logs("UserCardInformation", "create", "Info", "Not Found for Delete a Card Information with id = " + userCardInformationId);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a Card Information with id = " + userCardInformationId,
+                error: "404"
+            });
+        } else {
+            let result = await Usercard.destroy({
+                where: {
+                    user_card_information_id: userCardInformationId
+                }
+            });
+            // return the response to client
+            if (!result) {
+                logs("UserCardInformation", "deleteById", "Error", "Error -> Can not Card Information a model with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a Card Information with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
             }
+            logs("UserCardInformation", "deleteById", "Info", "delete successfully a Card Information with id = " + userCardInformationId);
+            res.status(200).json({
+                message: "delete successfully a Card Information with id = " + userCardInformationId
+            });
+        }
+    } catch (error) {
+        logs("UserCardInformation", "deleteById", "Info", "Error -> Can not delete a Card Information with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a Card Information with id = " + req.params.id,
+            error: errorResponse(error.message)
         });
-        logs("UserCardInformation","deleteById","Info", "Card Informations Deleted");
-        res.json({
-            "message": "Card Informations Deleted"
-        });
-    } catch (err) {
-        logs("UserCardInformation","deleteById","Error", err);
     }
 }

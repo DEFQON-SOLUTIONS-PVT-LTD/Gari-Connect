@@ -31,6 +31,10 @@ module.exports = function(sequelize, DataTypes) {
     icon: {
       type: DataTypes.STRING(50),
       allowNull: true
+    },
+    IsDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

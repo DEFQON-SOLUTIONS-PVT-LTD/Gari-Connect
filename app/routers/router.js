@@ -2,7 +2,7 @@ let express = require('express');
 let router = express.Router();
 const jwt = require('jsonwebtoken');
 const db = require('../config/env.js');
-const  authJwt  = require("../config/authJwt.js");
+const authJwt = require("../config/authJwt.js");
 
 
 const customers = require('../controllers/controller.js');
@@ -25,8 +25,8 @@ const subscriber = require('../controllers/subscriber.controller.js');
 
 router.post(
     '/api/auth/makecall',
-     customers.makecall
-     );
+    customers.makecall
+);
 router.post(
     '/api/auth/whatsapp',
     customers.whatsappVerification
@@ -36,457 +36,457 @@ router.post('/api/auth/token', customers.authenticate);
 router.post(
     '/api/auth/authuser',
     [authJwt.verifyToken],
-     customers.authuser
-    );
+    customers.authuser
+);
 router.post(
     '/api/auth/forgotpassword',
     [authJwt.verifyToken],
-     customers.forgotpassword
-     );
+    customers.forgotpassword
+);
 router.put(
-        '/api/auth/changepassword',
-        [authJwt.verifyToken],
-         users.updatePassword
-         );
+    '/api/auth/changepassword',
+    [authJwt.verifyToken],
+    users.updatePassword
+);
 router.put(
     '/api/auth/resetpassword',
     [authJwt.verifyToken],
-     customers.setForgotPassword
-     );
+    customers.setForgotPassword
+);
 router.put(
     '/api/staff/update',
     [authJwt.verifyToken],
-     users.updateStaff
-     );
+    users.updateStaff
+);
 router.put(
-        '/api/user/personalinfo',
-        [authJwt.verifyToken],
-         users.updatePersonalInfo
-         );
+    '/api/user/personalinfo',
+    [authJwt.verifyToken],
+    users.updatePersonalInfo
+);
 router.post(
     '/api/staff/addstaff',
     [authJwt.verifyToken],
-     users.addstaff
-     );
+    users.addstaff
+);
 router.get(
     '/api/staff/getstaff',
     [authJwt.verifyToken],
-     users.getAllStaff
-     );
+    users.getAllStaff
+);
 router.delete(
     '/api/staff/delete/:id',
     [authJwt.verifyToken],
-     users.deleteStaffById
-     );
+    users.deleteStaffById
+);
 
 router.post(
     '/api/auth/verifyotp',
     [authJwt.verifyToken],
-     customers.verifyOtp
-     );
+    customers.verifyOtp
+);
 router.post(
     '/api/auth/signin',
     [authJwt.verifyToken],
-     customers.signin
-     );
+    customers.signin
+);
 
 router.post(
     '/api/customers/create',
     [authJwt.verifyToken],
-     customers.create
-     );
+    customers.create
+);
 
 router.get(
     '/api/customers/all',
     [authJwt.verifyToken],
-     customers.retrieveAllCustomers
-     );
+    customers.retrieveAllCustomers
+);
 router.get(
     '/api/customers/onebyid/:id',
     [authJwt.verifyToken],
-     customers.getCustomerById
-     );
+    customers.getCustomerById
+);
 router.get(
     '/api/customers/filteringbyage',
     [authJwt.verifyToken],
-     customers.filteringByAge
-     );
+    customers.filteringByAge
+);
 router.get(
     '/api/customers/pagination',
     [authJwt.verifyToken],
-     customers.pagination
-     );
+    customers.pagination
+);
 router.get(
     '/api/customers/pagefiltersort',
     [authJwt.verifyToken],
-     customers.pagingfilteringsorting
-     );
+    customers.pagingfilteringsorting
+);
 router.put(
     '/api/customers/update/:id',
     [authJwt.verifyToken],
-     customers.updateById
-     );
+    customers.updateById
+);
 router.delete(
     '/api/customers/delete/:id',
     [authJwt.verifyToken],
-     customers.deleteById
-     );
+    customers.deleteById
+);
 
 // user api call
 router.post(
     '/api/user/createSocialUser',
     [authJwt.verifyToken],
-     users.createSocialUser
-     );
+    users.createSocialUser
+);
 router.post(
     '/api/usercard/create',
     [authJwt.verifyToken],
-     usercard.create
-     );
+    usercard.create
+);
 router.put(
     '/api/usercard/update',
     [authJwt.verifyToken],
-     usercard.updateCardInfo
-     );
+    usercard.updateCardInfo
+);
 router.get(
     '/api/usercard/getallcardinfo',
     [authJwt.verifyToken],
-     usercard.getCardInfos
-     );
+    usercard.getCardInfos
+);
 router.delete(
     '/api/usercard/deletecardinfo/:id',
     [authJwt.verifyToken],
-     usercard.deleteById
-     );
+    usercard.deleteById
+);
 
 router.get(
     '/api/usercard/getcardinfo/:id',
     [authJwt.verifyToken],
-     usercard.getCardInfoById
-     );
+    usercard.getCardInfoById
+);
 router.post(
     '/api/user/create',
     [authJwt.verifyToken],
-     users.create
-     );
+    users.create
+);
 router.put(
     '/api/user/update',
     [authJwt.verifyToken],
-     users.updateUser
-     );
+    users.updateUser
+);
 router.get(
     '/api/user/getusers',
     [authJwt.verifyToken],
     users.getUsers
-    );
+);
 router.get(
     '/api/user/getuser/:id',
     [authJwt.verifyToken],
-     users.getUserById
-     );
+    users.getUserById
+);
 
 router.post(
-    '/api/make/create', 
+    '/api/make/create',
     [authJwt.verifyToken],
     make.create
-    );
+);
 router.put(
     '/api/make/update',
     [authJwt.verifyToken],
-     make.updateMake
-     );
+    make.updateMake
+);
 router.get(
     '/api/make/all',
     [authJwt.verifyToken],
-     make.getMake
-     );
+    make.getMake
+);
 router.get(
     '/api/make/getbyid/:id',
     [authJwt.verifyToken],
-     make.getMakeById
-     );
+    make.getMakeById
+);
 router.delete(
     '/api/make/delete/:id',
     [authJwt.verifyToken],
-     make.deleteById
-     );
+    make.deleteById
+);
 
 router.post(
     '/api/model/create',
     [authJwt.verifyToken],
-     model.create
-     );
+    model.create
+);
 router.put(
     '/api/model/update',
     [authJwt.verifyToken],
-     model.updateModel
-     );
+    model.updateModel
+);
 router.get(
     '/api/model/all',
     [authJwt.verifyToken],
-     model.getModel
-     );
+    model.getModel
+);
 router.get(
     '/api/model/getbyid/:id',
     [authJwt.verifyToken],
-     model.getModelById
-     );
+    model.getModelById
+);
 router.delete(
     '/api/model/delete/:id',
     [authJwt.verifyToken],
-     model.deleteById
-     );
+    model.deleteById
+);
 
 router.post(
     '/api/greenVehicle/create',
     [authJwt.verifyToken],
-     greenVehicle.create
-     );
+    greenVehicle.create
+);
 router.put(
     '/api/greenVehicle/update',
     [authJwt.verifyToken],
-     greenVehicle.updateGreenVehicle
-     );
+    greenVehicle.updateGreenVehicle
+);
 router.get(
     '/api/greenVehicle/all',
     [authJwt.verifyToken],
-     greenVehicle.getGreenVehicle
-     );
+    greenVehicle.getGreenVehicle
+);
 router.get(
     '/api/greenVehicle/getbyid/:id',
     [authJwt.verifyToken],
-     greenVehicle.getGreenVehicleById
-     );
+    greenVehicle.getGreenVehicleById
+);
 router.delete(
     '/api/greenVehicle/delete/:id',
     [authJwt.verifyToken],
-     greenVehicle.deleteById
-     );
+    greenVehicle.deleteById
+);
 
 router.post(
     '/api/guideLine/create',
     [authJwt.verifyToken],
-     guideLine.create
-     );
+    guideLine.create
+);
 router.put(
     '/api/guideLine/update',
     [authJwt.verifyToken],
-     guideLine.updateGuideLine
-     );
+    guideLine.updateGuideLine
+);
 router.get(
     '/api/guideLine/all',
     [authJwt.verifyToken],
-     guideLine.getGuideLine
-     );
+    guideLine.getGuideLine
+);
 router.get(
     '/api/guideLine/getbyid/:id',
     [authJwt.verifyToken],
-     guideLine.getGuideLineById
-     );
+    guideLine.getGuideLineById
+);
 router.delete(
     '/api/guideLine/delete/:id',
     [authJwt.verifyToken],
-     guideLine.deleteById
-     );
+    guideLine.deleteById
+);
 
 router.post(
     '/api/category/create',
     [authJwt.verifyToken],
-     category.create
-     );
+    category.create
+);
 router.put(
     '/api/category/update',
     [authJwt.verifyToken],
-     category.updateCategory
-     );
+    category.updateCategory
+);
 router.get(
     '/api/category/all',
     [authJwt.verifyToken],
-     category.getCategory
-     );
+    category.getCategory
+);
 router.get(
     '/api/category/getbyid/:id',
     [authJwt.verifyToken],
-     category.getCategoryById
-     );
+    category.getCategoryById
+);
 router.delete(
     '/api/category/delete/:id',
     [authJwt.verifyToken],
-     category.deleteById
-     );
+    category.deleteById
+);
 
 router.post(
     '/api/transmission/create',
-    [authJwt.verifyToken], 
-     transmission.create
-     );
+    [authJwt.verifyToken],
+    transmission.create
+);
 router.put(
     '/api/transmission/update',
     [authJwt.verifyToken],
-     transmission.updateTransmission
-     );
+    transmission.updateTransmission
+);
 router.get(
     '/api/transmission/all',
     [authJwt.verifyToken],
-     transmission.getTransmission
-     );
+    transmission.getTransmission
+);
 router.get(
     '/api/transmission/getbyid/:id',
     [authJwt.verifyToken],
-     transmission.getTransmissionById
-     );
+    transmission.getTransmissionById
+);
 router.delete(
     '/api/transmission/delete/:id',
     [authJwt.verifyToken],
-     transmission.deleteById
-     );
+    transmission.deleteById
+);
 
 router.post(
     '/api/features/create',
     [authJwt.verifyToken],
-     features.create
-     );
+    features.create
+);
 router.put(
     '/api/features/update',
     [authJwt.verifyToken],
-     features.updateFeatures
-     );
+    features.updateFeatures
+);
 router.get(
     '/api/features/all',
     [authJwt.verifyToken],
-     features.getFeatures
-     );
+    features.getFeatures
+);
 router.get(
     '/api/features/getbyid/:id',
     [authJwt.verifyToken],
-     features.getFeaturesById
-     );
+    features.getFeaturesById
+);
 router.delete(
     '/api/features/delete/:id',
     [authJwt.verifyToken],
-     features.deleteById
-     );
-     router.put('/api/vehicle/isfavourite', vehicle.IsFavourite);
-     router.put('/api/vehicle/cancel', vehicle.CancelBooking);
-     router.get('/api/vehicle/vehicleList', vehicle.getVehicleList);
+    features.deleteById
+);
+router.put('/api/vehicle/isfavourite', vehicle.IsFavourite);
+router.put('/api/vehicle/cancel', vehicle.CancelBooking);
+router.get('/api/vehicle/vehicleList', vehicle.getVehicleList);
 router.post(
     '/api/vehicle/create',
     [authJwt.verifyToken],
-     vehicle.create
-     );
+    vehicle.create
+);
 router.put(
     '/api/vehicle/update',
     [authJwt.verifyToken],
-     vehicle.updateVehicle
-     );
+    vehicle.updateVehicle
+);
 router.get(
     '/api/vehicle/all',
     [authJwt.verifyToken],
-     vehicle.getVehicle
-     );
+    vehicle.getVehicle
+);
 router.get(
     '/api/vehicle/getbyid',
     [authJwt.verifyToken],
-     vehicle.getVehicleById
-     );
+    vehicle.getVehicleById
+);
 router.delete(
     '/api/vehicle/delete/:id',
     [authJwt.verifyToken],
-     vehicle.deleteById
-     );
+    vehicle.deleteById
+);
 
 router.post(
     '/api/userReview/create',
     [authJwt.verifyToken],
-     userReview.create
-     );
+    userReview.create
+);
 router.put(
     '/api/userReview/updateUserReview',
     [authJwt.verifyToken],
-     userReview.updateUserReview
-     );
+    userReview.updateUserReview
+);
 router.get(
     '/api/userReview/getUserReviews',
-     userReview.getUserReviews
-     );
+    userReview.getUserReviews
+);
 router.get(
     '/api/userReview/getUserReviewById/:id',
     [authJwt.verifyToken],
-     userReview.getUserReviewById
-     );
+    userReview.getUserReviewById
+);
 router.delete(
     '/api/userReview/deleteReviewById/:id',
     [authJwt.verifyToken],
-     userReview.deleteReviewById
-     );
-     router.put('/api/bookings/statusUpdate', bookings.statusUpdate);
+    userReview.deleteReviewById
+);
+router.put('/api/bookings/statusUpdate', bookings.statusUpdate);
 router.post(
     '/api/bookings/create',
     [authJwt.verifyToken],
-     bookings.create
-     );
+    bookings.create
+);
 router.get(
     '/api/bookings/all',
     [authJwt.verifyToken],
-     bookings.getBooking
-     );
-     router.get(
-        '/api/vehicle/getvehiclebyfilter',
-        [authJwt.verifyToken],
-         vehicle.getVehicleByFilters
-         );
+    bookings.getBooking
+);
+router.get(
+    '/api/vehicle/getvehiclebyfilter',
+    [authJwt.verifyToken],
+    vehicle.getVehicleByFilters
+);
 router.get(
     '/api/bookings/getbyid/:id',
     [authJwt.verifyToken],
-     bookings.getBookingById
-     );
+    bookings.getBookingById
+);
 router.delete(
     '/api/bookings/delete/:id',
     [authJwt.verifyToken],
-     bookings.deleteById
-     );
+    bookings.deleteById
+);
 router.put(
     '/api/bookings/IsApproved',
     [authJwt.verifyToken],
-     bookings.IsApproved
-     );
+    bookings.IsApproved
+);
 router.put(
     '/api/bookings/IsReject',
     [authJwt.verifyToken],
-     bookings.IsReject
-     );
+    bookings.IsReject
+);
 
 router.post(
     '/api/support/create',
     [authJwt.verifyToken],
-     support.create
-     );
+    support.create
+);
 router.put(
     '/api/support/update',
     [authJwt.verifyToken],
-     support.updateSupport
-     );
+    support.updateSupport
+);
 router.get(
     '/api/support/all',
     [authJwt.verifyToken],
-     support.getSupport
-     );
+    support.getSupport
+);
 router.get(
     '/api/support/getbyid/:id',
     [authJwt.verifyToken],
-     support.getSupportById
-     );
+    support.getSupportById
+);
 router.delete(
     '/api/support/delete/:id',
     [authJwt.verifyToken],
-     support.deleteById
-     );
+    support.deleteById
+);
 
-     router.post(
-        '/api/subscribe/email',
-        [authJwt.verifyToken],
-        subscriber.create
-         );
+router.post(
+    '/api/subscribe/email',
+    [authJwt.verifyToken],
+    subscriber.create
+);
 
 router.post('/api/vehicleType/create', vehicleType.create);
 router.put('/api/vehicleType/update', vehicleType.updateVehicleType);

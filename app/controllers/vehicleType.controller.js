@@ -22,7 +22,7 @@ exports.create = (req, res) => {
 
         // Save to MySQL database
         VehicleType.create(vehicletype).then(result => {
-            logs("VehicleType","create","Info", "Create Successfully a VehicleType with id = " + result.id);
+            logs("VehicleType", "create", "Info", "Create Successfully a VehicleType with id = " + result.id);
             // send uploading message to client
             res.status(200).json({
                 message: "Create Successfully a VehicleType with id = " + result.id,
@@ -30,7 +30,7 @@ exports.create = (req, res) => {
             });
         });
     } catch (error) {
-        logs("VehicleType","create","Error", error.message);
+        logs("VehicleType", "create", "Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -48,7 +48,7 @@ exports.updateVehicleType = async (req, res) => {
 
         if (!vehicletype) {
             // return a response to client
-            logs("VehicleType","updateVehicleType","Info", "Not Found for updating a vehicletype with id = " + vehicle_type_id);
+            logs("VehicleType", "updateVehicleType", "Info", "Not Found for updating a vehicletype with id = " + vehicle_type_id);
             res.status(404).json({
                 message: "Not Found for updating a vehicletype with id = " + vehicle_type_id,
                 vehicletype: "",
@@ -67,20 +67,20 @@ exports.updateVehicleType = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("VehicleType","updateVehicleType","Info", "Error -> Can not update a vehicletype with id = " + req.params.id);
+                logs("VehicleType", "updateVehicleType", "Info", "Error -> Can not update a vehicletype with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a vehicletype with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("VehicleType","updateVehicleType","Info", "Update successfully a vehicletype with id = " + vehicle_type_id);
+            logs("VehicleType", "updateVehicleType", "Info", "Update successfully a vehicletype with id = " + vehicle_type_id);
             res.status(200).json({
                 message: "Update successfully a vehicletype with id = " + vehicle_type_id,
                 vehicletype: updatedObject,
             });
         }
     } catch (error) {
-        logs("VehicleType","updateVehicleType","Error", "Error -> Can not update a vehicletype with id = " + req.params.id);
+        logs("VehicleType", "updateVehicleType", "Error", "Error -> Can not update a vehicletype with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a vehicletype with id = " + req.params.id,
             //error: error.message
@@ -93,7 +93,7 @@ exports.getVehicleType = (req, res) => {
 
     VehicleType.findAll()
         .then(vehicletypeInfos => {
-            logs("VehicleType","getVehicleType","Info", "Get all vehicletype' Infos Successfully!");
+            logs("VehicleType", "getVehicleType", "Info", "Get all vehicletype' Infos Successfully!");
             res.status(200).json({
                 message: "Get all vehicletype' Infos Successfully!",
                 vehicletype: vehicletypeInfos
@@ -101,7 +101,7 @@ exports.getVehicleType = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("VehicleType","getVehicleType","Error", error);
+            logs("VehicleType", "getVehicleType", "Error", error);
 
             res.status(500).json({
                 message: "Error!",
@@ -114,7 +114,7 @@ exports.getvehicletypeById = (req, res) => {
     let vehicle_type_id = req.params.id;
     VehicleType.findByPk(vehicle_type_id)
         .then(vehicletype => {
-            logs("VehicleType","getvehicletypeById","Info", "Successfully Get a vehicletype with id = " + vehicle_type_id);
+            logs("VehicleType", "getvehicletypeById", "Info", "Successfully Get a vehicletype with id = " + vehicle_type_id);
             res.status(200).json({
                 message: " Successfully Get a vehicletype with id = " + vehicle_type_id,
                 vehicletype: vehicletype
@@ -122,7 +122,7 @@ exports.getvehicletypeById = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("VehicleType","getvehicletypeById","Error", error);
+            logs("VehicleType", "getvehicletypeById", "Error", error);
 
             res.status(500).json({
                 message: "Error!",
@@ -133,16 +133,40 @@ exports.getvehicletypeById = (req, res) => {
 
 exports.deleteById = async (req, res) => {
     try {
-        await VehicleType.destroy({
-            where: {
-                vehicle_type_id: req.params.id
+        // Validate
+        let vehicle_type_id = req.params.id;
+        let vehicletype = await VehicleType.findByPk(vehicle_type_id);
+
+        if (!vehicletype) {
+            logs("VehicleType", "create", "Info", "Not Found for Delete a vehicletype with id = " + vehicle_type_id);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a vehicletype with id = " + vehicle_type_id,
+                error: "404"
+            });
+        } else {
+            let updatedObject = {
+                IsDeleted: "1"
             }
+            let result = await vehicletype.update(updatedObject, { returning: true, where: { vehicle_type_id: vehicle_type_id } });
+            // return the response to client
+            if (!result) {
+                logs("VehicleType", "deleteById", "Error", "Error -> Can not delete a vehicletype with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a vehicletype with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
+            }
+            logs("VehicleType", "deleteById", "Info", "delete successfully a vehicletype with id = " + vehicle_type_id);
+            res.status(200).json({
+                message: "delete successfully a vehicletype with id = " + vehicle_type_id
+            });
+        }
+    } catch (error) {
+        logs("VehicleType", "deleteById", "Info", "Error -> Can not delete a vehicletype with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a vehicletype with id = " + req.params.id,
+            error: errorResponse(error.message)
         });
-        logs("VehicleType","deleteById","Info", "VehicleType Deleted");
-        res.json({
-            "message": "VehicleType Deleted"
-        });
-    } catch (err) {
-        logs("VehicleType","deleteById","Error", err);
     }
 }

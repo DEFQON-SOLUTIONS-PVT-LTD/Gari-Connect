@@ -27,6 +27,10 @@ module.exports = function(sequelize, DataTypes) {
     is_active: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    IsDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

@@ -41,15 +41,15 @@ exports.create = async (req, res) => {
         }
         // Save to MySQL database
         Bookings.create(booking).then(result => {
-            logs("Bookings","create","Info", "Create Successfully a booking with id = " + result.id);
+            logs("Bookings", "create", "Info", "Create Successfully a booking with id = " + result.bookingId);
             // send uploading message to client
             res.status(200).json({
-                message: "Create Successfully a booking with id = " + result.id,
+                message: "Create Successfully a booking with id = " + result.bookingId,
                 booking: successResponse(result),
             });
         });
     } catch (error) {
-        logs("Bookings","create","Error", error.message);
+        logs("Bookings", "create", "Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -64,7 +64,7 @@ exports.statusUpdate = async (req, res) => {
         let bookingId = req.body.bookingId;
         let booking = await Bookings.findByPk(bookingId);
         if (!booking) {
-            logs("Bookings","create","Info", "Not Found for updating a booking with id = " + bookingId);
+            logs("Bookings", "create", "Info", "Not Found for updating a booking with id = " + bookingId);
             // return a response to client
             res.status(404).json({
                 message: "Not Found for updating a booking with id = " + bookingId,
@@ -81,20 +81,19 @@ exports.statusUpdate = async (req, res) => {
             let result = await booking.update(updatedObject, { returning: true, where: { bookingId: bookingId } });
             // return the response to client
             if (!result) {
-            logs("Bookings","statusUpdate","Error", "Error -> Can not update a status with id = " + req.params.id);
+                logs("Bookings", "statusUpdate", "Error", "Error -> Can not update a status with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a ststus with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("Bookings","statusUpdate","Info", "Update successfully a status with id = " + bookingId);
+            logs("Bookings", "statusUpdate", "Info", "Update successfully a status with id = " + bookingId);
             res.status(200).json({
-                message: "Update successfully a status with id = " + bookingId,
-                booking: updatedObject,
+                message: "Update successfully a status with id = " + bookingId
             });
         }
     } catch (error) {
-        logs("Bookings","statusUpdate","Info", "Error -> Can not update a status with id = " + req.params.id);
+        logs("Bookings", "statusUpdate", "Info", "Error -> Can not update a status with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a status with id = " + req.params.id,
             //error: error.message
@@ -106,7 +105,7 @@ exports.getBooking = (req, res, next) => {
     let statusId = req.body.statusId;
     db.sequelize.query('CALL get_bookings(' + statusId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
-            logs("Bookings","getBooking","Info", "Get all booking Infos Successfully! ");
+            logs("Bookings", "getBooking", "Info", "Get all booking Infos Successfully! ");
             res.status(200).json({
                 message: "Get all booking Infos Successfully! ",
                 result: result[0],
@@ -114,7 +113,7 @@ exports.getBooking = (req, res, next) => {
         })
         .catch(error => {
             // log on console
-            logs("Bookings","getBooking","Error", error.message);
+            logs("Bookings", "getBooking", "Error", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error
@@ -125,7 +124,7 @@ exports.getBookingById = (req, res, next) => {
     let bookingId = req.body.bookingId;
     db.sequelize.query('CALL get_bookingbyid( ' + bookingId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
-            logs("Bookings","getBookingById","Info", "Successfully Get a booking with id = " + bookingId);
+            logs("Bookings", "getBookingById", "Info", "Successfully Get a booking with id = " + bookingId);
             res.status(200).json({
                 message: "Successfully Get a booking with id = " + bookingId,
                 result: result[0],
@@ -134,7 +133,7 @@ exports.getBookingById = (req, res, next) => {
         .catch(error => {
             // log on console
             console.log(error);
-            logs("Bookings","getBookingById","Info", error.message);
+            logs("Bookings", "getBookingById", "Info", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error
@@ -143,25 +142,62 @@ exports.getBookingById = (req, res, next) => {
 }
 exports.deleteById = async (req, res) => {
     try {
-        await Bookings.destroy({
-            where: {
-                bookingId: req.params.id
+        // Validate
+        let bookingId = req.params.id;
+        let booking = await Bookings.findByPk(bookingId);
+        if (!booking) {
+            logs("Bookings", "create", "Info", "Not Found for Deleting a booking with id = " + bookingId);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a booking with id = " + bookingId,
+                error: "404"
+            });
+        } else {
+            let updatedObject = {
+                IsDeleted: "1"
             }
+            let result = await booking.update(updatedObject, { returning: true, where: { bookingId: bookingId } });
+            // return the response to client
+            if (!result) {
+                logs("Bookings", "deleteById", "Error", "Error -> Can not delete a booking with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a booking with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
+            }
+            logs("Bookings", "deleteById", "Info", "delete successfully a booking with id = " + bookingId);
+            res.status(200).json({
+                message: "delete successfully a booking with id = " + bookingId
+            });
+        }
+    } catch (error) {
+        logs("Bookings", "deleteById", "Info", "Error -> Can not delete a booking with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a booking with id = " + req.params.id,
+            //error: error.message
+            error: errorResponse(error.message)
         });
-        logs("Bookings","deleteById","Info", "booking deleted");
-        res.json({
-            "message": "booking Deleted"
-        });
-    } catch (err) {
-        logs("Bookings","deleteById","Error", err);
     }
+    // try {
+    // await Bookings.destroy({
+    // where: {
+    // bookingId: req.params.id
+    // }
+    // });
+    // logs("Bookings", "deleteById", "Info", "booking deleted");
+    // res.json({
+    // "message": "booking Deleted"
+    // });
+    // } catch (err) {
+    // logs("Bookings", "deleteById", "Error", err);
+    // }
 }
 exports.IsApproved = async (req, res) => {
     try {
         let bookingId = req.body.bookingId;
         let booking = await Bookings.findByPk(bookingId);
         if (!booking) {
-            logs("Bookings","IsApproved","Info", "Booking Not Found with id = " + bookingId);
+            logs("Bookings", "IsApproved", "Info", "Booking Not Found with id = " + bookingId);
             // return a response to client
             res.status(404).json({
                 message: "Booking Not Found with id = " + bookingId,
@@ -179,20 +215,20 @@ exports.IsApproved = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("Bookings","IsApproved","Error", "Error -> booking Can not Approved with id = " + req.params.id);
+                logs("Bookings", "IsApproved", "Error", "Error -> booking Can not Approved with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> booking Can not Approved with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("Bookings","IsApproved","Info", "Booking successfully Approved with id = " + bookingId);
+            logs("Bookings", "IsApproved", "Info", "Booking successfully Approved with id = " + bookingId);
             res.status(200).json({
                 message: "Booking successfully Approved with id = " + bookingId,
                 booking: updatedObject,
             });
         }
     } catch (error) {
-        logs("Bookings","IsApproved","Error", "Error -> Booking Can not  be Approved  with id = " + req.params.id);
+        logs("Bookings", "IsApproved", "Error", "Error -> Booking Can not  be Approved  with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Booking Can not  be Approved  with id = " + req.params.id,
             //error: error.message
@@ -205,7 +241,7 @@ exports.IsReject = async (req, res) => {
         let bookingId = req.body.bookingId;
         let booking = await Bookings.findByPk(bookingId);
         if (!booking) {
-            logs("Bookings","IsReject","Error", "Booking Not Found with id = " + bookingId);
+            logs("Bookings", "IsReject", "Error", "Booking Not Found with id = " + bookingId);
             // return a response to client
             res.status(404).json({
                 message: "Booking Not Found with id = " + bookingId,
@@ -223,20 +259,20 @@ exports.IsReject = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("Bookings","IsReject","Error", "Booking Not Found with id = " + bookingId);
+                logs("Bookings", "IsReject", "Error", "Booking Not Found with id = " + bookingId);
                 res.status(500).json({
                     message: "Error -> booking Can not Reject with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("Bookings","IsReject","Info", "Booking successfully Reject with id = " + bookingId);
+            logs("Bookings", "IsReject", "Info", "Booking successfully Reject with id = " + bookingId);
             res.status(200).json({
                 message: "Booking successfully Reject with id = " + bookingId,
                 booking: updatedObject,
             });
         }
     } catch (error) {
-        logs("Bookings","IsReject","Error", "Error -> Booking Can not be Reject  with id = " + req.params.id);
+        logs("Bookings", "IsReject", "Error", "Error -> Booking Can not be Reject  with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Booking Can not be Reject  with id = " + req.params.id,
             //error: error.message

@@ -9,7 +9,7 @@ const logs = require('../controllers/logging.js');
 
 exports.create = (req, res) => {
     let category = {};
-    
+
     try {
         // Validate
         const { error } = saveCategoryValidations(req.body);
@@ -24,7 +24,7 @@ exports.create = (req, res) => {
         // Save to MySQL database
         Category.create(category).then(result => {
 
-            logs("Category","Create","Info", "Successfully created a category");
+            logs("Category", "Create", "Info", "Successfully created a category");
             // send uploading message to client
             res.status(200).json({
                 message: "Create Successfully a category",
@@ -32,7 +32,7 @@ exports.create = (req, res) => {
             });
         });
     } catch (error) {
-        logs("Category","Create","Error", error.message);
+        logs("Category", "Create", "Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -50,7 +50,7 @@ exports.updateCategory = async (req, res) => {
         let category = await Category.findByPk(categoryId);
 
         if (!category) {
-            logs("Category","Update","Error", "Not Found for updating a category with id = " + categoryId);
+            logs("Category", "Update", "Error", "Not Found for updating a category with id = " + categoryId);
             // return a response to client
             res.status(404).json({
                 message: "Not Found for updating a category with id = " + categoryId,
@@ -70,20 +70,20 @@ exports.updateCategory = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("Category","Update","Error", "Error -> Can not update a category with id = " + req.params.id);
+                logs("Category", "Update", "Error", "Error -> Can not update a category with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a category with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("Category","Update","Info", "Update successfully a category with id = " + categoryId);
+            logs("Category", "Update", "Info", "Update successfully a category with id = " + categoryId);
             res.status(200).json({
                 message: "Update successfully a category with id = " + categoryId,
                 category: updatedObject,
             });
         }
     } catch (error) {
-        logs("Category","Update","Error", "Error -> Can not update a category with id = " + req.params.id);
+        logs("Category", "Update", "Error", "Error -> Can not update a category with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a category with id = " + req.params.id,
             //error: error.message
@@ -96,7 +96,7 @@ exports.getCategory = (req, res) => {
 
     Category.findAll()
         .then(categoryInfos => {
-            logs("Category","getCategory","Info", "Get all category' Infos Successfully!");
+            logs("Category", "getCategory", "Info", "Get all category' Infos Successfully!");
             res.status(200).json({
                 message: "Get all category' Infos Successfully!",
                 category: categoryInfos
@@ -104,7 +104,7 @@ exports.getCategory = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Category","getCategory","Error", error.message);
+            logs("Category", "getCategory", "Error", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error
@@ -116,25 +116,25 @@ exports.getCategoryById = (req, res) => {
     let categoryId = req.params.id;
     Category.findByPk(categoryId)
         .then(category => {
-            
-            if(category!=null){
-                logs("Category","getCategoryById","Info", " Successfully Get a category with id = " + categoryId);
+
+            if (category != null) {
+                logs("Category", "getCategoryById", "Info", " Successfully Get a category with id = " + categoryId);
                 res.status(200).json({
                     message: " Successfully Get a category with id = " + categoryId,
                     category: category
                 });
-            }else{
-                logs("Category","getCategoryById","Info", "No Category found against categoryId = " + categoryId);
+            } else {
+                logs("Category", "getCategoryById", "Info", "No Category found against categoryId = " + categoryId);
                 res.status(404).json({
                     message: "No Category found against categoryId = " + categoryId,
                     category: category
                 });
             }
-            
+
         })
         .catch(error => {
             // log on console
-            logs("Category","getCategoryById","Error", error.message);
+            logs("Category", "getCategoryById", "Error", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error
@@ -144,16 +144,39 @@ exports.getCategoryById = (req, res) => {
 
 exports.deleteById = async (req, res) => {
     try {
-        await Category.destroy({
-            where: {
-                categoryId: req.params.id
+        // Validate
+        let categoryId = req.params.id;
+        let category = await Category.findByPk(categoryId);
+        if (!category) {
+            logs("Category", "create", "Info", "Not Found for Deleting a category with id = " + categoryId);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a category with id = " + categoryId,
+                error: "404"
+            });
+        } else {
+            let updatedObject = {
+                IsDeleted: "1"
             }
+            let result = await category.update(updatedObject, { returning: true, where: { categoryId: categoryId } });
+            // return the response to client
+            if (!result) {
+                logs("Category", "deleteById", "Error", "Error -> Can not delete a category with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a category with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
+            }
+            logs("Category", "deleteById", "Info", "delete successfully a category with id = " + categoryId);
+            res.status(200).json({
+                message: "delete successfully a category with id = " + categoryId
+            });
+        }
+    } catch (error) {
+        logs("Category", "deleteById", "Info", "Error -> Can not delete a category with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a category with id = " + req.params.id,
+            error: errorResponse(error.message)
         });
-        logs("Category","deleteById","Info", "Category Deleted");
-        res.json({
-            "message": "Category Deleted"
-        });
-    } catch (err) {
-        logs("Category","deleteById","Info", err);
     }
 }

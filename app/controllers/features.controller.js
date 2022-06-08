@@ -23,7 +23,7 @@ exports.create = (req, res) => {
         // Save to PostgreSQL database
         Features.create(feature).then(result => {
             // saving logs to database
-            logs("Features","create","Info", "Successfully Created a feature");
+            logs("Features", "create", "Info", "Successfully Created a feature");
             // send uploading message to client
             res.status(200).json({
                 message: "Successfully Created a feature",
@@ -31,8 +31,8 @@ exports.create = (req, res) => {
             });
         });
     } catch (error) {
-         // saving logs to database
-         logs("Features","create","Error", error.message);
+        // saving logs to database
+        logs("Features", "create", "Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -50,7 +50,7 @@ exports.updateFeatures = async (req, res) => {
         let feature = await Features.findByPk(featureId);
 
         if (!feature) {
-            logs("Features","updateFeatures","Info", "Not Found for updating a feature with id = " + featureId);
+            logs("Features", "updateFeatures", "Info", "Not Found for updating a feature with id = " + featureId);
             // return a response to client
             res.status(404).json({
                 message: "Not Found for updating a feature with id = " + featureId,
@@ -71,22 +71,22 @@ exports.updateFeatures = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("Features","updateFeatures","Error", "Error -> Can not update a feature with id = " + req.params.id);
+                logs("Features", "updateFeatures", "Error", "Error -> Can not update a feature with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a feature with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("Features","updateFeatures","Error", "Update successfully a feature with id = " + featureId);
+            logs("Features", "updateFeatures", "Error", "Update successfully a feature with id = " + featureId);
             res.status(200).json({
                 message: "Update successfully a feature with id = " + featureId,
                 feature: updatedObject,
             });
-            
+
 
         }
     } catch (error) {
-            logs("Features","updateFeatures","Error", error.message);
+        logs("Features", "updateFeatures", "Error", error.message);
         res.status(500).json({
             message: "Error -> Can not update a feature with id = " + req.params.id,
             //error: error.message
@@ -100,7 +100,7 @@ exports.getFeatures = (req, res) => {
     Features.findAll()
         .then(featureInfos => {
             // saving logs to database
-         logs("Features","getFeatures","Info", "Get all feature' Infos Successfully!");
+            logs("Features", "getFeatures", "Info", "Get all feature' Infos Successfully!");
             res.status(200).json({
                 message: "Get all feature' Infos Successfully!",
                 feature: featureInfos
@@ -108,7 +108,7 @@ exports.getFeatures = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Features","getFeatures","Error", error.message);
+            logs("Features", "getFeatures", "Error", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error.message
@@ -121,7 +121,7 @@ exports.getFeaturesById = (req, res) => {
     let featureId = req.params.id;
     Features.findByPk(featureId)
         .then(feature => {
-            logs("Features","getFeaturesById","Info", "Successfully Get a feature with id = " + featureId);
+            logs("Features", "getFeaturesById", "Info", "Successfully Get a feature with id = " + featureId);
             res.status(200).json({
                 message: " Successfully Get a feature with id = " + featureId,
                 feature: feature
@@ -129,7 +129,7 @@ exports.getFeaturesById = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Features","getFeaturesById","Error", error.message);
+            logs("Features", "getFeaturesById", "Error", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error
@@ -138,24 +138,40 @@ exports.getFeaturesById = (req, res) => {
 }
 
 exports.deleteById = async (req, res) => {
-    let log = {};
     try {
-        await Features.destroy({
-            where: {
-                featureId: req.params.id
-            }
-        });
-        logs("Features","deleteById","Info", "feature Deleted with id " + req.params.id);
-        res.json({
-            "message": "feature Deleted"
-        });
-    } catch (err) {
-         log.controller = 'Features';
-            log.method = 'getFeaturesById';
-            log.type = 'Error';
-            log.description = err;
-            Logs.create(log).then(results =>{
+        // Validate
+        let featureId = req.params.id;
+        let feature = await Features.findByPk(featureId);
+        if (!feature) {
+            logs("Features", "create", "Info", "Not Found for Delete a feature with id = " + featureId);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a feature with id = " + featureId,
+                error: "404"
             });
-            logs("Features","getFeaturesById","Error", err);
+        } else {
+            let updatedObject = {
+                IsDeleted: "1",
+            }
+            let result = await Features.update(updatedObject, { returning: true, where: { featureId: featureId } });
+            // return the response to client
+            if (!result) {
+                logs("Features", "deleteById", "Error", "Error -> Can not delete a feature with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a feature with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
+            }
+            logs("Features", "deleteById", "Info", "delete successfully a feature with id = " + featureId);
+            res.status(200).json({
+                message: "delete successfully a feature with id = " + featureId
+            });
+        }
+    } catch (error) {
+        logs("Features", "deleteById", "Info", "Error -> Can not delete a feature with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a feature with id = " + req.params.id,
+            error: errorResponse(error.message)
+        });
     }
 }

@@ -11,11 +11,13 @@ var _features = require("./features");
 var _green_vehicles = require("./green_vehicles");
 var _guidelines = require("./guidelines");
 var _locations = require("./locations");
+var _logs = require("./logs");
 var _makes = require("./makes");
 var _models = require("./models");
 var _permissions = require("./permissions");
 var _roles = require("./roles");
 var _status = require("./status");
+var _subscribers = require("./subscribers");
 var _supports = require("./supports");
 var _transmissions = require("./transmissions");
 var _user_card_informations = require("./user_card_informations");
@@ -25,10 +27,10 @@ var _user_transactions = require("./user_transactions");
 var _users = require("./users");
 var _vehicle_images = require("./vehicle_images");
 var _vehicle_reviews = require("./vehicle_reviews");
+var _vehicle_to_features = require("./vehicle_to_features");
+var _vehicle_to_guidelines = require("./vehicle_to_guidelines");
 var _vehicle_types = require("./vehicle_types");
 var _vehicles = require("./vehicles");
-var _logs = require("./logs");
-var _subscribers = require("./subscribers");
 
 function initModels(sequelize) {
   var State = _State(sequelize, DataTypes);
@@ -43,11 +45,13 @@ function initModels(sequelize) {
   var green_vehicles = _green_vehicles(sequelize, DataTypes);
   var guidelines = _guidelines(sequelize, DataTypes);
   var locations = _locations(sequelize, DataTypes);
+  var logs = _logs(sequelize, DataTypes);
   var makes = _makes(sequelize, DataTypes);
   var models = _models(sequelize, DataTypes);
   var permissions = _permissions(sequelize, DataTypes);
   var roles = _roles(sequelize, DataTypes);
   var status = _status(sequelize, DataTypes);
+  var subscribers = _subscribers(sequelize, DataTypes);
   var supports = _supports(sequelize, DataTypes);
   var transmissions = _transmissions(sequelize, DataTypes);
   var user_card_informations = _user_card_informations(sequelize, DataTypes);
@@ -57,10 +61,10 @@ function initModels(sequelize) {
   var users = _users(sequelize, DataTypes);
   var vehicle_images = _vehicle_images(sequelize, DataTypes);
   var vehicle_reviews = _vehicle_reviews(sequelize, DataTypes);
+  var vehicle_to_features = _vehicle_to_features(sequelize, DataTypes);
+  var vehicle_to_guidelines = _vehicle_to_guidelines(sequelize, DataTypes);
   var vehicle_types = _vehicle_types(sequelize, DataTypes);
   var vehicles = _vehicles(sequelize, DataTypes);
-  var logs = _logs(sequelize, DataTypes);
-  var subscribers = _subscribers(sequelize, DataTypes);
 
   city.belongsTo(State, { as: "state", foreignKey: "stateId"});
   State.hasMany(city, { as: "cities", foreignKey: "stateId"});
@@ -72,12 +76,12 @@ function initModels(sequelize) {
   city.hasMany(users, { as: "users", foreignKey: "cityId"});
   availability.belongsTo(days, { as: "day", foreignKey: "dayId"});
   days.hasMany(availability, { as: "availabilities", foreignKey: "dayId"});
-  vehicles.belongsTo(features, { as: "feature", foreignKey: "featureId"});
-  features.hasMany(vehicles, { as: "vehicles", foreignKey: "featureId"});
+  vehicle_to_features.belongsTo(features, { as: "feature", foreignKey: "featureId"});
+  features.hasMany(vehicle_to_features, { as: "vehicle_to_features", foreignKey: "featureId"});
   vehicles.belongsTo(green_vehicles, { as: "green_vehicle", foreignKey: "green_vehicle_id"});
   green_vehicles.hasMany(vehicles, { as: "vehicles", foreignKey: "green_vehicle_id"});
-  vehicles.belongsTo(guidelines, { as: "guideline", foreignKey: "guidelineId"});
-  guidelines.hasMany(vehicles, { as: "vehicles", foreignKey: "guidelineId"});
+  vehicle_to_guidelines.belongsTo(guidelines, { as: "guideline", foreignKey: "guidelineId"});
+  guidelines.hasMany(vehicle_to_guidelines, { as: "vehicle_to_guidelines", foreignKey: "guidelineId"});
   vehicles.belongsTo(locations, { as: "location", foreignKey: "locationId"});
   locations.hasMany(vehicles, { as: "vehicles", foreignKey: "locationId"});
   models.belongsTo(makes, { as: "make", foreignKey: "makeId"});
@@ -120,6 +124,10 @@ function initModels(sequelize) {
   vehicles.hasMany(vehicle_images, { as: "vehicle_images", foreignKey: "vehicleId"});
   vehicle_reviews.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
   vehicles.hasMany(vehicle_reviews, { as: "vehicle_reviews", foreignKey: "vehicleId"});
+  vehicle_to_features.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
+  vehicles.hasMany(vehicle_to_features, { as: "vehicle_to_features", foreignKey: "vehicleId"});
+  vehicle_to_guidelines.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
+  vehicles.hasMany(vehicle_to_guidelines, { as: "vehicle_to_guidelines", foreignKey: "vehicleId"});
 
   return {
     State,
@@ -134,11 +142,13 @@ function initModels(sequelize) {
     green_vehicles,
     guidelines,
     locations,
+    logs,
     makes,
     models,
     permissions,
     roles,
     status,
+    subscribers,
     supports,
     transmissions,
     user_card_informations,
@@ -148,10 +158,10 @@ function initModels(sequelize) {
     users,
     vehicle_images,
     vehicle_reviews,
+    vehicle_to_features,
+    vehicle_to_guidelines,
     vehicle_types,
     vehicles,
-    logs,
-    subscribers,
   };
 }
 module.exports = initModels;

@@ -24,7 +24,7 @@ exports.create = (req, res) => {
 
         // Save to MySQL database
         Make.create(make).then(result => {
-            logs("Make","Create","Info", "Create Successfully a Make with id = " + result.id);
+            logs("Make", "Create", "Info", "Create Successfully a Make with id = " + result.id);
             // send uploading message to client
             res.status(200).json({
                 message: "Create Successfully a Make with id = " + result.id,
@@ -32,7 +32,7 @@ exports.create = (req, res) => {
             });
         });
     } catch (error) {
-        logs("Make","Create","Error", error.message);
+        logs("Make", "Create", "Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -49,7 +49,7 @@ exports.updateMake = async (req, res) => {
         let make = await Make.findByPk(makeId);
 
         if (!make) {
-            logs("Make","updateMake","Info", "Not Found for updating a make with id = " + makeId);
+            logs("Make", "updateMake", "Info", "Not Found for updating a make with id = " + makeId);
             // return a response to client
             res.status(404).json({
                 message: "Not Found for updating a make with id = " + makeId,
@@ -69,20 +69,20 @@ exports.updateMake = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("Make","updateMake","Error", "Error -> Can not update a make with id = " + req.params.id);
+                logs("Make", "updateMake", "Error", "Error -> Can not update a make with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a make with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("Make","updateMake","Info", "Update successfully a make with id = " + makeId);
+            logs("Make", "updateMake", "Info", "Update successfully a make with id = " + makeId);
             res.status(200).json({
                 message: "Update successfully a make with id = " + makeId,
                 make: updatedObject,
             });
         }
     } catch (error) {
-        logs("Make","updateMake","Error", "Error -> Can not update a make with id = " + req.params.id);
+        logs("Make", "updateMake", "Error", "Error -> Can not update a make with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a make with id = " + req.params.id,
             //error: error.message
@@ -95,7 +95,7 @@ exports.getMake = (req, res) => {
 
     Make.findAll()
         .then(makeInfos => {
-            logs("Make","getMake","Info", "Get all makes' Infos Successfully!");
+            logs("Make", "getMake", "Info", "Get all makes' Infos Successfully!");
             res.status(200).json({
                 message: "Get all makes' Infos Successfully!",
                 makes: makeInfos
@@ -103,7 +103,7 @@ exports.getMake = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Make","getMake","Error", error.message);
+            logs("Make", "getMake", "Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -116,7 +116,7 @@ exports.getMakeById = (req, res) => {
     let makeId = req.params.id;
     Make.findByPk(makeId)
         .then(make => {
-            logs("Make","getMakeById","Info", "Successfully Get a Make with id = " + makeId);
+            logs("Make", "getMakeById", "Info", "Successfully Get a Make with id = " + makeId);
             res.status(200).json({
                 message: " Successfully Get a Make with id = " + makeId,
                 makes: make
@@ -124,7 +124,7 @@ exports.getMakeById = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("Make","getMakeById","Error", error.message);
+            logs("Make", "getMakeById", "Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -135,16 +135,40 @@ exports.getMakeById = (req, res) => {
 
 exports.deleteById = async (req, res) => {
     try {
-        await Make.destroy({
-            where: {
-                makeId: req.params.id
+        // Validate
+        let makeId = req.params.id;
+        let make = await Make.findByPk(makeId);
+        if (!make) {
+            logs("Make", "create", "Info", "Not Found for Delete a Make with id = " + makeId);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a Make with id = " + makeId,
+                error: "404"
+            });
+        } else {
+            let updatedObject = {
+                IsDeleted: "1"
             }
+            let result = await make.update(updatedObject, { returning: true, where: { makeId: makeId } });
+            // return the response to client
+            if (!result) {
+                logs("Make", "deleteById", "Error", "Error -> Can not delete a Make with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a Make with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
+            }
+            logs("Make", "deleteById", "Info", "delete successfully a Make with id = " + makeId);
+            res.status(200).json({
+                message: "delete successfully a Make with id = " + makeId
+            });
+        }
+    } catch (error) {
+        logs("Make", "deleteById", "Info", "Error -> Can not delete a Make with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a Make with id = " + req.params.id,
+            error: errorResponse(error.message)
         });
-        logs("Make","deleteById","Info", "Make Deleted");
-        res.json({
-            "message": "Make Deleted"
-        });
-    } catch (err) {
-        logs("Make","deleteById","Error", err);
     }
+
 }

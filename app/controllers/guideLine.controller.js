@@ -24,14 +24,14 @@ exports.create = (req, res) => {
         // Save to MySQL database
         GuideLine.create(guideLine).then(result => {
             // send uploading message to client
-            logs("GuideLine","Create","Info", "Create Successfully a guideLine with id = " + result.id);
+            logs("GuideLine", "Create", "Info", "Create Successfully a guideLine with id = " + result.id);
             res.status(200).json({
                 message: "Successfully created a guideLine",
                 guideLine: successResponse(result),
             });
         });
     } catch (error) {
-        logs("GuideLine","Create","Error", error.message);
+        logs("GuideLine", "Create", "Error", error.message);
         res.status(500).json({
             message: "Fail!",
             error: errorResponse(error.message)
@@ -49,7 +49,7 @@ exports.updateGuideLine = async (req, res) => {
 
         if (!guideLine) {
             // return a response to client
-            logs("GuideLine","updateGuideLine","Info", "Not Found for updating a guideLine with id = " + guideLineId);
+            logs("GuideLine", "updateGuideLine", "Info", "Not Found for updating a guideLine with id = " + guideLineId);
             res.status(404).json({
                 message: "Not Found for updating a guideLine with id = " + guideLineId,
                 guideLine: "",
@@ -69,20 +69,20 @@ exports.updateGuideLine = async (req, res) => {
 
             // return the response to client
             if (!result) {
-                logs("GuideLine","updateGuideLine","Info", "Error -> Can not update a guideLine with id = " + req.params.id);
+                logs("GuideLine", "updateGuideLine", "Info", "Error -> Can not update a guideLine with id = " + req.params.id);
                 res.status(500).json({
                     message: "Error -> Can not update a guideLine with id = " + req.params.id,
                     error: "Can NOT Updated",
                 });
             }
-            logs("GuideLine","updateGuideLine","Info", "Update successfully a guideLine with id = " + guideLineId);
+            logs("GuideLine", "updateGuideLine", "Info", "Update successfully a guideLine with id = " + guideLineId);
             res.status(200).json({
                 message: "Update successfully a guideLine with id = " + guideLineId,
                 guideLines: updatedObject,
             });
         }
     } catch (error) {
-        logs("GuideLine","updateGuideLine","Error", "Error -> Can not update a guideline with id = " + req.params.id);
+        logs("GuideLine", "updateGuideLine", "Error", "Error -> Can not update a guideline with id = " + req.params.id);
         res.status(500).json({
             message: "Error -> Can not update a guideline with id = " + req.params.id,
             //error: error.message
@@ -95,7 +95,7 @@ exports.getGuideLine = (req, res) => {
 
     GuideLine.findAll()
         .then(guideLineInfos => {
-            logs("GuideLine","getGuideLine","Info", "Get all guideLine' Infos Successfully!");
+            logs("GuideLine", "getGuideLine", "Info", "Get all guideLine' Infos Successfully!");
             res.status(200).json({
                 message: "Get all guideLine' Infos Successfully!",
                 guideLines: guideLineInfos
@@ -104,7 +104,7 @@ exports.getGuideLine = (req, res) => {
         .catch(error => {
             // log on console
             console.log(error);
-            logs("GuideLine","getGuideLine","Error", error.message);
+            logs("GuideLine", "getGuideLine", "Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -117,7 +117,7 @@ exports.getGuideLineById = (req, res) => {
     let guideLinedId = req.params.id;
     GuideLine.findByPk(guideLinedId)
         .then(guideLine => {
-            logs("GuideLine","getGuideLineById","Error", "Successfully Get a guideLine with id = " + guideLinedId);
+            logs("GuideLine", "getGuideLineById", "Error", "Successfully Get a guideLine with id = " + guideLinedId);
             res.status(200).json({
                 message: "Successfully Get a guideLine with id = " + guideLinedId,
                 guideLines: guideLine
@@ -125,7 +125,7 @@ exports.getGuideLineById = (req, res) => {
         })
         .catch(error => {
             // log on console
-            logs("GuideLine","getGuideLineById","Error", error.message);
+            logs("GuideLine", "getGuideLineById", "Error", error.message);
 
             res.status(500).json({
                 message: "Error!",
@@ -136,16 +136,39 @@ exports.getGuideLineById = (req, res) => {
 
 exports.deleteById = async (req, res) => {
     try {
-        await GuideLine.destroy({
-            where: {
-                guidelineId: req.params.id
+        // Validate
+        let guideLineId = req.params.id;
+        let guideLine = await GuideLine.findByPk(guideLineId);
+        if (!guideLine) {
+            logs("GuideLine", "create", "Info", "Not Found for Delete a guideLine with id = " + guideLineId);
+            // return a response to client
+            res.status(404).json({
+                message: "Not Found for Deleting a guideLine with id = " + guideLineId,
+                error: "404"
+            });
+        } else {
+            let updatedObject = {
+                IsDeleted: "1"
             }
+            let result = await guideLine.update(updatedObject, { returning: true, where: { guideLineId: guideLineId } });
+            // return the response to client
+            if (!result) {
+                logs("GuideLine", "deleteById", "Error", "Error -> Can not delete a guideLine with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not delete a guideLine with id = " + req.params.id,
+                    error: "Id not Exists",
+                });
+            }
+            logs("GuideLine", "deleteById", "Info", "delete successfully a guideLine with id = " + guideLineId);
+            res.status(200).json({
+                message: "delete successfully a guideLine with id = " + guideLineId
+            });
+        }
+    } catch (error) {
+        logs("GuideLine", "deleteById", "Info", "Error -> Can not delete a guideLine with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not delete a guideLine with id = " + req.params.id,
+            error: errorResponse(error.message)
         });
-        logs("GuideLine","deleteById","Error", "GuideLine Deleted");
-        res.json({
-            "message": "GuideLine Deleted"
-        });
-    } catch (err) {
-        console.log(err);
     }
 }

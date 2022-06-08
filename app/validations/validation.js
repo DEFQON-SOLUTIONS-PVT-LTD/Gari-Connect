@@ -1,6 +1,6 @@
 // VALIDATION
 const Joi = require('joi');
-const { joiPassword} = require('joi-password');
+const { joiPassword } = require('joi-password');
 
 // CATEGORY VALIDATION
 const saveCategoryValidations = (data) => {
@@ -68,7 +68,6 @@ const saveBookingsValidation = (data) => {
         statusId: Joi.number().required(),
         trip_startDate: Joi.string().required(),
         trip_endDate: Joi.string().required(),
-        //cost: Joi.string().required(),
     });
     return schema.validate(data);
 };
@@ -184,14 +183,15 @@ const saveVehicleValidation = (data) => {
         green_vehicle_id: Joi.string().required(),
         categoryId: Joi.string().required(),
         transmissionId: Joi.string().required(),
-        featureId: Joi.string().required(),
         main_image: Joi.string().required(),
         price: Joi.number().required(),
         price_inc_driver: Joi.number().required(),
-        guidelineId: Joi.string().required(),
         userId: Joi.string().required(),
         modelId: Joi.string().required(),
         created_by: Joi.string().required(),
+        features: Joi.array().items({ featureId: Joi.string().required() }),
+        guidelines: Joi.array().items({ guidelineId: Joi.string().required() }),
+        cancel: Joi.boolean().required(),
 
     });
     return schema.validate(data);
@@ -207,11 +207,11 @@ const updateVehicleValidation = (data) => {
         green_vehicle_id: Joi.string().required(),
         categoryId: Joi.string().required(),
         transmissionId: Joi.string().required(),
-        featureId: Joi.string().required(),
+        features: Joi.string().required(),
         main_image: Joi.string().required(),
         price: Joi.number().required(),
         price_inc_driver: Joi.number().required(),
-        guidelineId: Joi.string().required(),
+        guidelines: Joi.string().required(),
         userId: Joi.string().required(),
         updated_by: Joi.string().required(),
         modelId: Joi.string().required(),
@@ -227,13 +227,13 @@ const saveUserValidation = (data) => {
         phoneno: Joi.string().length(13).required(),
         email: Joi.string().email().trim(true).required(),
         password: joiPassword
-        .string()
-        .minOfSpecialCharacters(1)
-        .minOfLowercase(1)
-        .minOfUppercase(1)
-        .minOfNumeric(2)
-        .noWhiteSpaces()
-        .required(),
+            .string()
+            .minOfSpecialCharacters(1)
+            .minOfLowercase(1)
+            .minOfUppercase(1)
+            .minOfNumeric(2)
+            .noWhiteSpaces()
+            .required(),
         address: Joi.string().required(),
         photo: Joi.string().required(),
         cnic: Joi.string().required(),
@@ -253,15 +253,15 @@ const updatePasswordValidation = (data) => {
         phone_no: Joi.string().length(13).required(),
         current_password: Joi.string(),
         password: joiPassword
-        .string()
-        .minOfSpecialCharacters(1)
-        .minOfLowercase(1)
-        .minOfUppercase(1)
-        .minOfNumeric(2)
-        .noWhiteSpaces()
-        .required().label('Password'),
+            .string()
+            .minOfSpecialCharacters(1)
+            .minOfLowercase(1)
+            .minOfUppercase(1)
+            .minOfNumeric(2)
+            .noWhiteSpaces()
+            .required().label('Password'),
         password_confirmation: Joi.any().valid(Joi.ref('password')).required().label('Confirm password')
-        .options({ messages: { 'any.only': '{{#label}} does not match'} })
+            .options({ messages: { 'any.only': '{{#label}} does not match' } })
     });
     return schema.validate(data);
 };
@@ -283,6 +283,7 @@ const updateUserValidation = (data) => {
         roleId: Joi.string().required(),
         cityId: Joi.string().required(),
         gender: Joi.string().required(),
+        otp: Joi.string().required(),
     });
     return schema.validate(data);
 };
@@ -339,6 +340,7 @@ const saveAuthUserValidation = (data) => {
 // Support VALIDATION
 const saveSupportValidation = (data) => {
     const schema = Joi.object({
+        topic: Joi.string().required(),
         description: Joi.string().required(),
         userId: Joi.string().required(),
         created_by: Joi.string()
@@ -360,16 +362,16 @@ const updateForgotPasswordValidation = (data) => {
     const schema = Joi.object({
         phone_no: Joi.string().length(13).required(),
         password: joiPassword
-        .string()
-        .minOfSpecialCharacters(1)
-        .minOfLowercase(1)
-        .minOfUppercase(1)
-        .minOfNumeric(2)
-        .noWhiteSpaces()
-        .required().label('Password'),
+            .string()
+            .minOfSpecialCharacters(1)
+            .minOfLowercase(1)
+            .minOfUppercase(1)
+            .minOfNumeric(2)
+            .noWhiteSpaces()
+            .required().label('Password'),
         password_confirmation: Joi.any().valid(Joi.ref('password')).required().label('Confirm password')
-        .options({ messages: { 'any.only': '{{#label}} does not match'} })
-        
+            .options({ messages: { 'any.only': '{{#label}} does not match' } })
+
     });
     return schema.validate(data);
 };
