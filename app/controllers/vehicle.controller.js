@@ -11,7 +11,6 @@ const logs = require('../controllers/logging.js');
 //const Op = db.Sequelize.Op;
 
 exports.create = async function (req, res) {
-    let transaction;
     let vehicle = {};
     let vehicle_to_features = {};
     let vehicle_to_guidelines = {};
@@ -465,7 +464,7 @@ exports.CancelBooking = async (req, res) => {
 exports.getVehicleList = (req, res, next) => {
     db.sequelize.query('CALL get_vehicleList(); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
-            logs("Vehicle", "CancelBooking", "Error", "Get all VehicleList Infos Successfully! ");
+            logs("Vehicle", "getVehicleList", "Error", "Get all VehicleList Infos Successfully! ");
             res.status(200).json({
                 message: "Get all VehicleList Infos Successfully! ",
                 result: result[0],
@@ -474,7 +473,28 @@ exports.getVehicleList = (req, res, next) => {
         .catch(error => {
             // log on console
             console.log(error);
-            logs("Vehicle", "CancelBooking", "Error", error);
+            logs("Vehicle", "getVehicleList", "Error", error);
+            res.status(500).json({
+                message: "Error!",
+                error: error
+            });
+        });
+}
+
+exports.getVehicleBySearch = (req, res, next) => {
+    let locationId = req.body.locationId;
+    db.sequelize.query('CALL get_vehiclebysearch(' + locationId + '); FETCH ALL FROM "rs_resultone";', res, next)
+        .then(result => {
+            logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ");
+            res.status(200).json({
+                message: "Get all getVehicleBySearch Infos Successfully! ",
+                result: result[0],
+            });
+        })
+        .catch(error => {
+            // log on console
+            console.log(error);
+            logs("Vehicle", "getVehicleBySearch", "Error", error);
             res.status(500).json({
                 message: "Error!",
                 error: error

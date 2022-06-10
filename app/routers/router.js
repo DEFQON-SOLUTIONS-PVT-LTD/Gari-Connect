@@ -369,6 +369,7 @@ router.delete(
 router.put('/api/vehicle/isfavourite', vehicle.IsFavourite);
 router.put('/api/vehicle/cancel', vehicle.CancelBooking);
 router.get('/api/vehicle/vehicleList', vehicle.getVehicleList);
+router.get('/api/vehicle/vehicleSearch', vehicle.getVehicleBySearch);
 router.post(
     '/api/vehicle/create',
     [authJwt.verifyToken],
