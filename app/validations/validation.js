@@ -191,7 +191,7 @@ const saveVehicleValidation = (data) => {
         created_by: Joi.string().required(),
         features: Joi.array().items({ featureId: Joi.string().required() }),
         guidelines: Joi.array().items({ guidelineId: Joi.string().required() }),
-        cancel: Joi.boolean().required(),
+        //cancel: Joi.boolean().required(),
 
     });
     return schema.validate(data);
@@ -226,23 +226,20 @@ const saveUserValidation = (data) => {
         lastname: Joi.string().required(),
         phoneno: Joi.string().length(13).required(),
         email: Joi.string().email().trim(true).required(),
-        password: joiPassword
-            .string()
-            .minOfSpecialCharacters(1)
-            .minOfLowercase(1)
-            .minOfUppercase(1)
-            .minOfNumeric(2)
-            .noWhiteSpaces()
-            .required(),
+        // password: joiPassword
+        // .string()
+        // .minOfSpecialCharacters(1)
+        // .minOfLowercase(1)
+        // .minOfUppercase(1)
+        // .minOfNumeric(2)
+        // .noWhiteSpaces()
+        // .required(),
         address: Joi.string().required(),
         photo: Joi.string().required(),
-        cnic: Joi.string().required(),
-        cnic_validity: Joi.string().required(),
-        driving_license_number: Joi.string().required(),
-        license_validity: Joi.string(),
-        is_active: Joi.boolean().required(),
-        permissionId: Joi.string().required(),
-        roleId: Joi.string().required(),
+        //cnic: Joi.string().required(),
+        // is_active: Joi.boolean().required(),
+        // permissionId: Joi.string().required(),
+        // roleId: Joi.string().required(),
         cityId: Joi.string().required(),
         gender: Joi.string().required(),
     });
@@ -375,6 +372,23 @@ const updateForgotPasswordValidation = (data) => {
     });
     return schema.validate(data);
 };
+const createPasswordValidation = (data) => {
+    const schema = Joi.object({
+        userId: Joi.string().required(),
+        password: joiPassword
+            .string()
+            .minOfSpecialCharacters(1)
+            .minOfLowercase(1)
+            .minOfUppercase(1)
+            .minOfNumeric(2)
+            .noWhiteSpaces()
+            .required().label('Password'),
+        password_confirmation: Joi.any().valid(Joi.ref('password')).required().label('Confirm password')
+            .options({ messages: { 'any.only': '{{#label}} does not match' } })
+
+    });
+    return schema.validate(data);
+};
 //USER VALIDATION
 const saveStaffValidation = (data) => {
     const schema = Joi.object({
@@ -417,8 +431,19 @@ const saveSubscriberValidation = (data) => {
     });
     return schema.validate(data);
 };
+const saveVehicleReviewsValidation = (data) => {
+    const schema = Joi.object({
+        rating: Joi.string().required(),
+        is_active: Joi.string().required(),
+        vehicleId: Joi.string().required(),
+        created_by: Joi.string().required(),
+    });
+    return schema.validate(data);
+};
+
 
 module.exports = {
+    saveVehicleReviewsValidation,
     saveCategoryValidations,
     updateCategoryValidation,
     saveFeaturesValidations,
@@ -454,4 +479,5 @@ module.exports = {
     updatePasswordValidation,
     updatePersonalInfoValidation,
     saveSubscriberValidation,
+    createPasswordValidation
 }

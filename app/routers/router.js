@@ -22,6 +22,7 @@ const bookings = require('../controllers/bookings.controller.js');
 const vehicleType = require('../controllers/vehicleType.controller.js');
 const dashboard = require('../controllers/dashboard.controller.js');
 const subscriber = require('../controllers/subscriber.controller.js');
+const vehicleReviews = require('../controllers/vehicleReviews.controller.js');
 
 router.post(
     '/api/auth/makecall',
@@ -168,6 +169,11 @@ router.post(
     '/api/user/create',
     [authJwt.verifyToken],
     users.create
+);
+router.put(
+    '/api/user/createPassword',
+    [authJwt.verifyToken],
+    users.createPassword
 );
 router.put(
     '/api/user/update',
@@ -494,6 +500,9 @@ router.put('/api/vehicleType/update', vehicleType.updateVehicleType);
 router.get('/api/vehicleType/all', vehicleType.getVehicleType);
 router.get('/api/vehicleType/getById/:id', vehicleType.getvehicletypeById);
 router.delete('/api/vehicleType/delete/:id', vehicleType.deleteById);
+
+
+router.post('/api/vehicleReviews/create', vehicleReviews.create);
 
 router.get('/api/dashboard/all', dashboard.getDashboardData);
 
