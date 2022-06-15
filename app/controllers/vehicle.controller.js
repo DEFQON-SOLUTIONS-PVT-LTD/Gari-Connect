@@ -38,6 +38,7 @@ exports.create = async function (req, res) {
         vehicle.createdAt = new Date();
         vehicle.cancel = "0";
         vehicle.Isfavourite = "0";
+        vehicle.IsDeleted = "0";
         // Save to MySQL database
         const result = await Vehicle.create(vehicle);
         // send uploading message to client

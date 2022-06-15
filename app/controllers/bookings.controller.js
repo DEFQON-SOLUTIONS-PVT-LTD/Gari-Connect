@@ -27,6 +27,9 @@ exports.create = async (req, res) => {
         booking.createdAt = new Date();
         booking.trip_startDate = (req.body.trip_startDate);
         booking.trip_endDate = (req.body.trip_endDate);
+        booking.isApproved = "0";
+        booking.isReject = "0";
+        booking.IsDeleted = "0";
         let vehicleid = req.body.vehicleId;
         let vehicle = await Vehicle.findByPk(vehicleid);
         let startDate = booking.trip_startDate;

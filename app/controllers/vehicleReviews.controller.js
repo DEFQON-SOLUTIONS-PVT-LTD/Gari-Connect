@@ -20,6 +20,7 @@ exports.create = (req, res) => {
         vehicleReview.vehicleId = req.body.vehicleId;
         vehicleReview.created_by = req.body.created_by;
         vehicleReview.createdAt = new Date();
+        vehicleReview.IsDeleted = "0";
 
         // Save to MySQL database
         VehicleReviews.create(vehicleReview).then(result => {

@@ -31,6 +31,10 @@ module.exports = function(sequelize, DataTypes) {
         model: 'users',
         key: 'userId'
       }
+    },
+    IsDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

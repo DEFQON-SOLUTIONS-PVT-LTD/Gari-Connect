@@ -19,6 +19,7 @@ exports.create = (req, res) => {
         vehicletype.is_active = req.body.is_active;
         vehicletype.created_by = req.body.created_by;
         vehicletype.createdAt = new Date();
+        vehicletype.IsDeleted = "0";
 
         // Save to MySQL database
         VehicleType.create(vehicletype).then(result => {

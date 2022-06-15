@@ -20,6 +20,7 @@ exports.create = (req, res) => {
         guideLine.createdAt = new Date();
         guideLine.uuid = crypto.randomUUID();
         guideLine.icon = req.body.icon;
+        guideLine.IsDeleted = "0";
 
         // Save to MySQL database
         GuideLine.create(guideLine).then(result => {
