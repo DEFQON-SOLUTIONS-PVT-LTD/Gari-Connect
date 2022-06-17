@@ -23,6 +23,7 @@ const vehicleType = require('../controllers/vehicleType.controller.js');
 const dashboard = require('../controllers/dashboard.controller.js');
 const subscriber = require('../controllers/subscriber.controller.js');
 const vehicleReviews = require('../controllers/vehicleReviews.controller.js');
+const vehicleAvailability = require('../controllers/vehicleAvailability.controller.js');
 
 router.post(
     '/api/auth/makecall',
@@ -501,6 +502,7 @@ router.get('/api/vehicleType/all', vehicleType.getVehicleType);
 router.get('/api/vehicleType/getById/:id', vehicleType.getvehicletypeById);
 router.delete('/api/vehicleType/delete/:id', vehicleType.deleteById);
 
+router.post('/api/vehicleAvailability/create', vehicleAvailability.create);
 
 router.post('/api/vehicleReviews/create', vehicleReviews.create);
 

@@ -441,8 +441,18 @@ const saveVehicleReviewsValidation = (data) => {
     return schema.validate(data);
 };
 
+const saveVehicleAvailabilityValidation = (data) => {
+    const schema = Joi.object({
+        vehicleId: Joi.string().required(),
+        days: Joi.array().items({ dayId: Joi.string().required() }),
+        //cancel: Joi.boolean().required(),
+
+    });
+    return schema.validate(data);
+};
 
 module.exports = {
+    saveVehicleAvailabilityValidation,
     saveVehicleReviewsValidation,
     saveCategoryValidations,
     updateCategoryValidation,
