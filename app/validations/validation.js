@@ -191,6 +191,8 @@ const saveVehicleValidation = (data) => {
         created_by: Joi.string().required(),
         features: Joi.array().items({ featureId: Joi.string().required() }),
         guidelines: Joi.array().items({ guidelineId: Joi.string().required() }),
+        availability_startdate: Joi.string().required(),
+        availability_enddate: Joi.string().required()
         //cancel: Joi.boolean().required(),
 
     });
