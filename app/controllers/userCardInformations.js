@@ -30,13 +30,14 @@ exports.create = (req, res) => {
                     user_card.cvv = req.body.cvv;
                     user_card.is_active = req.body.is_active;
                     user_card.userId = req.body.userId;
+                    user_card.IsDeleted = "0";
 
                     // Save to Postgress database
                     Usercard.create(user_card).then(result => {
                         // send uploading message to client
-                        logs("UserCardInformation", "Create", "Info", "Create Successfully a User Card Information with id = " + result.id);
+                        logs("UserCardInformation", "Create", "Info", "Create Successfully a User Card Information with id = " + result.user_card_information_id);
                         res.status(200).json({
-                            message: "Create Successfully a User Card Information with id = " + result.id,
+                            message: "Create Successfully a User Card Information with id = " + result.user_card_information_id,
                             cardinfo: successResponse(result),
                         });
                     });
@@ -159,11 +160,10 @@ exports.deleteById = async (req, res) => {
                 error: "404"
             });
         } else {
-            let result = await Usercard.destroy({
-                where: {
-                    user_card_information_id: userCardInformationId
-                }
-            });
+            let updatedObject = {
+                IsDeleted: "1"
+            }
+            let result = await Usercard.update(updatedObject, { returning: true, where: { user_card_information_id: userCardInformationId } });
             // return the response to client
             if (!result) {
                 logs("UserCardInformation", "deleteById", "Error", "Error -> Can not Card Information a model with id = " + req.params.id);

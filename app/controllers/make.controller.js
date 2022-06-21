@@ -21,6 +21,7 @@ exports.create = (req, res) => {
         make.created_by = req.body.created_by;
         make.createdAt = new Date();
         make.uuid = crypto.randomUUID();
+        make.IsDeleted = "0";
 
         // Save to MySQL database
         Make.create(make).then(result => {

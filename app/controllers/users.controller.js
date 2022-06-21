@@ -9,6 +9,7 @@ const {
     updateStaffValidation,
     updatePasswordValidation,
     updatePersonalInfoValidation,
+    createPasswordValidation
 } = require('../validations/validation');
 const User = db.Users;
 const Roles = db.Roles;
@@ -363,30 +364,26 @@ exports.create = (req, res) => {
                     });
                 } else {
                     // Building model object from upoading request's body
-                    const hashpassword = encrypt(req.body.password);
+                    // const hashpassword = encrypt(req.body.password);
                     user.firstname = req.body.firstname;
                     user.lastname = req.body.lastname;
                     user.phoneno = req.body.phoneno;
                     user.email = req.body.email;
-                    user.password = hashpassword;
+                    //user.password = hashpassword;
                     user.address = req.body.address;
                     user.photo = req.body.photo;
-                    user.cnic = req.body.cnic;
-                    user.cnic_validity = req.body.cnic_validity;
-                    user.driving_license_number = req.body.driving_license_number;
-                    user.license_validity = req.body.license_validity;
-                    user.is_active = req.body.is_active;
+                    user.is_active = "true";
                     user.uuid = crypto.randomUUID();
-                    user.permissionId = req.body.permissionId;
-                    user.roleId = req.body.roleId;
+                    user.permissionId = "1";
+                    user.roleId = "1";
                     user.cityId = req.body.cityId;
                     user.gender = req.body.gender;
                     // Save to Postgress database
                     User.create(user).then(result => {
                         // send uploading message to client
-                        logs("User", "create", "Info", "Successfully Created a User with id = " + result.id);
+                        logs("User", "create", "Info", "Successfully Created a User with id = " + result.userId);
                         res.status(200).json({
-                            message: "Successfully Created a User with id = " + result.id,
+                            message: "Successfully Created a User with id = " + result.userId,
                             user: successResponse(result),
                         });
                     });
@@ -541,7 +538,7 @@ exports.deleteStaffById = async (req, res) => {
         } else {
             let updatedObject = {
                 userId: req.params.id,
-                is_active: true,
+                is_active: false,
                 updatedAt: new Date(),
             }
             let result = await user.update(updatedObject, {
@@ -605,5 +602,51 @@ exports.deleteStaffById = async (req, res) => {
 
     } catch (err) {
         logs("User", "deleteStaffById", "Error", err);
+    }
+}
+exports.createPassword = async (req, res) => {
+
+    try {
+        // Validate
+        const { error } = createPasswordValidation(req.body);
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        const hashpassword = encrypt(req.body.password);
+        let UserId = req.body.userId;
+        let user = await User.findByPk(UserId);
+        if (!user) {
+            // return a response to client
+            logs("User", "createPassword", "Info", "UserId. does not exists with this Id. = " + UserId);
+            res.status(404).json({
+                message: "Not Found for create password with id = " + UserId,
+                user: "",
+                error: "404"
+            });
+        }
+        else {
+            let updatedObject = {
+                userId: UserId,
+                password: hashpassword
+            }
+            let result = await user.update(updatedObject, { returning: true, where: { userId: UserId } });
+            if (!result) {
+                logs("User", "createPassword", "Error", "Error -> Can not update a password with id = " + req.params.id);
+                res.status(500).json({
+                    message: "Error -> Can not update a password with id = " + req.params.id,
+                    error: "Can NOT Updated",
+                });
+            }
+            logs("User", "createPassword", "Error", "Update successfully a password with id = " + UserId);
+            res.status(200).json({
+                message: "Update successfully a password with id = " + UserId,
+                user: updatedObject,
+            });
+        }
+    }
+    catch (error) {
+        logs("MainController", "forgotpassword", "Error", error.message);
+        res.status(403).json({
+            message: "Forbidden!",
+            error: errorResponse(error.message)
+        });
     }
 }

@@ -21,6 +21,7 @@ exports.create = (req, res) => {
         review.is_active = req.body.is_active;
         review.userId = req.body.userId;
         review.uuid = crypto.randomUUID();
+        review.IsDeleted = "0";
 
         // Save to MySQL database
         UserReviews.create(review).then(result => {

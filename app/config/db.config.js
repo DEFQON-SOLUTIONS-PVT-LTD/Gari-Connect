@@ -47,4 +47,6 @@ db.Logs = require('../models/logs.js')(sequelize, Sequelize);
 db.Subscribers = require('../models/subscribers.js')(sequelize, Sequelize);
 db.vehicle_to_features = require('../models/vehicle_to_features.js')(sequelize, Sequelize);
 db.vehicle_to_guidelines = require('../models/vehicle_to_guidelines.js')(sequelize, Sequelize);
+db.vehicle_reviews = require('../models/vehicle_reviews.js')(sequelize, Sequelize);
+db.vehicle_Availability = require('../models/vehicle_availability.js')(sequelize, Sequelize)
 module.exports = db;

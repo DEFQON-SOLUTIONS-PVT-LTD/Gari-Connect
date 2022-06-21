@@ -25,6 +25,7 @@ var _user_documents = require("./user_documents");
 var _user_reviews = require("./user_reviews");
 var _user_transactions = require("./user_transactions");
 var _users = require("./users");
+var _vehicle_availability = require("./vehicle_availability");
 var _vehicle_images = require("./vehicle_images");
 var _vehicle_reviews = require("./vehicle_reviews");
 var _vehicle_to_features = require("./vehicle_to_features");
@@ -59,6 +60,7 @@ function initModels(sequelize) {
   var user_reviews = _user_reviews(sequelize, DataTypes);
   var user_transactions = _user_transactions(sequelize, DataTypes);
   var users = _users(sequelize, DataTypes);
+  var vehicle_availability = _vehicle_availability(sequelize, DataTypes);
   var vehicle_images = _vehicle_images(sequelize, DataTypes);
   var vehicle_reviews = _vehicle_reviews(sequelize, DataTypes);
   var vehicle_to_features = _vehicle_to_features(sequelize, DataTypes);
@@ -76,6 +78,8 @@ function initModels(sequelize) {
   city.hasMany(users, { as: "users", foreignKey: "cityId"});
   availability.belongsTo(days, { as: "day", foreignKey: "dayId"});
   days.hasMany(availability, { as: "availabilities", foreignKey: "dayId"});
+  vehicle_availability.belongsTo(days, { as: "day", foreignKey: "dayid"});
+  days.hasMany(vehicle_availability, { as: "vehicle_availabilities", foreignKey: "dayid"});
   vehicle_to_features.belongsTo(features, { as: "feature", foreignKey: "featureId"});
   features.hasMany(vehicle_to_features, { as: "vehicle_to_features", foreignKey: "featureId"});
   vehicles.belongsTo(green_vehicles, { as: "green_vehicle", foreignKey: "green_vehicle_id"});
@@ -120,6 +124,8 @@ function initModels(sequelize) {
   vehicles.hasMany(bookings, { as: "bookings", foreignKey: "vehicleId"});
   favourite.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
   vehicles.hasMany(favourite, { as: "favourites", foreignKey: "vehicleId"});
+  vehicle_availability.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleid"});
+  vehicles.hasMany(vehicle_availability, { as: "vehicle_availabilities", foreignKey: "vehicleid"});
   vehicle_images.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
   vehicles.hasMany(vehicle_images, { as: "vehicle_images", foreignKey: "vehicleId"});
   vehicle_reviews.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
@@ -156,6 +162,7 @@ function initModels(sequelize) {
     user_reviews,
     user_transactions,
     users,
+    vehicle_availability,
     vehicle_images,
     vehicle_reviews,
     vehicle_to_features,

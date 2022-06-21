@@ -20,6 +20,7 @@ exports.create = (req, res) => {
         category.createdAt = new Date();
         category.uuid = crypto.randomUUID();
         category.created_by = req.body.created_by;
+        category.IsDeleted = "0";
 
         // Save to MySQL database
         Category.create(category).then(result => {

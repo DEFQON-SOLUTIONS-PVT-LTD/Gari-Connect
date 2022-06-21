@@ -19,6 +19,7 @@ exports.create = (req, res) => {
         greenvehicle.created_by = req.body.created_by;
         greenvehicle.createdAt = new Date()
         greenvehicle.uuid = crypto.randomUUID();
+        greenvehicle.IsDeleted = "0";
 
         // Save to MySQL database
         GreenVehicle.create(greenvehicle).then(result => {

@@ -24,11 +24,8 @@ app.use(cors(corsOptions));
 //app.use(expressValidator())
 app.use(bodyParser.json());
 app.use('/', router);
-
-
-
 // Create a Server
-const server = app.listen(8080, function () {
+const server = app.listen(process.env.PORT || 8080, function () {
 
   let host = server.address().address
   let port = server.address().port
@@ -36,10 +33,10 @@ const server = app.listen(8080, function () {
   console.log("App listening at http://%s:%s", host, port);
 })
 
-// For Single_Upload
+// For Single_Upload_Doc
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './uploads/');
+    cb(null, './app/files/user/documents/');
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname);
@@ -69,17 +66,39 @@ app.post('/api/uploaduserdoc', upload.single('image'), (req, res) => {
     });
   }
 });
-// For Single_UploadImage
+// For Single_UploadProfile
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './app/Images/Main_Image/');
+    cb(null, './app/files/user/profile/');
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname);
   }
 });
 var upload = multer({ storage: storage });
-app.post('/api/upload-single', upload.single('image'), (req, res) => {
+app.post('/api/upload-profile', upload.single('image'), (req, res) => {
+  const file = req.file.destination + req.file.filename;
+  if (!file) {
+    const error = new Error('Please upload a file')
+    error.httpStatusCode = 400
+    return (error)
+  }
+  res.status(500).json({
+    FilePath: file,
+    message: "Profile Uploaded",
+  });
+});
+// For Single_UploadImage
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './app/files/vehicle/images/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+var upload = multer({ storage: storage });
+app.post('/api/upload-images', upload.single('image'), (req, res) => {
   const file = req.file.destination + req.file.filename;
   if (!file) {
     const error = new Error('Please upload a file')

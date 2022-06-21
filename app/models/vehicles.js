@@ -111,6 +111,14 @@ module.exports = function(sequelize, DataTypes) {
     IsDeleted: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    availability_startdate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    availability_enddate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
     }
   }, {
     sequelize,

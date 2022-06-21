@@ -514,7 +514,6 @@ exports.getCustomerById = (req, res) => {
     });
 }
 
-
 exports.filteringByAge = (req, res) => {
   let age = req.query.age;
 
@@ -570,7 +569,6 @@ exports.pagination = (req, res) => {
     });
   }
 }
-
 exports.pagingfilteringsorting = (req, res) => {
   try {
     let page = parseInt(req.query.page);
