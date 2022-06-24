@@ -2,11 +2,11 @@
 const express = require('express');
 const app = express();
 var bodyParser = require('body-parser');
-//const expressValidator = require('express-validator')
 var multer = require('multer');
 const { successResponse, errorResponse } = require('./app/common/response');
-
 const db = require('./app/config/db.config.js');
+const { saveVehicleImagesValidation, updateVehicleImagesValidation } = require('./app/validations/validation');
+const VehicleImages = db.vehicle_images;
 const UserDocs = db.UserDocuments;
 // force: true will drop the table if it already exists
 // db.sequelize.sync().then(() => {
@@ -20,6 +20,7 @@ const corsOptions = {
   origin: 'http://localhost:8080',
   optionsSuccessStatus: 200
 }
+
 app.use(cors(corsOptions));
 //app.use(expressValidator())
 app.use(bodyParser.json());
@@ -51,7 +52,6 @@ app.post('/api/uploaduserdoc', upload.single('image'), (req, res) => {
     error.httpStatusCode = 400
     return (error)
   }
-
   if (file) {
     userdocs.path = file;
     userdocs.userId = req.body.userId;
@@ -98,17 +98,33 @@ var storage = multer.diskStorage({
   }
 });
 var upload = multer({ storage: storage });
-app.post('/api/upload-images', upload.single('image'), (req, res) => {
+app.post('/api/upload-images', upload.single('image_path'), (req, res) => {
+  const { error } = saveVehicleImagesValidation(req.body);
+  if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+  let images = {};
   const file = req.file.destination + req.file.filename;
   if (!file) {
     const error = new Error('Please upload a file')
     error.httpStatusCode = 400
     return (error)
   }
-  res.status(500).json({
-    FilePath: file,
-    message: "File Uploaded",
-  });
+  if (file) {
+    images.image_path = file;
+    images.vehicleId = req.body.vehicleId;
+    images.document_type = req.body.document_type;
+    images.IsDeleted = "0";
+    VehicleImages.create(images).then(result => {
+      // send uploading message to client
+      res.status(200).json({
+        message: "Vehicle Image uploaded successfully!",
+        userdocs: successResponse(result),
+      });
+    });
+  }
+  // res.status(500).json({
+  // FilePath: file,
+  // message: "File Uploaded",
+  // });
 });
 // For multiple UploadImage
 var storage = multer.diskStorage({
@@ -120,7 +136,10 @@ var storage = multer.diskStorage({
   }
 });
 var upload = multer({ storage: storage });
-app.post("/api/multiupload", upload.array("images", 12), (req, res) => {
+app.post("/api/multiupload", upload.array("image_path", 12), (req, res) => {
+  const { error } = saveVehicleImagesValidation(req.body);
+  if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+  let images = {};
   try {
     //await multiupload(req, res);
     console.log(req.files);
@@ -132,10 +151,23 @@ app.post("/api/multiupload", upload.array("images", 12), (req, res) => {
     for (var i = 0; i < req.files.length; i++) {
       photoArray[i].push() = req.files.destination[i] + req.files.filename[i];
     }
-    res.status(500).json({
-      FilePath: photoArray[i],
-      message: "File Uploaded",
-    });
+    if (photoArray) {
+      images.image_path = photoArray[i];
+      images.vehicleId = req.body.vehicleId;
+      images.document_type = req.body.document_type;
+      images.IsDeleted = "0";
+      VehicleImages.create(images).then(result => {
+        // send uploading message to client
+        res.status(200).json({
+          message: "Vehicle Image uploaded successfully!",
+          userdocs: successResponse(result),
+        });
+      });
+    }
+    // res.status(500).json({
+    // FilePath: photoArray[i],
+    // message: "File Uploaded",
+    // });
   } catch (error) {
     console.log(error);
     if (error.code === "LIMIT_UNEXPECTED_FILE") {

@@ -1,44 +1,35 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('vehicle_reviews', {
-    vehicle_review_id: {
+  return sequelize.define('eco_friendly', {
+    eco_friendly_Id: {
       autoIncrement: true,
-      autoIncrementIdentity: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    rating: {
-      type: DataTypes.INTEGER,
+    name: {
+      type: DataTypes.TEXT,
       allowNull: true
     },
-    is_active: {
+    isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: true
     },
-    vehicleId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'vehicles',
-        key: 'vehicleId'
-      }
-    },
-    set_cover: {
+    IsDeleted: {
       type: DataTypes.BOOLEAN,
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'vehicle_reviews',
+    tableName: 'eco_friendly',
     schema: 'public',
-    timestamps: true,
+    timestamps: false,
     indexes: [
       {
-        name: "vehicle_reviews_pkey",
+        name: "eco_friendly_pkey",
         unique: true,
         fields: [
-          { name: "vehicle_review_id" },
+          { name: "eco_friendly_Id" },
         ]
       },
     ]

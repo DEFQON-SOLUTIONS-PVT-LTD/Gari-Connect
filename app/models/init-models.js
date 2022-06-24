@@ -6,8 +6,10 @@ var _bookings = require("./bookings");
 var _categories = require("./categories");
 var _city = require("./city");
 var _days = require("./days");
+var _eco_friendly = require("./eco_friendly");
 var _favourite = require("./favourite");
 var _features = require("./features");
+var _fuel_type = require("./fuel_type");
 var _green_vehicles = require("./green_vehicles");
 var _guidelines = require("./guidelines");
 var _locations = require("./locations");
@@ -27,6 +29,7 @@ var _user_transactions = require("./user_transactions");
 var _users = require("./users");
 var _vehicle_availability = require("./vehicle_availability");
 var _vehicle_images = require("./vehicle_images");
+var _vehicle_mandatory_features = require("./vehicle_mandatory_features");
 var _vehicle_reviews = require("./vehicle_reviews");
 var _vehicle_to_features = require("./vehicle_to_features");
 var _vehicle_to_guidelines = require("./vehicle_to_guidelines");
@@ -41,8 +44,10 @@ function initModels(sequelize) {
   var categories = _categories(sequelize, DataTypes);
   var city = _city(sequelize, DataTypes);
   var days = _days(sequelize, DataTypes);
+  var eco_friendly = _eco_friendly(sequelize, DataTypes);
   var favourite = _favourite(sequelize, DataTypes);
   var features = _features(sequelize, DataTypes);
+  var fuel_type = _fuel_type(sequelize, DataTypes);
   var green_vehicles = _green_vehicles(sequelize, DataTypes);
   var guidelines = _guidelines(sequelize, DataTypes);
   var locations = _locations(sequelize, DataTypes);
@@ -62,6 +67,7 @@ function initModels(sequelize) {
   var users = _users(sequelize, DataTypes);
   var vehicle_availability = _vehicle_availability(sequelize, DataTypes);
   var vehicle_images = _vehicle_images(sequelize, DataTypes);
+  var vehicle_mandatory_features = _vehicle_mandatory_features(sequelize, DataTypes);
   var vehicle_reviews = _vehicle_reviews(sequelize, DataTypes);
   var vehicle_to_features = _vehicle_to_features(sequelize, DataTypes);
   var vehicle_to_guidelines = _vehicle_to_guidelines(sequelize, DataTypes);
@@ -80,14 +86,18 @@ function initModels(sequelize) {
   days.hasMany(availability, { as: "availabilities", foreignKey: "dayId"});
   vehicle_availability.belongsTo(days, { as: "day", foreignKey: "dayid"});
   days.hasMany(vehicle_availability, { as: "vehicle_availabilities", foreignKey: "dayid"});
+  vehicles.belongsTo(eco_friendly, { as: "eco_friendly", foreignKey: "eco_friendly_Id"});
+  eco_friendly.hasMany(vehicles, { as: "vehicles", foreignKey: "eco_friendly_Id"});
   vehicle_to_features.belongsTo(features, { as: "feature", foreignKey: "featureId"});
   features.hasMany(vehicle_to_features, { as: "vehicle_to_features", foreignKey: "featureId"});
+  vehicle_mandatory_features.belongsTo(fuel_type, { as: "fueltype_fuel_type", foreignKey: "fueltype"});
+  fuel_type.hasMany(vehicle_mandatory_features, { as: "vehicle_mandatory_features", foreignKey: "fueltype"});
   vehicles.belongsTo(green_vehicles, { as: "green_vehicle", foreignKey: "green_vehicle_id"});
   green_vehicles.hasMany(vehicles, { as: "vehicles", foreignKey: "green_vehicle_id"});
   vehicle_to_guidelines.belongsTo(guidelines, { as: "guideline", foreignKey: "guidelineId"});
   guidelines.hasMany(vehicle_to_guidelines, { as: "vehicle_to_guidelines", foreignKey: "guidelineId"});
-  vehicles.belongsTo(locations, { as: "location", foreignKey: "locationId"});
-  locations.hasMany(vehicles, { as: "vehicles", foreignKey: "locationId"});
+  vehicles.belongsTo(locations, { as: "location_location", foreignKey: "locationId"});
+  locations.hasMany(vehicles, { as: "location_vehicles", foreignKey: "locationId"});
   models.belongsTo(makes, { as: "make", foreignKey: "makeId"});
   makes.hasMany(models, { as: "models", foreignKey: "makeId"});
   vehicles.belongsTo(models, { as: "model", foreignKey: "modelId"});
@@ -124,10 +134,14 @@ function initModels(sequelize) {
   vehicles.hasMany(bookings, { as: "bookings", foreignKey: "vehicleId"});
   favourite.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
   vehicles.hasMany(favourite, { as: "favourites", foreignKey: "vehicleId"});
+  locations.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
+  vehicles.hasMany(locations, { as: "locations", foreignKey: "vehicleId"});
   vehicle_availability.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleid"});
   vehicles.hasMany(vehicle_availability, { as: "vehicle_availabilities", foreignKey: "vehicleid"});
   vehicle_images.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
   vehicles.hasMany(vehicle_images, { as: "vehicle_images", foreignKey: "vehicleId"});
+  vehicle_mandatory_features.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
+  vehicles.hasMany(vehicle_mandatory_features, { as: "vehicle_mandatory_features", foreignKey: "vehicleId"});
   vehicle_reviews.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
   vehicles.hasMany(vehicle_reviews, { as: "vehicle_reviews", foreignKey: "vehicleId"});
   vehicle_to_features.belongsTo(vehicles, { as: "vehicle", foreignKey: "vehicleId"});
@@ -143,8 +157,10 @@ function initModels(sequelize) {
     categories,
     city,
     days,
+    eco_friendly,
     favourite,
     features,
+    fuel_type,
     green_vehicles,
     guidelines,
     locations,
@@ -164,6 +180,7 @@ function initModels(sequelize) {
     users,
     vehicle_availability,
     vehicle_images,
+    vehicle_mandatory_features,
     vehicle_reviews,
     vehicle_to_features,
     vehicle_to_guidelines,

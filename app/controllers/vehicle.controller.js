@@ -20,7 +20,7 @@ exports.create = async function (req, res) {
         const { error } = saveVehicleValidation(req.body);
         if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
         // Building model object from upoading request's body
-        vehicle.locationId = req.body.locationId;
+        //vehicle.locationId = req.body.locationId;
         vehicle.plate_number = req.body.plate_number;
         vehicle.description = req.body.description;
         vehicle.seats = req.body.seats;
@@ -42,6 +42,11 @@ exports.create = async function (req, res) {
         vehicle.IsDeleted = "0";
         vehicle.availability_startdate = req.body.availability_startdate;
         vehicle.availability_enddate = req.body.availability_enddate;
+        vehicle.chassis_number = req.body.chassis_number;
+        vehicle.eco_friendly_Id = req.body.eco_friendly_Id;
+        vehicle.additional_Price = req.body.additional_Price;
+        vehicle.with_driver = req.body.with_driver;
+
         // Save to MySQL database
         const result = await Vehicle.create(vehicle);
         // send uploading message to client
@@ -118,7 +123,13 @@ exports.updateVehicle = async (req, res) => {
                 updated_by: req.body.userId,
                 modelId: req.body.modelId,
                 updatedat: new Date(),
-                makeId: req.body.makeId
+                makeId: req.body.makeId,
+                availability_startdate: req.body.availability_startdate,
+                availability_enddate: req.body.availability_enddate,
+                chassis_number: req.body.chassis_number,
+                eco_friendly_Id: req.body.eco_friendly_Id,
+                additional_Price: req.body.additional_Price,
+                with_driver: req.body.with_driver,
             }
             let result = await vehicle.update(updatedObject, { returning: true, where: { vehicleId: vehicleId } });
 
@@ -234,12 +245,12 @@ exports.getVehicleByFilters = (req, res, next) => {
             });
         });
 }
-exports.getVehicleById = (req, res, next) => {
+exports.getVehicleDetails = (req, res, next) => {
     let bookingStatusId = req.body.statusId;
     let vehicleId = req.body.vehicleId;
     db.sequelize.query('CALL getVehicleDetail(' + bookingStatusId + ',' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
-            logs("Vehicle", "getVehicleById", "Info", "Successfully Get a vehicle with id = " + vehicleId);
+            logs("Vehicle", "getVehicleDetails", "Info", "Successfully Get a vehicle with id = " + vehicleId);
             res.status(200).json({
                 message: "Get Vehicle Detail Page Successfully!",
                 result: result[0],
@@ -247,7 +258,7 @@ exports.getVehicleById = (req, res, next) => {
         })
         .catch(error => {
             // log on console
-            logs("Vehicle", "getVehicleById", "Error", error.message);
+            logs("Vehicle", "getVehicleDetails", "Error", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error
@@ -489,14 +500,12 @@ exports.getVehicleList = (req, res, next) => {
 exports.getVehicleBySearch = (req, res, next) => {
     try {
         let locationId = req.body.locationId;
-        // let result = {};
-
         db.sequelize.query('CALL get_vehiclebysearch (' + locationId + ',' + req.body.startdate + ',' + req.body.enddate + '); FETCH ALL FROM "rs_resultone";', res, next)
             .then(result => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
                 res.status(200).json({
                     message: "Get all getVehiclyeBySearch Infos Successfully! ",
-                    results: { 'query': result[0][1], 'count': result[1][1].rowCount }
+                    results: { 'query': result[0], 'count': result[1][1].rowCount }
                 });
             })
     }
@@ -509,4 +518,23 @@ exports.getVehicleBySearch = (req, res, next) => {
             error: error
         });
     };
+}
+exports.getVehicleById = (req, res, next) => {
+    let vehicleId = req.body.vehicleId;
+    db.sequelize.query('CALL get_vehiclebyid(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
+        .then(result => {
+            logs("Vehicle", "getVehicleById", "Info", "Successfully Get a vehicle with id = " + vehicleId);
+            res.status(200).json({
+                message: "Get Vehicle Detail Page Successfully!",
+                result: result[0],
+            });
+        })
+        .catch(error => {
+            // log on console
+            logs("Vehicle", "getVehicleById", "Error", error.message);
+            res.status(500).json({
+                message: "Error!",
+                error: error
+            });
+        });
 }

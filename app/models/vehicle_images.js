@@ -19,6 +19,10 @@ module.exports = function(sequelize, DataTypes) {
         model: 'vehicles',
         key: 'vehicleId'
       }
+    },
+    setCover: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,
