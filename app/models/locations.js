@@ -39,6 +39,22 @@ module.exports = function(sequelize, DataTypes) {
     longitude: {
       type: DataTypes.DOUBLE,
       allowNull: true
+    },
+    area: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    vehicleId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'vehicles',
+        key: 'vehicleId'
+      }
+    },
+    IsDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

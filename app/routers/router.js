@@ -24,6 +24,12 @@ const dashboard = require('../controllers/dashboard.controller.js');
 const subscriber = require('../controllers/subscriber.controller.js');
 const vehicleReviews = require('../controllers/vehicleReviews.controller.js');
 const vehicleAvailability = require('../controllers/vehicleAvailability.controller.js');
+const location = require('../controllers/location.controller.js');
+const ecofriendly = require('../controllers/ecoFriendly.controller.js');
+const vehicleMandatoryFeatures = require('../controllers/vehicleMandatoryFeatures.controller.js');
+const vehicleImages = require('../controllers/vehicleImages.controller.js');
+
+
 
 router.post(
     '/api/auth/makecall',
@@ -42,7 +48,7 @@ router.post(
 );
 router.post(
     '/api/auth/forgotpassword',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     customers.forgotpassword
 );
 router.put(
@@ -52,7 +58,7 @@ router.put(
 );
 router.put(
     '/api/auth/resetpassword',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     customers.setForgotPassword
 );
 router.put(
@@ -88,7 +94,7 @@ router.post(
 );
 router.post(
     '/api/auth/signin',
-    [authJwt.verifyToken],
+    // [authJwt.verifyToken],
     customers.signin
 );
 
@@ -168,7 +174,7 @@ router.get(
 );
 router.post(
     '/api/user/create',
-    [authJwt.verifyToken],
+    // [authJwt.verifyToken],
     users.create
 );
 router.put(
@@ -295,6 +301,10 @@ router.delete(
     [authJwt.verifyToken],
     guideLine.deleteById
 );
+router.get(
+    '/api/guideLine/getguidelinebyid/:id',
+    guideLine.getguidelineByVehicleId
+);
 
 router.post(
     '/api/category/create',
@@ -373,6 +383,10 @@ router.delete(
     [authJwt.verifyToken],
     features.deleteById
 );
+router.get(
+    '/api/features/getfeaturebyid/:id',
+    features.getfeaturesByVehicleId
+);
 router.put('/api/vehicle/isfavourite', vehicle.IsFavourite);
 router.put('/api/vehicle/cancel', vehicle.CancelBooking);
 router.get('/api/vehicle/vehicleList', vehicle.getVehicleList);
@@ -394,6 +408,11 @@ router.get(
 );
 router.get(
     '/api/vehicle/getbyid',
+    [authJwt.verifyToken],
+    vehicle.getVehicleDetails
+);
+router.get(
+    '/api/vehicle/getvrhiclebyid',
     [authJwt.verifyToken],
     vehicle.getVehicleById
 );
@@ -503,8 +522,33 @@ router.get('/api/vehicleType/getById/:id', vehicleType.getvehicletypeById);
 router.delete('/api/vehicleType/delete/:id', vehicleType.deleteById);
 
 router.post('/api/vehicleAvailability/create', vehicleAvailability.create);
+router.get('/api/vehicleAvailability/getbyid/:id', vehicleAvailability.getAvailabilityByVehicleId);
+
+router.post('/api/vehicleMandatoryFeatures/create', vehicleMandatoryFeatures.create);
+router.get('/api/vehicleMandatoryFeatures/getById/:id', vehicleMandatoryFeatures.getVehicleMandatoryFeaturesById);
+
+
+router.post('/api/ecofriendly/create', ecofriendly.create);
+router.put('/api/ecofriendly/update', ecofriendly.updateEcoFriendly);
+router.get('/api/ecofriendly/all', ecofriendly.getEcoFriendly);
+router.get('/api/ecofriendly/getById/:id', ecofriendly.getEcoFriendlyById);
+router.delete('/api/ecofriendly/delete/:id', ecofriendly.deleteById);
+
+
+router.post('/api/location/create', location.create);
+router.put('/api/location/update', location.updateLocation);
+router.get('/api/location/all', location.getLocation);
+router.get('/api/location/getById/:id', location.getLocationById);
+router.delete('/api/location/delete/:id', location.deleteById);
+router.get('/api/location/getLocationByVehicleId', location.getLocationByVehicleId);
 
 router.post('/api/vehicleReviews/create', vehicleReviews.create);
+
+//router.post('/api/vehicleImages/create', vehicleImages.AddImage);
+router.get('/api/vehicleImages/all', vehicleImages.getVehicleImages);
+router.get('/api/vehicleImages/getById/:id', vehicleImages.getVehicleImagesById);
+router.delete('/api/vehicleImages/delete/:id', vehicleImages.deleteById);
+
 
 router.get('/api/dashboard/all', dashboard.getDashboardData);
 

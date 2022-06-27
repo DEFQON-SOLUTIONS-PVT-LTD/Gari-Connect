@@ -3,7 +3,7 @@ const env = {
   database: 'GariConnect',
   username: 'postgres',
   password: 'abc@123',
-  host: 'localhost',
+  host: '147.182.142.123',
   dialect: 'postgres',
   secretkey: 'iWillDoItNow',
   TWILIO_ACCOUNT_SID: 'AC1053c43c77f208071cbfd3bdd954cfc9',

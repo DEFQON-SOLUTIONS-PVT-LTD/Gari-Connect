@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     locationId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'locations',
         key: 'locationId'
@@ -118,6 +118,26 @@ module.exports = function(sequelize, DataTypes) {
     },
     availability_enddate: {
       type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    chassis_number: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    eco_friendly_Id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'eco_friendly',
+        key: 'eco_friendly_Id'
+      }
+    },
+    additional_Price: {
+      type: DataTypes.DOUBLE,
+      allowNull: true
+    },
+    with_driver: {
+      type: DataTypes.BOOLEAN,
       allowNull: true
     }
   }, {

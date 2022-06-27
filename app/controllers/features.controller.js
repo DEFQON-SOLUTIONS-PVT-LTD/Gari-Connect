@@ -4,6 +4,7 @@ const { saveFeaturesValidations, updateFeaturesValidation } = require('../valida
 const Features = db.Features;
 const crypto = require('crypto');
 const logs = require('../controllers/logging.js');
+const { date } = require('joi');
 //const Op = db.Sequelize.Op;
 
 exports.create = (req, res) => {
@@ -175,4 +176,28 @@ exports.deleteById = async (req, res) => {
             error: errorResponse(error.message)
         });
     }
+}
+exports.getfeaturesByVehicleId = (req, res, next) => {
+    let vehicleId = req.params.id;
+    db.sequelize.query('CALL get_featuresbyvehicleid(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
+        .then(result => {
+            if (result != null) {
+                db.sequelize.query('CALL get_featuresbyvehicleid(' + vehicleId + '); FETCH ALL FROM "rs_resulttwo";', res, next)
+                    .then(data => {
+                        logs("Features", "getfeaturesByVehicleId", "Info", "Successfully Get  features Details by vehicle with id = " + vehicleId);
+                        res.status(200).json({
+                            message: "Get features Details by vehicle Successfully!",
+                            result: { 'features': result[0], 'mandatoryFeature': data[0][1] }
+                        });
+                    });
+            }
+        })
+        .catch(error => {
+            // log on console
+            logs("Features", "getfeaturesByVehicleId", "Error", error.message);
+            res.status(500).json({
+                message: "Error!",
+                error: error
+            });
+        });
 }

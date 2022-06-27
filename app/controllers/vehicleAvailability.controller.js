@@ -38,3 +38,23 @@ exports.create = async function (req, res) {
         });
     }
 }
+
+exports.getAvailabilityByVehicleId = (req, res, next) => {
+    let vehicleId = req.params.id;
+    db.sequelize.query('CALL get_availabilitybyvehicleid(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
+        .then(result => {
+            logs("vehicleAvailability", "getAvailabilityByVehicleId", "Info", "Successfully Get  availability Details by vehicle with id = " + vehicleId);
+            res.status(200).json({
+                message: "Get availability Details by vehicle Successfully!",
+                result: result[0],
+            });
+        })
+        .catch(error => {
+            // log on console
+            logs("vehicleAvailability", "getAvailabilityByVehicleId", "Error", error.message);
+            res.status(500).json({
+                message: "Error!",
+                error: error
+            });
+        });
+}

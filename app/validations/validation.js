@@ -175,7 +175,7 @@ const updateTransmissionValidation = (data) => {
 //VEHICLE VALIDATION
 const saveVehicleValidation = (data) => {
     const schema = Joi.object({
-        locationId: Joi.string().required(),
+        // locationId: Joi.string().required(),
         plate_number: Joi.string().required(),
         description: Joi.string().required(),
         seats: Joi.string().required(),
@@ -192,8 +192,11 @@ const saveVehicleValidation = (data) => {
         features: Joi.array().items({ featureId: Joi.string().required() }),
         guidelines: Joi.array().items({ guidelineId: Joi.string().required() }),
         availability_startdate: Joi.string().required(),
-        availability_enddate: Joi.string().required()
-        //cancel: Joi.boolean().required(),
+        availability_enddate: Joi.string().required(),
+        chassis_number: Joi.string().required(),
+        eco_friendly_Id: Joi.string().required(),
+        additional_Price: Joi.number().required(),
+        with_driver: Joi.boolean().required()
 
     });
     return schema.validate(data);
@@ -201,7 +204,7 @@ const saveVehicleValidation = (data) => {
 const updateVehicleValidation = (data) => {
     const schema = Joi.object({
         vehicleId: Joi.string().required(),
-        locationId: Joi.string().required(),
+        //locationId: Joi.string().required(),
         plate_number: Joi.string().required(),
         description: Joi.string().required(),
         seats: Joi.string().required(),
@@ -217,6 +220,14 @@ const updateVehicleValidation = (data) => {
         userId: Joi.string().required(),
         updated_by: Joi.string().required(),
         modelId: Joi.string().required(),
+        // features: Joi.array().items({ featureId: Joi.string().required() }),
+        //guidelines: Joi.array().items({ guidelineId: Joi.string().required() }),
+        availability_startdate: Joi.string().required(),
+        availability_enddate: Joi.string().required(),
+        chassis_number: Joi.string().required(),
+        eco_friendly_Id: Joi.string().required(),
+        additional_Price: Joi.number().required(),
+        with_driver: Joi.boolean().required()
     });
     return schema.validate(data);
 };
@@ -453,7 +464,77 @@ const saveVehicleAvailabilityValidation = (data) => {
     return schema.validate(data);
 };
 
+const saveLocationValidation = (data) => {
+    const schema = Joi.object({
+        cityId: Joi.string().required(),
+        area: Joi.string().required(),
+        address: Joi.string().required(),
+        zip_code: Joi.string().required(),
+        vehicleId: Joi.string().required(),
+    });
+    return schema.validate(data);
+};
+const updateLocationValidation = (data) => {
+    const schema = Joi.object({
+        locationId: Joi.string().required(),
+        cityId: Joi.string().required(),
+        area: Joi.string().required(),
+        address: Joi.string().required(),
+        zip_code: Joi.string().required(),
+        vehicleId: Joi.string().required(),
+    });
+    return schema.validate(data);
+};
+const saveEcoFriendlyValidation = (data) => {
+    const schema = Joi.object({
+        name: Joi.string().required(),
+        isActive: Joi.boolean().required(),
+    });
+    return schema.validate(data);
+};
+const updateEcoFriendlyValidation = (data) => {
+    const schema = Joi.object({
+        eco_friendly_Id: Joi.string().required(),
+        name: Joi.string().required(),
+        isActive: Joi.boolean().required(),
+    });
+    return schema.validate(data);
+};
+const saveVehicleMandatoryFeaturesValidation = (data) => {
+    const schema = Joi.object({
+        vehicleId: Joi.string().required(),
+        fueltype: Joi.string().required(),
+        kmpl: Joi.string().required(),
+        doors: Joi.string().required(),
+        seats: Joi.string().required(),
+    });
+    return schema.validate(data);
+};
+const saveVehicleImagesValidation = (data) => {
+    const schema = Joi.object({
+        vehicleId: Joi.string().required(),
+        // image_path: Joi.string().required(),
+        setCover: Joi.boolean().required()
+    });
+    return schema.validate(data);
+};
+const updateVehicleImagesValidation = (data) => {
+    const schema = Joi.object({
+        vehicle_image_id: Joi.string().required(),
+        vehicleId: Joi.string().required(),
+        // image_path: Joi.string().required(),
+        setCover: Joi.boolean().required()
+    });
+    return schema.validate(data);
+};
 module.exports = {
+    saveVehicleImagesValidation,
+    updateVehicleImagesValidation,
+    saveVehicleMandatoryFeaturesValidation,
+    saveEcoFriendlyValidation,
+    updateEcoFriendlyValidation,
+    saveLocationValidation,
+    updateLocationValidation,
     saveVehicleAvailabilityValidation,
     saveVehicleReviewsValidation,
     saveCategoryValidations,
