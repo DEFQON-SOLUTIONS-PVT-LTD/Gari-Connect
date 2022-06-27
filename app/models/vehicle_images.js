@@ -23,6 +23,10 @@ module.exports = function(sequelize, DataTypes) {
     setCover: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    IsDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

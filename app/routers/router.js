@@ -174,7 +174,7 @@ router.get(
 );
 router.post(
     '/api/user/create',
-    [authJwt.verifyToken],
+    // [authJwt.verifyToken],
     users.create
 );
 router.put(
@@ -522,6 +522,7 @@ router.get('/api/vehicleType/getById/:id', vehicleType.getvehicletypeById);
 router.delete('/api/vehicleType/delete/:id', vehicleType.deleteById);
 
 router.post('/api/vehicleAvailability/create', vehicleAvailability.create);
+router.get('/api/vehicleAvailability/getbyid/:id', vehicleAvailability.getAvailabilityByVehicleId);
 
 router.post('/api/vehicleMandatoryFeatures/create', vehicleMandatoryFeatures.create);
 router.get('/api/vehicleMandatoryFeatures/getById/:id', vehicleMandatoryFeatures.getVehicleMandatoryFeaturesById);
