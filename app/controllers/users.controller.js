@@ -373,7 +373,7 @@ exports.create = (req, res) => {
                     user.address = req.body.address;
                     user.photo = req.body.photo;
                     user.is_active = "true";
-                    user.uuid = crypto.randomUUID();
+                    // user.uuid = crypto.randomUUID();
                     user.permissionId = "1";
                     user.roleId = "1";
                     user.cityId = req.body.cityId;

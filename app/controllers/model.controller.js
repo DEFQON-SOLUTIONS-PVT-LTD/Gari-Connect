@@ -27,10 +27,10 @@ exports.create = (req, res) => {
 
         // Save to MySQL database
         Model.create(model).then(result => {
-            logs("Model", "Create", "Info", "Create Successfully a model with id = " + result.id);
+            logs("Model", "Create", "Info", "Create Successfully a model with id = " + result.modelId);
             // send uploading message to client
             res.status(200).json({
-                message: "Create Successfully a model with id = " + result.id,
+                message: "Create Successfully a model with id = " + result.modelId,
                 model: successResponse(result),
             });
         });
