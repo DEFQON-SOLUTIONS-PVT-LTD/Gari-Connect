@@ -25,9 +25,9 @@ exports.create = (req, res) => {
         // Save to MySQL database
         GuideLine.create(guideLine).then(result => {
             // send uploading message to client
-            logs("GuideLine", "Create", "Info", "Create Successfully a guideLine with id = " + result.id);
+            logs("GuideLine", "Create", "Info", "Create Successfully a guideLine with id = " + result.guideLineId);
             res.status(200).json({
-                message: "Successfully created a guideLine",
+                message: "Successfully created a guideLine = " + result.guideLineId,
                 guideLine: successResponse(result),
             });
         });

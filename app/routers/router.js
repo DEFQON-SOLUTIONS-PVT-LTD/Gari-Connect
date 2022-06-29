@@ -463,7 +463,7 @@ router.get(
     vehicle.getVehicleByFilters
 );
 router.get(
-    '/api/bookings/getbyid/:id',
+    '/api/bookings/getbyid',
     [authJwt.verifyToken],
     bookings.getBookingById
 );

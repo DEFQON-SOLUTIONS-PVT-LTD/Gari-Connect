@@ -1,7 +1,12 @@
 const db = require('../config/db.config.js');
+const Authuser = db.Authuser;
+const env = require('../config/env.js');
 const { messages } = require('../common/messages');
 const { successResponse, errorResponse } = require('../common/response');
 const logs = require('../controllers/logging.js');
+const accountSid = env.TWILIO_ACCOUNT_SID;
+const authToken = env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
 const {
     saveUserValidation,
     updateUserValidation,
@@ -363,6 +368,29 @@ exports.create = (req, res) => {
                         error: errordetails
                     });
                 } else {
+                    let forgotpwd = {};
+                    var expiryTime = 60;
+                    var rand = Math.floor(Math.random() * 10000) + 1;
+                    // two factor authentication
+                    client.messages.create({
+                        body: 'Your OTP code is : ' + rand + ' to reset your password. This code will expires in ' + expiryTime + ' Seconds',
+                        from: env.TWILIO_PHONE_NUMBER,
+                        to: req.body.phoneno
+                    })
+                        .then(message => console.log(message.sid));
+                    var expiry_time;
+                    expiry_time = new Date();
+                    //expires in one minute.
+                    expiry_time.setSeconds(expiry_time.getSeconds() + expiryTime);
+
+                    forgotpwd.phone_no = req.body.phoneno;
+                    forgotpwd.otp_code = rand;
+                    forgotpwd.otp_expiry = expiry_time;
+                    Authuser.create(forgotpwd).then(result => {
+                        // send uploading message to client
+                        logs("MainController", "forgotpassword", "Info", "OTP sent to = " + req.body.phoneno + ". Please verify to continue ");
+                    });
+
                     // Building model object from upoading request's body
                     // const hashpassword = encrypt(req.body.password);
                     user.firstname = req.body.firstname;
@@ -373,11 +401,13 @@ exports.create = (req, res) => {
                     user.address = req.body.address;
                     user.photo = req.body.photo;
                     user.is_active = "true";
-                    user.uuid = crypto.randomUUID();
+                    // user.uuid = crypto.randomUUID();
                     user.permissionId = "1";
                     user.roleId = "1";
                     user.cityId = req.body.cityId;
                     user.gender = req.body.gender;
+                    user.otp = rand;
+                    user.otp_expiry = expiry_time;
                     // Save to Postgress database
                     User.create(user).then(result => {
                         // send uploading message to client

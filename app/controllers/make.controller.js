@@ -25,10 +25,10 @@ exports.create = (req, res) => {
 
         // Save to MySQL database
         Make.create(make).then(result => {
-            logs("Make", "Create", "Info", "Create Successfully a Make with id = " + result.id);
+            logs("Make", "Create", "Info", "Create Successfully a Make with id = " + result.makeId);
             // send uploading message to client
             res.status(200).json({
-                message: "Create Successfully a Make with id = " + result.id,
+                message: "Create Successfully a Make with id = " + result.makeId,
                 make: successResponse(result),
             });
         });

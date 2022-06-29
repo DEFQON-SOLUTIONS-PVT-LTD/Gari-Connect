@@ -504,6 +504,7 @@ exports.getVehicleBySearch = (req, res, next) => {
         let endDate = req.body.enddate;
         let days = [];
         let dayName = [];
+        let day = [];
         let end = new Date(endDate)
         for (let start = new Date(startDate); start <= end; start.setDate(start.getDate() + 1)) {
             let day = start.getDay();
@@ -512,9 +513,29 @@ exports.getVehicleBySearch = (req, res, next) => {
             }
         }
         dayName = days.map(e => e.toLocaleString('en-US', { weekday: 'long' }));
-
+        for (let i = 0; i < dayName.length; i++) {
+            if (dayName[i] == 'Monday') {
+                day.push(1);
+            }
+            else if (dayName[i] == 'Tuesday') {
+                day.push(2);
+            }
+            else if (dayName[i] == 'Wednesday') {
+                day.push(3);
+            } else if (dayName[i] == 'Thursday') {
+                day.push(4);
+            } else if (dayName[i] == 'Friday') {
+                day.push(5);
+            } else if (dayName[i] == 'Saturday') {
+                day.push(6);
+            } else if (dayName[i] == 'Sunday') {
+                day.push(7);
+            }
+        }
+        // var arrStr = JSON.stringify({ days });
+        var arrStr = "'" + "{" + day.join() + "}" + "'";
         let locationId = req.body.locationId;
-        db.sequelize.query('CALL get_vehiclesearch (' + locationId + ',' + dayName + '); FETCH ALL FROM "rs_resultone";', res, next)
+        db.sequelize.query('CALL get_vehiclesearch (' + locationId + ',' + arrStr + '); FETCH ALL FROM "rs_resultone";', res, next)
             .then(result => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
                 res.status(200).json({
