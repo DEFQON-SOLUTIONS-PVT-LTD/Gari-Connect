@@ -176,3 +176,22 @@ exports.deleteById = async (req, res) => {
         });
     }
 }
+exports.getModelByMakeId = (req, res, next) => {
+    let makeId = req.body.makeId;
+    db.sequelize.query('CALL get_modelbymakeid(' + makeId + '); FETCH ALL FROM "rs_resultone";', res, next)
+        .then(result => {
+            logs("Model", "getModelByMakeId", "Info", "Successfully Get model Details with id = " + makeId);
+            res.status(200).json({
+                message: "Get model Details by make Successfully!",
+                result: result[0],
+            });
+        })
+        .catch(error => {
+            // log on console
+            logs("vehicleAvailaModelbility", "getModelByMakeId", "Error", error.message);
+            res.status(500).json({
+                message: "Error!",
+                error: error
+            });
+        });
+}

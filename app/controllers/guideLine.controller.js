@@ -1,7 +1,8 @@
 const db = require('../config/db.config.js');
 const { successResponse, errorResponse } = require('../common/response');
-const { saveGuideLineValidation, updateGuideLineValidation } = require('../validations/validation');
+const { saveGuideLineValidation, updateGuideLineValidation, updateVehicleGuidelineValidation } = require('../validations/validation');
 const GuideLine = db.GuideLine;
+const Vehicle_to_Guidelines = db.vehicle_to_guidelines;
 const crypto = require('crypto');
 const logs = require('../controllers/logging.js');
 //const Op = db.Sequelize.Op;
@@ -191,4 +192,44 @@ exports.getguidelineByVehicleId = (req, res, next) => {
                 error: error
             });
         });
+}
+exports.updateGuideLineByVehicle = async (req, res) => {
+    let vehicle_to_guidelines = {};
+    let VehicleId = req.body.vehicleId;
+    try {
+        // Validate
+        const { error } = updateVehicleGuidelineValidation(req.body);
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        // Save to MySQL database
+        var result = await Vehicle_to_Guidelines.destroy({
+            where: {
+                vehicleId: req.body.vehicleId
+            }
+        });
+
+        if (result != null) {
+            let guidelines = [];
+            var val = req.body.guidelines;
+            for (var i in val) {
+                guidelines.push({ 'guidelineId': val[i].guidelineId, 'vehicleId': VehicleId });
+                vehicle_to_guidelines.guidelineId = guidelines[i].guidelineId;
+                vehicle_to_guidelines.vehicleId = guidelines[i].vehicleId;
+                await Vehicle_to_Guidelines.create(vehicle_to_guidelines);
+            }
+            logs("GuideLine", "updateGuideLineByVehicle", "Info", "Update successfully a vehicleGuideLine with id = " + VehicleId);
+            res.status(200).json({
+                message: "Update successfully a vehicleGuideLine with id = " + VehicleId,
+                // vehicleGuideLine: successResponse(data),
+            });
+        }
+    }
+    catch (error) {
+        logs("GuideLine", "updateGuideLineByVehicle", "Error", "Error -> Can not update a vehicleGuideLine with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not update a vehicleGuideLine with id = " + req.params.id,
+            //error: error.message
+            error: errorResponse(error.message)
+        });
+    }
+
 }

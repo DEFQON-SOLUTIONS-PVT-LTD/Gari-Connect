@@ -1,7 +1,7 @@
 // Import model Product
 const db = require('../config/db.config.js');
 const { successResponse, errorResponse } = require('../common/response');
-const { saveVehicleAvailabilityValidation, updateMakeValidation } = require('../validations/validation');
+const { saveVehicleAvailabilityValidation, updateVehicleAvailabilityValidation } = require('../validations/validation');
 const { date } = require('joi');
 const vehicleAvailability = db.vehicle_Availability;
 const logs = require('../controllers/logging.js');
@@ -58,3 +58,45 @@ exports.getAvailabilityByVehicleId = (req, res, next) => {
             });
         });
 }
+exports.updateAvailabilityByVehicle = async (req, res) => {
+    let vehicle_availability = {};
+    let VehicleId = req.body.vehicleId;
+    let days = [];
+    var val = req.body.days;
+    try {
+        // Validate
+        const { error } = updateVehicleAvailabilityValidation(req.body);
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        // Save to MySQL database
+        var result = await vehicleAvailability.destroy({
+            where: {
+                vehicleid: req.body.vehicleId
+            }
+        });
+
+        if (result != null) {
+            for (var i in val) {
+                days.push({ 'dayId': val[i].dayId, 'vehicleId': VehicleId });
+                vehicle_availability.dayid = days[i].dayId;
+                vehicle_availability.vehicleid = days[i].vehicleId;
+                const data = await vehicleAvailability.create(vehicle_availability);
+
+            }
+            logs("vehicleAvailability", "updateAvailabilityByVehicle", "Info", "Update successfully a vehicleAvailability with id = " + VehicleId);
+            res.status(200).json({
+                message: "Update successfully a vehicleAvailability with id = " + VehicleId,
+                // vehicleAvailability: successResponse(data),
+            });
+        }
+    }
+    catch (error) {
+        logs("vehicleAvailability", "updateAvailabilityByVehicle", "Error", "Error -> Can not update a vehicleAvailability with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not update a vehicleAvailability with id = " + req.params.id,
+            //error: error.message
+            error: errorResponse(error.message)
+        });
+    }
+
+}
+

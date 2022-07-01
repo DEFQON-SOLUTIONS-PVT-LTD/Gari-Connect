@@ -458,11 +458,35 @@ const saveVehicleAvailabilityValidation = (data) => {
     const schema = Joi.object({
         vehicleId: Joi.string().required(),
         days: Joi.array().items({ dayId: Joi.string().required() }),
-        //cancel: Joi.boolean().required(),
 
     });
     return schema.validate(data);
 };
+const updateVehicleAvailabilityValidation = (data) => {
+    const schema = Joi.object({
+        vehicleId: Joi.string().required(),
+        days: Joi.array().items({ dayId: Joi.string().required() }),
+
+    });
+    return schema.validate(data);
+};
+const updateVehicleGuidelineValidation = (data) => {
+    const schema = Joi.object({
+        vehicleId: Joi.string().required(),
+        guidelines: Joi.array().items({ guidelineId: Joi.string().required() }),
+
+    });
+    return schema.validate(data);
+};
+const updateVehicleFeaturesValidation = (data) => {
+    const schema = Joi.object({
+        vehicleId: Joi.string().required(),
+        features: Joi.array().items({ featureId: Joi.string().required() }),
+
+    });
+    return schema.validate(data);
+};
+
 
 const saveLocationValidation = (data) => {
     const schema = Joi.object({
@@ -476,7 +500,7 @@ const saveLocationValidation = (data) => {
 };
 const updateLocationValidation = (data) => {
     const schema = Joi.object({
-        locationId: Joi.string().required(),
+        // locationId: Joi.string().required(),
         cityId: Joi.string().required(),
         area: Joi.string().required(),
         address: Joi.string().required(),
@@ -510,6 +534,16 @@ const saveVehicleMandatoryFeaturesValidation = (data) => {
     });
     return schema.validate(data);
 };
+const updateVehicleMandatoryFeaturesValidation = (data) => {
+    const schema = Joi.object({
+        vehicleId: Joi.string().required(),
+        fueltype: Joi.string().required(),
+        kmpl: Joi.string().required(),
+        doors: Joi.string().required(),
+        seats: Joi.string().required(),
+    });
+    return schema.validate(data);
+};
 const saveVehicleImagesValidation = (data) => {
     const schema = Joi.object({
         vehicleId: Joi.string().required(),
@@ -531,11 +565,15 @@ module.exports = {
     saveVehicleImagesValidation,
     updateVehicleImagesValidation,
     saveVehicleMandatoryFeaturesValidation,
+    updateVehicleMandatoryFeaturesValidation,
     saveEcoFriendlyValidation,
     updateEcoFriendlyValidation,
     saveLocationValidation,
     updateLocationValidation,
     saveVehicleAvailabilityValidation,
+    updateVehicleAvailabilityValidation,
+    updateVehicleGuidelineValidation,
+    updateVehicleFeaturesValidation,
     saveVehicleReviewsValidation,
     saveCategoryValidations,
     updateCategoryValidation,

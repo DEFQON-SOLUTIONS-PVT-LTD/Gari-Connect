@@ -1,7 +1,8 @@
 const db = require('../config/db.config.js');
 const { successResponse, errorResponse } = require('../common/response');
-const { saveFeaturesValidations, updateFeaturesValidation } = require('../validations/validation');
+const { saveFeaturesValidations, updateFeaturesValidation, updateVehicleFeaturesValidation } = require('../validations/validation');
 const Features = db.Features;
+const Vehicle_to_Features = db.vehicle_to_features;
 const crypto = require('crypto');
 const logs = require('../controllers/logging.js');
 const { date } = require('joi');
@@ -201,3 +202,45 @@ exports.getfeaturesByVehicleId = (req, res, next) => {
             });
         });
 }
+exports.updateFeaturesByVehicle = async (req, res) => {
+    let vehicle_to_features = {};
+    let VehicleId = req.body.vehicleId;
+    try {
+        // Validate
+        const { error } = updateVehicleFeaturesValidation(req.body);
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        // Save to MySQL database
+        var result = await Vehicle_to_Features.destroy({
+            where: {
+                vehicleId: req.body.vehicleId
+            }
+        });
+
+        if (result != null) {
+            var obj = req.body.features;
+            let features = [];
+            for (var i in obj) {
+                features.push({ 'featureId': obj[i].featureId, 'vehicleId': VehicleId });
+                vehicle_to_features.featureId = features[i].featureId;
+                vehicle_to_features.vehicleId = features[i].vehicleId;
+                await Vehicle_to_Features.create(vehicle_to_features);
+            }
+
+            logs("Features", "updateFeaturesByVehicle", "Info", "Update successfully a Features with id = " + VehicleId);
+            res.status(200).json({
+                message: "Update successfully a vehicleFeatures with id = " + VehicleId,
+                // vehicle_to_features: successResponse(data),
+            });
+        }
+    }
+    catch (error) {
+        logs("Features", "updateFeaturesByVehicle", "Error", "Error -> Can not update a Features with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not update a Features with id = " + req.params.id,
+            //error: error.message
+            error: errorResponse(error.message)
+        });
+    }
+
+}
+
