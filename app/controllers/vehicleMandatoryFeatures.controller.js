@@ -1,7 +1,7 @@
 // Import model Product
 const db = require('../config/db.config.js');
 const { successResponse, errorResponse } = require('../common/response');
-const { saveVehicleMandatoryFeaturesValidation, updateMakeValidation } = require('../validations/validation');
+const { saveVehicleMandatoryFeaturesValidation, updateVehicleMandatoryFeaturesValidation } = require('../validations/validation');
 const { date } = require('joi');
 const VehicleMmandatoryFeatures = db.vehicle_mandatory_features;
 const logs = require('../controllers/logging.js');
@@ -58,3 +58,55 @@ exports.getVehicleMandatoryFeaturesById = (req, res) => {
             });
         });
 }
+exports.updateVehicleMandatoryFeaturesByVehicle = (req, res) => {
+    try {
+        // Validate
+        const { error } = updateVehicleMandatoryFeaturesValidation(req.body);
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        let VehicleId = req.body.vehicleId;
+        VehicleMmandatoryFeatures.findOne({
+            where: {
+                vehicleId: req.body.vehicleId
+            }
+        })
+            .then(vehicleMandatoryFeatures => {
+                if (vehicleMandatoryFeatures == null) {
+                    logs("vehicleMmandatoryFeatures", "updateVehicleMandatoryFeaturesByVehicle", "Info", "Not Found for updating a VehicleMmandatoryFeatures with id = " + VehicleId);
+                    return res.status(404).send({ message: "Not Found for updating a location with id = " + VehicleId, });
+                }
+                else {
+                    // update new change to database
+                    let updatedObject = {
+                        vehicleId: req.body.vehicleId,
+                        fueltype: req.body.fueltype,
+                        kmpl: req.body.kmpl,
+                        doors: req.body.doors,
+                        seats: req.body.seats,
+                    }
+                    let result = vehicleMandatoryFeatures.update(updatedObject, { returning: true, where: { vehicleId: VehicleId } });
+                    // return the response to client
+                    if (!result) {
+                        logs("vehicleMmandatoryFeatures", "updateVehicleMandatoryFeaturesByVehicle", "Error", "Error -> Can not update a VehicleMmandatoryFeatures with id = " + req.params.id);
+                        res.status(500).json({
+                            message: "Error -> Can not update a VehicleMmandatoryFeatures with id = " + req.params.id,
+                            error: "Can NOT Updated",
+                        });
+                    }
+                    logs("vehicleMmandatoryFeatures", "updateVehicleMandatoryFeaturesByVehicle", "Info", "Update successfully a VehicleMmandatoryFeatures with id = " + VehicleId);
+                    res.status(200).json({
+                        message: "Update successfully a location with id = " + VehicleId,
+                        location: updatedObject,
+                    });
+                }
+            });
+    }
+    catch (error) {
+        logs("location", "updateLocation", "Error", "Error -> Can not update a VehicleMmandatoryFeatures with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not update a VehicleMmandatoryFeatures with id = " + req.params.id,
+            //error: error.message
+            error: errorResponse(error.message)
+        });
+    }
+}
+

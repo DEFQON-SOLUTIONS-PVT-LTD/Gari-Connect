@@ -43,7 +43,7 @@ router.post(
 router.post('/api/auth/token', customers.authenticate);
 router.post(
     '/api/auth/authuser',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     customers.authuser
 );
 router.post(
@@ -179,7 +179,7 @@ router.post(
 );
 router.put(
     '/api/user/createPassword',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     users.createPassword
 );
 router.put(
@@ -249,6 +249,11 @@ router.delete(
     [authJwt.verifyToken],
     model.deleteById
 );
+router.get(
+    '/api/model/getbymakeId',
+    [authJwt.verifyToken],
+    model.getModelByMakeId
+);
 
 router.post(
     '/api/greenVehicle/create',
@@ -280,6 +285,11 @@ router.post(
     '/api/guideLine/create',
     [authJwt.verifyToken],
     guideLine.create
+);
+router.post(
+    '/api/guideLine/updateByVehicleId',
+    [authJwt.verifyToken],
+    guideLine.updateGuideLineByVehicle
 );
 router.put(
     '/api/guideLine/update',
@@ -362,6 +372,11 @@ router.post(
     '/api/features/create',
     [authJwt.verifyToken],
     features.create
+);
+router.post(
+    '/api/features/updatefeaturesByVehicle',
+    [authJwt.verifyToken],
+    features.updateFeaturesByVehicle
 );
 router.put(
     '/api/features/update',
@@ -523,10 +538,12 @@ router.delete('/api/vehicleType/delete/:id', vehicleType.deleteById);
 
 router.post('/api/vehicleAvailability/create', vehicleAvailability.create);
 router.get('/api/vehicleAvailability/getbyid/:id', vehicleAvailability.getAvailabilityByVehicleId);
+router.put('/api/vehicleAvailability/update', vehicleAvailability.updateAvailabilityByVehicle);
+
 
 router.post('/api/vehicleMandatoryFeatures/create', vehicleMandatoryFeatures.create);
 router.get('/api/vehicleMandatoryFeatures/getById/:id', vehicleMandatoryFeatures.getVehicleMandatoryFeaturesById);
-
+router.put('/api/vehicleMandatoryFeatures/update', vehicleMandatoryFeatures.updateVehicleMandatoryFeaturesByVehicle);
 
 router.post('/api/ecofriendly/create', ecofriendly.create);
 router.put('/api/ecofriendly/update', ecofriendly.updateEcoFriendly);
@@ -541,6 +558,7 @@ router.get('/api/location/all', location.getLocation);
 router.get('/api/location/getById/:id', location.getLocationById);
 router.delete('/api/location/delete/:id', location.deleteById);
 router.get('/api/location/getLocationByVehicleId', location.getLocationByVehicleId);
+router.put('/api/location/updateByVehicle', location.updateLocationByVehicle);
 
 router.post('/api/vehicleReviews/create', vehicleReviews.create);
 

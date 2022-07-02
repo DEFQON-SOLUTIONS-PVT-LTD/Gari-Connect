@@ -193,3 +193,56 @@ exports.getLocationByVehicleId = (req, res, next) => {
             });
         });
 }
+exports.updateLocationByVehicle = (req, res) => {
+    try {
+        // Validate
+        const { error } = updateLocationValidation(req.body);
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        let VehicleId = req.body.vehicleId;
+        Location.findOne({
+            where: {
+                vehicleId: req.body.vehicleId
+            }
+        })
+            .then(location => {
+                if (location == null) {
+                    logs("location", "updateLocation", "Info", "Not Found for updating a location with id = " + VehicleId);
+                    return res.status(404).send({ message: "Not Found for updating a location with id = " + VehicleId, });
+                }
+                else {
+                    // update new change to database
+                    let updatedObject = {
+                        vehicleId: req.body.vehicleId,
+                        cityId: req.body.cityId,
+                        area: req.body.area,
+                        address: req.body.address,
+                        zip_code: req.body.zip_code,
+                        updatedAt: new Date()
+                    }
+                    let result = location.update(updatedObject, { returning: true, where: { vehicleId: VehicleId } });
+                    // return the response to client
+                    if (!result) {
+                        logs("location", "updateLocation", "Error", "Error -> Can not update a location with id = " + req.params.id);
+                        res.status(500).json({
+                            message: "Error -> Can not update a location with id = " + req.params.id,
+                            error: "Can NOT Updated",
+                        });
+                    }
+                    logs("location", "updateLocation", "Info", "Update successfully a location with id = " + VehicleId);
+                    res.status(200).json({
+                        message: "Update successfully a location with id = " + VehicleId,
+                        location: updatedObject,
+                    });
+                }
+            });
+    }
+    catch (error) {
+        logs("location", "updateLocation", "Error", "Error -> Can not update a location with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not update a location with id = " + req.params.id,
+            //error: error.message
+            error: errorResponse(error.message)
+        });
+    }
+}
+
