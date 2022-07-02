@@ -6,6 +6,7 @@ const VoiceResponse = require('twilio/lib/twiml/VoiceResponse');
 const Vehicle = db.Vehicle;
 const Vehicle_to_Features = db.vehicle_to_features;
 const Vehicle_to_Guidelines = db.vehicle_to_guidelines;
+const vehicleAvailability = db.vehicle_Availability;
 const crypto = require('crypto');
 const logs = require('../controllers/logging.js');
 const { count } = require('console');
@@ -15,6 +16,7 @@ exports.create = async function (req, res) {
     let vehicle = {};
     let vehicle_to_features = {};
     let vehicle_to_guidelines = {};
+    let vehicle_availability = {};
     try {
         // Validate
         const { error } = saveVehicleValidation(req.body);
@@ -71,6 +73,17 @@ exports.create = async function (req, res) {
                 vehicle_to_features.featureId = features[i].featureId;
                 vehicle_to_features.vehicleId = features[i].vehicleId;
                 await Vehicle_to_Features.create(vehicle_to_features);
+            }
+        }
+        if (result.vehicleId != null) {
+            var id = result.vehicleId;
+            let days = [];
+            var val = req.body.days;
+            for (var i in val) {
+                days.push({ 'dayId': val[i].dayId, 'vehicleId': id });
+                vehicle_availability.dayid = days[i].dayId;
+                vehicle_availability.vehicleid = days[i].vehicleId;
+                await vehicleAvailability.create(vehicle_availability);
             }
         }
         res.status(200).json({

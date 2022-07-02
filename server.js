@@ -68,43 +68,48 @@ app.post('/api/uploaduserdoc', upload.single('file'), function (req, res) {
   }
 });
 // For Single_UploadProfile
-var upload = multer({ storage: storage });
-app.post('/api/upload-profile', upload.single('image'), (req, res) => {
-  const file = req.file.destination + req.file.filename;
-  if (!file) {
-    const error = new Error('Please upload a file')
-    error.httpStatusCode = 400
-    return (error)
-  }
-  res.status(500).json({
-    FilePath: file,
-    message: "Profile Uploaded",
-  });
-});
-// For Single_UploadImage
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './app/files/vehicle/images/');
+    cb(null, './app/files/user/profile/');
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname);
   }
 });
 var upload = multer({ storage: storage });
-app.post('/api/upload-images', upload.single('image_path'), (req, res) => {
-  const { error } = saveVehicleImagesValidation(req.body);
-  if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
-  let images = {};
-  const file = req.file.destination + req.file.filename;
-  if (!file) {
+app.post('/api/upload-profile', upload.single('image'), (req, res) => {
+  //const file = req.file.destination + req.file.filename;
+  const img = req.file.originalname;
+  const base64Data = new Buffer(JSON.stringify(img)).toString("base64");
+  if (!base64Data) {
     const error = new Error('Please upload a file')
     error.httpStatusCode = 400
     return (error)
   }
-  if (file) {
-    images.image_path = file;
+  res.status(500).json({
+    FilePath: base64Data,
+    message: "Profile Uploaded",
+  });
+});
+// For Single_UploadImage
+var storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
+app.post('/api/upload-images', upload.single('image'), (req, res) => {
+  const { error } = saveVehicleImagesValidation(req.body);
+  if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+  let images = {};
+  const img = req.file.originalname;
+  const base64Data = new Buffer(JSON.stringify(img)).toString("base64");
+  // const file = req.file.destination + req.file.filename;
+  if (!base64Data) {
+    const error = new Error('Please upload a file')
+    error.httpStatusCode = 400
+    return (error)
+  }
+  if (base64Data) {
+    images.image_path = base64Data;
     images.vehicleId = req.body.vehicleId;
-    images.document_type = req.body.document_type;
+    images.setCover = req.body.setCover;
     images.IsDeleted = "0";
     VehicleImages.create(images).then(result => {
       // send uploading message to client
@@ -114,25 +119,16 @@ app.post('/api/upload-images', upload.single('image_path'), (req, res) => {
       });
     });
   }
-  // res.status(500).json({
-  // FilePath: file,
-  // message: "File Uploaded",
-  // });
 });
 // For multiple UploadImage
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './app/Images/VehicleImages/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
 var upload = multer({ storage: storage });
-app.post("/api/multiupload", upload.array("image_path", 12), (req, res) => {
+app.post("/api/multiupload", upload.array("images", 12), (req, res) => {
   const { error } = saveVehicleImagesValidation(req.body);
   if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
   let images = {};
+  let img = {};
+  //const img = req.file.originalname;
+  // const base64Data = new Buffer(JSON.stringify(img)).toString("base64");
   try {
     //await multiupload(req, res);
     console.log(req.files);
@@ -141,8 +137,11 @@ app.post("/api/multiupload", upload.array("image_path", 12), (req, res) => {
     }
     //const file = req.files.destination[0] + req.files.filename[0];
     let photoArray = [];
+    let imgArray = [];
     for (var i = 0; i < req.files.length; i++) {
-      photoArray[i].push() = req.files.destination[i] + req.files.filename[i];
+      img[i] = req.files[i].originalname;
+      imgArray[i] = new Buffer(JSON.stringify(img[i]).toString("base64"));
+      photoArray[i].push() = imgArray[i];
     }
     if (photoArray) {
       images.image_path = photoArray[i];
@@ -157,12 +156,8 @@ app.post("/api/multiupload", upload.array("image_path", 12), (req, res) => {
         });
       });
     }
-    // res.status(500).json({
-    // FilePath: photoArray[i],
-    // message: "File Uploaded",
-    // });
   } catch (error) {
-    console.log(error);
+    -console.log(error);
     if (error.code === "LIMIT_UNEXPECTED_FILE") {
       return res.send("Too many files to upload.");
     }
