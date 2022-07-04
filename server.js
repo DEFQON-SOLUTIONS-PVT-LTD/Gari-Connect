@@ -10,7 +10,7 @@ const VehicleImages = db.vehicle_images;
 const UserDocs = db.UserDocuments;
 var Buffer = require('buffer/').Buffer;
 var fs = require('fs');
-var base64 = require('base-64');
+//var base64 = require('base-64');
 // force: true will drop the table if it already exists
 // db.sequelize.sync().then(() => {
 //   console.log('Drop and Resync with { force: true }');
