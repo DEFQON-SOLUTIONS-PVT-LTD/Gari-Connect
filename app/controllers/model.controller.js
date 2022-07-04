@@ -181,9 +181,14 @@ exports.getModelByMakeId = (req, res, next) => {
     db.sequelize.query('CALL get_modelbymakeid(' + makeId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Model", "getModelByMakeId", "Info", "Successfully Get model Details with id = " + makeId);
+
+            var arr = result[0];
+
+            arr.splice(0, 1);
+
             res.status(200).json({
                 message: "Get model Details by make Successfully!",
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {

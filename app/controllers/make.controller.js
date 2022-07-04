@@ -94,12 +94,16 @@ exports.updateMake = async (req, res) => {
 // Get  make
 exports.getMake = (req, res) => {
 
+    const data = [];
     Make.findAll()
         .then(makeInfos => {
             logs("Make", "getMake", "Info", "Get all makes' Infos Successfully!");
+            for (var i in makeInfos) {
+                data.push({ 'makeId': makeInfos[i].makeId, 'makeName': makeInfos[i].name });
+            }
             res.status(200).json({
                 message: "Get all makes' Infos Successfully!",
-                makes: makeInfos
+                makes: data
             });
         })
         .catch(error => {

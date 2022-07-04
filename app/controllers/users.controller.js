@@ -306,24 +306,13 @@ exports.createSocialUser = (req, res) => {
                     return res.status(404).send({ message: "User already exists. Please try to login." });
                 } else {
                     // Building model object from upoading request's body
-                    const hashpassword = encrypt(req.body.password);
                     user.firstname = req.body.firstname;
                     user.lastname = req.body.lastname;
-                    user.phoneno = req.body.phoneno;
                     user.email = req.body.email;
-                    user.password = hashpassword;
-                    user.address = req.body.address;
                     user.photo = req.body.photo;
-                    user.cnic = req.body.cnic;
-                    user.cnic_validity = req.body.cnic_validity;
-                    user.driving_license_number = req.body.driving_license_number;
-                    user.is_active = req.body.is_active;
-                    user.otp = req.body.otp;
-                    user.otp_expiry = req.body.otp_expiry;
-                    user.uuid = crypto.randomUUID();
-                    user.permissionId = req.body.permissionId;
-                    user.roleId = req.body.roleId;
-                    user.cityId = req.body.cityId;
+                    user.is_active = "true";
+                    user.permissionId = "1";
+                    user.roleId = "1";
                     user.gender = req.body.gender;
                     // Save to Postgress database
                     User.create(user).then(result => {
@@ -333,7 +322,6 @@ exports.createSocialUser = (req, res) => {
                             message: "Successfully Created a User with id = " + result.id,
                             user: successResponse(result),
                         });
-
                     });
                 }
             });
