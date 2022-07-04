@@ -9,7 +9,8 @@ const { saveVehicleImagesValidation, updateVehicleImagesValidation } = require('
 const VehicleImages = db.vehicle_images;
 const UserDocs = db.UserDocuments;
 var Buffer = require('buffer/').Buffer;
-
+var fs = require('fs');
+var base64 = require('base-64');
 // force: true will drop the table if it already exists
 // db.sequelize.sync().then(() => {
 //   console.log('Drop and Resync with { force: true }');
@@ -127,6 +128,8 @@ app.post("/api/multiupload", upload.array("images", 12), (req, res) => {
   if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
   let images = {};
   let img = {};
+  let photoArray = [];
+  let imgArray = {};
   //const img = req.file.originalname;
   // const base64Data = new Buffer(JSON.stringify(img)).toString("base64");
   try {
@@ -136,13 +139,16 @@ app.post("/api/multiupload", upload.array("images", 12), (req, res) => {
       return res.send(`You must select at least 1 file.`);
     }
     //const file = req.files.destination[0] + req.files.filename[0];
-    let photoArray = [];
-    let imgArray = [];
     for (var i = 0; i < req.files.length; i++) {
-      img[i] = req.files[i].originalname;
-      imgArray[i] = new Buffer(JSON.stringify(img[i]).toString("base64"));
-      photoArray[i].push() = imgArray[i];
+      photoArray.push(new Buffer(JSON.stringify(req.files[i].originalname).toString("base64")));
+
     }
+
+    // for (var i = 0; i < req.files.length; i++) {
+    // img[i] = req.files[i].originalname;
+    // imgArray[i] = new Buffer(JSON.stringify(img[i]).toString("base64"));
+    // photoArray[i].push(imgArray[i]);
+    // }
     if (photoArray) {
       images.image_path = photoArray[i];
       images.vehicleId = req.body.vehicleId;

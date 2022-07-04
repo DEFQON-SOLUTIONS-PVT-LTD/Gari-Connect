@@ -176,29 +176,55 @@ const updateTransmissionValidation = (data) => {
 const saveVehicleValidation = (data) => {
     const schema = Joi.object({
         // locationId: Joi.string().required(),
-        plate_number: Joi.string().required(),
-        description: Joi.string().required(),
-        seats: Joi.string().required(),
-        vehicle_type_id: Joi.string().required(),
-        green_vehicle_id: Joi.string().required(),
-        categoryId: Joi.string().required(),
-        transmissionId: Joi.string().required(),
-        main_image: Joi.string().required(),
-        price: Joi.number().required(),
-        price_inc_driver: Joi.number().required(),
-        userId: Joi.string().required(),
-        modelId: Joi.string().required(),
-        created_by: Joi.string().required(),
-        features: Joi.array().items({ featureId: Joi.string().required() }),
-        guidelines: Joi.array().items({ guidelineId: Joi.string().required() }),
-        days: Joi.array().items({ dayId: Joi.string().required() }),
-        availability_startdate: Joi.string().required(),
-        availability_enddate: Joi.string().required(),
-        chassis_number: Joi.string().required(),
-        eco_friendly_Id: Joi.string().required(),
-        additional_Price: Joi.number().required(),
-        with_driver: Joi.boolean().required()
 
+        carDetail: {
+            modelId: Joi.string().required(),
+            categoryId: Joi.string().required(),
+            chassis_number: Joi.string().required(),
+            plate_number: Joi.string().required(),
+            description: Joi.string().required(),
+            transmissionId: Joi.string().required(),
+            eco_friendly_Id: Joi.string().required(),
+            vehicle_type_id: Joi.string().required(),
+        },
+        location: {
+            latitude: Joi.string().required(),
+            longitude: Joi.string().required(),
+            address: Joi.string().required(),
+        },
+
+        features: {
+            mandatoryFeatures: {
+                fueltype: Joi.string().required(),
+                kmpl: Joi.string().required(),
+                doors: Joi.string().required(),
+                seats: Joi.string().required(),
+            },
+            featuresList: Joi.array().items({ featureId: Joi.string().required() }),
+        },
+        guidelines: Joi.array().items({ guidelineId: Joi.string().required() }),
+        setAvailability: {
+            days: Joi.array().items({ dayId: Joi.string().required() }),
+
+        },
+
+        vehicleimages: {
+            images: Joi.array().items({ mainimage: Joi.string().required(), setCover: Joi.string().required() }),
+        },
+        setPrice: {
+            price: Joi.number().required(),
+            price_inc_driver: Joi.number().required(),
+            created_by: Joi.string().required(),
+            with_driver: Joi.boolean().required(),
+            pickAndDrop: Joi.boolean().required(),
+            additional_Price: Joi.string().required(),
+        }
+        // seats: Joi.string().required(),
+        //green_vehicle_id: Joi.string().required(),
+        // main_image: Joi.string().required(),
+        //userId: Joi.string().required(),
+        // availability_startdate: Joi.string().required(),
+        // availability_enddate: Joi.string().required(),
     });
     return schema.validate(data);
 };

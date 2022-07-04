@@ -7,6 +7,9 @@ const Vehicle = db.Vehicle;
 const Vehicle_to_Features = db.vehicle_to_features;
 const Vehicle_to_Guidelines = db.vehicle_to_guidelines;
 const vehicleAvailability = db.vehicle_Availability;
+const Location = db.locations;
+const VehicleMmandatoryFeatures = db.vehicle_mandatory_features;
+const VehicleImages = db.vehicle_images;
 const crypto = require('crypto');
 const logs = require('../controllers/logging.js');
 const { count } = require('console');
@@ -17,40 +20,71 @@ exports.create = async function (req, res) {
     let vehicle_to_features = {};
     let vehicle_to_guidelines = {};
     let vehicle_availability = {};
+    let location = {};
+    let vehicleMandatoryFeatures = {};
+    let setAsPrice = {};
+    let VehicleImage = {};
     try {
         // Validate
-        const { error } = saveVehicleValidation(req.body);
-        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        // const { error } = saveVehicleValidation(req.body);
+        // if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
         // Building model object from upoading request's body
         //vehicle.locationId = req.body.locationId;
-        vehicle.plate_number = req.body.plate_number;
-        vehicle.description = req.body.description;
-        vehicle.seats = req.body.seats;
-        vehicle.vehicle_type_id = req.body.vehicle_type_id;
-        vehicle.green_vehicle_id = req.body.green_vehicle_id;
-        vehicle.categoryId = req.body.categoryId;
-        vehicle.transmissionId = req.body.transmissionId;
-        vehicle.main_image = req.body.main_image;
-        vehicle.price = req.body.price;
-        vehicle.price_inc_driver = req.body.price_inc_driver;
+        vehicle.modelId = req.body.carDetail.modelId;
+        vehicle.plate_number = req.body.carDetail.plate_number;
+        vehicle.description = req.body.carDetail.description;
+        vehicle.vehicle_type_id = req.body.carDetail.vehicle_type_id;
+        vehicle.categoryId = req.body.carDetail.categoryId;
+        vehicle.transmissionId = req.body.carDetail.transmissionId;
+        vehicle.chassis_number = req.body.carDetail.chassis_number;
+        vehicle.eco_friendly_Id = req.body.carDetaileco_friendly_Id;
         vehicle.uuid = crypto.randomUUID();
-        vehicle.userId = req.body.userId;
-        vehicle.modelId = req.body.modelId;
-        vehicle.makeId = req.body.makeId;
-        vehicle.created_by = req.body.userId;
         vehicle.createdAt = new Date();
         vehicle.cancel = "0";
         vehicle.Isfavourite = "0";
         vehicle.IsDeleted = "0";
-        vehicle.availability_startdate = req.body.availability_startdate;
-        vehicle.availability_enddate = req.body.availability_enddate;
-        vehicle.chassis_number = req.body.chassis_number;
-        vehicle.eco_friendly_Id = req.body.eco_friendly_Id;
-        vehicle.additional_Price = req.body.additional_Price;
-        vehicle.with_driver = req.body.with_driver;
-
+        //  vehicle.seats = req.body.seats;
+        // vehicle.green_vehicle_id = req.body.green_vehicle_id;
+        //vehicle.main_image = req.body.main_image;
+        // vehicle.userId = req.body.userId;
+        // vehicle.makeId = req.body.makeId;
+        //vehicle.availability_startdate = req.body.availability_startdate;
+        // vehicle.availability_enddate = req.body.availability_enddate;
         // Save to MySQL database
         const result = await Vehicle.create(vehicle);
+        if (result.vehicleId != null) {
+            //const { error } = saveLocationValidation(req.body);
+            //if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+            // Building model object from upoading request's body
+            location.latitude = req.body.location.latitude;
+            location.longitude = req.body.location.longitude;
+            location.address = req.body.location.address;
+            location.vehicleId = result.vehicleId;
+            location.createdAt = new Date();
+            location.IsDeleted = "0";
+            await Location.create(location);
+        }
+        if (result.vehicleId != null) {
+            // const { error } = saveVehicleMandatoryFeaturesValidation(req.body);
+            // if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+            // Building model object from upoading request's body
+            vehicleMandatoryFeatures.fueltype = req.body.features.mandatoryFeatures.fueltype;
+            vehicleMandatoryFeatures.kmpl = req.body.features.mandatoryFeatures.kmpl;
+            vehicleMandatoryFeatures.doors = req.body.features.mandatoryFeatures.doors;
+            vehicleMandatoryFeatures.seats = req.body.features.mandatoryFeatures.seats;
+            vehicleMandatoryFeatures.vehicleId = result.vehicleId;
+            // Save to MySQL database
+            await VehicleMmandatoryFeatures.create(vehicleMandatoryFeatures);
+            var obj = req.body.features.mandatoryFeatures.featuresList;
+            var id = result.vehicleId;
+            let features = [];
+            for (var i in obj) {
+                features.push({ 'featureId': obj[i].featureId, 'vehicleId': id });
+                vehicle_to_features.featureId = features[i].featureId;
+                vehicle_to_features.vehicleId = features[i].vehicleId;
+                await Vehicle_to_Features.create(vehicle_to_features);
+            }
+        }
         // send uploading message to client
         if (result.vehicleId != null) {
             var id = result.vehicleId;
@@ -63,28 +97,39 @@ exports.create = async function (req, res) {
                 await Vehicle_to_Guidelines.create(vehicle_to_guidelines);
             }
         }
-
-        if (result.vehicleId != null) {
-            var obj = req.body.features;
-            var id = result.vehicleId;
-            let features = [];
-            for (var i in obj) {
-                features.push({ 'featureId': obj[i].featureId, 'vehicleId': id });
-                vehicle_to_features.featureId = features[i].featureId;
-                vehicle_to_features.vehicleId = features[i].vehicleId;
-                await Vehicle_to_Features.create(vehicle_to_features);
-            }
-        }
         if (result.vehicleId != null) {
             var id = result.vehicleId;
             let days = [];
-            var val = req.body.days;
+            var val = req.body.setAvailability.days;
             for (var i in val) {
                 days.push({ 'dayId': val[i].dayId, 'vehicleId': id });
                 vehicle_availability.dayid = days[i].dayId;
                 vehicle_availability.vehicleid = days[i].vehicleId;
                 await vehicleAvailability.create(vehicle_availability);
             }
+        }
+        if (result.vehicleId != null) {
+            var id = result.vehicleId;
+            let Image = [];
+            var val = req.body.vehicleimages.images;
+            for (var i in val) {
+                Image.push({ 'image': val[i].mainimage, 'vehicleId': id, 'setCover': val[i].setCover });
+                VehicleImage.image_path = Image[i].mainimage;
+                VehicleImage.vehicleid = Image[i].vehicleId;
+                VehicleImage.setCover = Image[i].setCover;
+                VehicleImage.IsDeleted = '0';
+                await VehicleImages.create(VehicleImage);
+            }
+        }
+        if (result.vehicleId != null) {
+
+            setAsPrice.price = req.body.price;
+            setAsPrice.with_driver = req.body.setPrice.with_driver;
+            setAsPrice.price_inc_driver = req.body.setPrice.price_inc_driver;
+            setAsPrice.pickAndDrop = req.body.setPrice.pickAndDrop;
+            setAsPrice.additional_Price = req.body.setPrice.additional_Price;
+            setAsPrice.created_by = req.body.setPrice.created_by;
+            await Vehicle.create(setAsPrice);
         }
         res.status(200).json({
             message: "Create Successfully a vehicle with id = " + result.vehicleId,

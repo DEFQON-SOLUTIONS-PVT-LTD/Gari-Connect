@@ -139,6 +139,10 @@ module.exports = function(sequelize, DataTypes) {
     with_driver: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    pickAndDrop: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,
