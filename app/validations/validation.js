@@ -176,7 +176,6 @@ const updateTransmissionValidation = (data) => {
 const saveVehicleValidation = (data) => {
     const schema = Joi.object({
         // locationId: Joi.string().required(),
-
         carDetail: {
             modelId: Joi.string().required(),
             categoryId: Joi.string().required(),
@@ -192,7 +191,6 @@ const saveVehicleValidation = (data) => {
             longitude: Joi.string().required(),
             address: Joi.string().required(),
         },
-
         features: {
             mandatoryFeatures: {
                 fueltype: Joi.string().required(),
@@ -207,7 +205,6 @@ const saveVehicleValidation = (data) => {
             days: Joi.array().items({ dayId: Joi.string().required() }),
 
         },
-
         vehicleimages: {
             images: Joi.array().items({ mainimage: Joi.string().required(), setCover: Joi.string().required() }),
         },

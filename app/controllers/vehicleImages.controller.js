@@ -107,3 +107,46 @@ exports.uploadImage = async (req, res, next) => {
         next(e);
     }
 }
+exports.updateVehicleImagesByVehicle = async (req, res) => {
+    let VehicleImage = {};
+    let VehicleId = req.body.vehicleId;
+    try {
+        // Validate
+        // const { error } = updateVehicleFeaturesValidation(req.body);
+        //if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        // Save to MySQL database
+        var result = await VehicleImages.destroy({
+            where: {
+                vehicleId: req.body.vehicleId
+            }
+        });
+        if (result != null) {
+            let Image = [];
+            var val = req.body.vehicleimages.images;
+            for (var i in val) {
+                Image.push({ 'image': val[i].mainimage, 'vehicleId': VehicleId, 'setCover': val[i].setCover });
+                VehicleImage.image_path = Image[i].image;
+                VehicleImage.vehicleId = Image[i].vehicleId;
+                VehicleImage.setCover = Image[i].setCover;
+                VehicleImage.IsDeleted = '0';
+                await VehicleImages.create(VehicleImage);
+            }
+
+            logs("VehicleImages", "updateVehicleImagesByVehicle", "Info", "Update successfully a VehicleImage with id = " + VehicleId);
+            res.status(200).json({
+                message: "Update successfully a VehicleImage with id = " + VehicleId,
+                // VehicleImage: successResponse(data),
+            });
+        }
+    }
+    catch (error) {
+        logs("VehicleImages", "updateVehicleImagesByVehicle", "Error", "Error -> Can not update a VehicleImage with id = " + req.params.id);
+        res.status(500).json({
+            message: "Error -> Can not update a VehicleImage with id = " + req.params.id,
+            //error: error.message
+            error: errorResponse(error.message)
+        });
+    }
+
+}
+
