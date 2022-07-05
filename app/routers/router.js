@@ -43,22 +43,18 @@ router.post(
 router.post('/api/auth/token', customers.authenticate);
 router.post(
     '/api/auth/authuser',
-    //[authJwt.verifyToken],
     customers.authuser
 );
 router.post(
     '/api/auth/forgotpassword',
-    //[authJwt.verifyToken],
     customers.forgotpassword
 );
 router.put(
     '/api/auth/changepassword',
-    [authJwt.verifyToken],
     users.updatePassword
 );
 router.put(
     '/api/auth/resetpassword',
-    //[authJwt.verifyToken],
     customers.setForgotPassword
 );
 router.put(
@@ -89,12 +85,10 @@ router.delete(
 
 router.post(
     '/api/auth/verifyotp',
-    [authJwt.verifyToken],
     customers.verifyOtp
 );
 router.post(
     '/api/auth/signin',
-    // [authJwt.verifyToken],
     customers.signin
 );
 
@@ -174,12 +168,10 @@ router.get(
 );
 router.post(
     '/api/user/create',
-    // [authJwt.verifyToken],
     users.create
 );
 router.put(
     '/api/user/createPassword',
-    //[authJwt.verifyToken],
     users.createPassword
 );
 router.put(
