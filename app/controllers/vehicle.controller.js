@@ -138,7 +138,7 @@ exports.create = async function (req, res) {
         }
         res.status(200).json({
             message: "Create Successfully a vehicle with id = " + result.vehicleId,
-            vehicle: successResponse(result),
+            vehicle: [],
         });
     } catch (error) {
         logs("Vehicle", "create", "Info", error.message);
