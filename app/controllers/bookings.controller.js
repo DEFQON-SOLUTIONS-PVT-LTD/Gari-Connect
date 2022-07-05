@@ -109,9 +109,11 @@ exports.getBooking = (req, res, next) => {
     db.sequelize.query('CALL get_bookings(' + statusId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Bookings", "getBooking", "Info", "Get all booking Infos Successfully! ");
+            var arr = result[0];
+            arr.splice(0, 1);
             res.status(200).json({
                 message: "Get all booking Infos Successfully! ",
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {
@@ -128,9 +130,11 @@ exports.getBookingById = (req, res, next) => {
     db.sequelize.query('CALL get_bookingbyid( ' + bookingId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Bookings", "getBookingById", "Info", "Successfully Get a booking with id = " + bookingId);
+            var arr = result[0];
+            arr.splice(0, 1);
             res.status(200).json({
                 message: "Successfully Get a booking with id = " + bookingId,
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {

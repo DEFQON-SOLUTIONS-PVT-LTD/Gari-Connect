@@ -44,9 +44,11 @@ exports.getAvailabilityByVehicleId = (req, res, next) => {
     db.sequelize.query('CALL get_availabilitybyvehicleid(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("vehicleAvailability", "getAvailabilityByVehicleId", "Info", "Successfully Get  availability Details by vehicle with id = " + vehicleId);
+            var arr = result[0];
+            arr.splice(0, 1);
             res.status(200).json({
                 message: "Get availability Details by vehicle Successfully!",
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {

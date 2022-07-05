@@ -22,12 +22,11 @@ exports.create = async function (req, res) {
     let vehicle_availability = {};
     let location = {};
     let vehicleMandatoryFeatures = {};
-    let setAsPrice = {};
     let VehicleImage = {};
     try {
         // Validate
-        // const { error } = saveVehicleValidation(req.body);
-        // if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        const { error } = saveVehicleValidation(req.body);
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
         // Building model object from upoading request's body
         //vehicle.locationId = req.body.locationId;
         vehicle.modelId = req.body.carDetail.modelId;
@@ -43,7 +42,7 @@ exports.create = async function (req, res) {
         vehicle.cancel = "0";
         vehicle.Isfavourite = "0";
         vehicle.IsDeleted = "0";
-        //  vehicle.seats = req.body.seats;
+        //vehicle.seats = req.body.seats;
         // vehicle.green_vehicle_id = req.body.green_vehicle_id;
         //vehicle.main_image = req.body.main_image;
         // vehicle.userId = req.body.userId;
@@ -53,9 +52,6 @@ exports.create = async function (req, res) {
         // Save to MySQL database
         const result = await Vehicle.create(vehicle);
         if (result.vehicleId != null) {
-            //const { error } = saveLocationValidation(req.body);
-            //if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
-            // Building model object from upoading request's body
             location.latitude = req.body.location.latitude;
             location.longitude = req.body.location.longitude;
             location.address = req.body.location.address;
@@ -65,9 +61,6 @@ exports.create = async function (req, res) {
             await Location.create(location);
         }
         if (result.vehicleId != null) {
-            // const { error } = saveVehicleMandatoryFeaturesValidation(req.body);
-            // if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
-            // Building model object from upoading request's body
             vehicleMandatoryFeatures.fueltype = req.body.features.mandatoryFeatures.fueltype;
             vehicleMandatoryFeatures.kmpl = req.body.features.mandatoryFeatures.kmpl;
             vehicleMandatoryFeatures.doors = req.body.features.mandatoryFeatures.doors;
@@ -75,7 +68,7 @@ exports.create = async function (req, res) {
             vehicleMandatoryFeatures.vehicleId = result.vehicleId;
             // Save to MySQL database
             await VehicleMmandatoryFeatures.create(vehicleMandatoryFeatures);
-            var obj = req.body.features.mandatoryFeatures.featuresList;
+            var obj = req.body.features.featuresList;
             var id = result.vehicleId;
             let features = [];
             for (var i in obj) {
@@ -114,22 +107,34 @@ exports.create = async function (req, res) {
             var val = req.body.vehicleimages.images;
             for (var i in val) {
                 Image.push({ 'image': val[i].mainimage, 'vehicleId': id, 'setCover': val[i].setCover });
-                VehicleImage.image_path = Image[i].mainimage;
-                VehicleImage.vehicleid = Image[i].vehicleId;
+                VehicleImage.image_path = Image[i].image;
+                VehicleImage.vehicleId = Image[i].vehicleId;
                 VehicleImage.setCover = Image[i].setCover;
                 VehicleImage.IsDeleted = '0';
                 await VehicleImages.create(VehicleImage);
             }
         }
         if (result.vehicleId != null) {
-
-            setAsPrice.price = req.body.price;
-            setAsPrice.with_driver = req.body.setPrice.with_driver;
-            setAsPrice.price_inc_driver = req.body.setPrice.price_inc_driver;
-            setAsPrice.pickAndDrop = req.body.setPrice.pickAndDrop;
-            setAsPrice.additional_Price = req.body.setPrice.additional_Price;
-            setAsPrice.created_by = req.body.setPrice.created_by;
-            await Vehicle.create(setAsPrice);
+            let vehicle = await Vehicle.findByPk(result.vehicleId);
+            if (!vehicle) {
+                // return a response to client
+                logs("Vehicle", "updateVehicle", "Info", "Not Found for creating set price a vehicle with id = " + result.vehicleId);
+                res.status(404).json({
+                    message: "Not Found  a vehicle with id = " + result.vehicleId,
+                    vehicle: "",
+                    error: "404"
+                });
+            } else {
+                let updatedObject = {
+                    price: req.body.setPrice.price,
+                    with_driver: req.body.setPrice.with_driver,
+                    price_inc_driver: req.body.setPrice.price_inc_driver,
+                    pickAndDrop: req.body.setPrice.pickAndDrop,
+                    additional_Price: req.body.setPrice.additional_Price,
+                    created_by: req.body.setPrice.created_by
+                }
+                await vehicle.update(updatedObject, { returning: true, where: { vehicleId: result.vehicleId } });
+            }
         }
         res.status(200).json({
             message: "Create Successfully a vehicle with id = " + result.vehicleId,
@@ -289,9 +294,11 @@ exports.getVehicleByFilters = (req, res, next) => {
     db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + ',' + makeId + ',' + locationId + ',' + modelId + ',' + vehicle_type_id + ',' + rating + ',' + price_range1 + ',' + price_range2 + ',' + sorting + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicles", "getVehicleByFilters", "Info", "Get all filtered Lists Successfully! ");
+            var arr = result[0];
+            arr.splice(0, 1);
             res.status(200).json({
                 message: "Get all Vehicles Infos Successfully!",
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {
@@ -309,9 +316,11 @@ exports.getVehicleDetails = (req, res, next) => {
     db.sequelize.query('CALL getVehicleDetail(' + bookingStatusId + ',' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicle", "getVehicleDetails", "Info", "Successfully Get a vehicle with id = " + vehicleId);
+            var arr = result[0];
+            arr.splice(0, 1);
             res.status(200).json({
                 message: "Get Vehicle Detail Page Successfully!",
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {
@@ -539,9 +548,11 @@ exports.getVehicleList = (req, res, next) => {
     db.sequelize.query('CALL get_vehicleList(); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicle", "getVehicleList", "Error", "Get all VehicleList Infos Successfully! ");
+            var arr = result[0];
+            arr.splice(0, 1);
             res.status(200).json({
                 message: "Get all VehicleList Infos Successfully! ",
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {
@@ -596,9 +607,11 @@ exports.getVehicleBySearch = (req, res, next) => {
         db.sequelize.query('CALL get_vehiclesearch (' + locationId + ',' + arrStr + '); FETCH ALL FROM "rs_resultone";', res, next)
             .then(result => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
+                var arr = result[0];
+                arr.splice(0, 1);
                 res.status(200).json({
                     message: "Get all getVehiclyeBySearch Infos Successfully! ",
-                    results: { 'query': result[0], 'count': result[1][1].rowCount }
+                    results: { 'query': arr, 'count': result[1][1].rowCount }
                 });
             })
     }
@@ -617,9 +630,11 @@ exports.getVehicleById = (req, res, next) => {
     db.sequelize.query('CALL get_vehiclebyid(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicle", "getVehicleById", "Info", "Successfully Get a vehicle with id = " + vehicleId);
+            var arr = result[0];
+            arr.splice(0, 1);
             res.status(200).json({
                 message: "Get Vehicle Detail Page Successfully!",
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {

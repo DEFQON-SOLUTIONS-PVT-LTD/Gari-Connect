@@ -566,7 +566,7 @@ router.post('/api/vehicleReviews/create', vehicleReviews.create);
 router.get('/api/vehicleImages/all', vehicleImages.getVehicleImages);
 router.get('/api/vehicleImages/getById/:id', vehicleImages.getVehicleImagesById);
 router.delete('/api/vehicleImages/delete/:id', vehicleImages.deleteById);
-
+router.put('/api/vehicleImages/updateByVehicle', vehicleImages.updateVehicleImagesByVehicle);
 
 router.get('/api/dashboard/all', dashboard.getDashboardData);
 

@@ -179,9 +179,11 @@ exports.getLocationByVehicleId = (req, res, next) => {
     db.sequelize.query('CALL get_locationByVehicleId(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("location", "getLocationByVehicleId", "Info", "Successfully Get  location Details by vehicle with id = " + vehicleId);
+            var arr = result[0];
+            arr.splice(0, 1);
             res.status(200).json({
                 message: "Get location Details by vehicle Successfully!",
-                result: result[0],
+                result: arr,
             });
         })
         .catch(error => {

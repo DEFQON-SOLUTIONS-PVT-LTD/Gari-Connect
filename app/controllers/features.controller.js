@@ -186,9 +186,11 @@ exports.getfeaturesByVehicleId = (req, res, next) => {
                 db.sequelize.query('CALL get_featuresbyvehicleid(' + vehicleId + '); FETCH ALL FROM "rs_resulttwo";', res, next)
                     .then(data => {
                         logs("Features", "getfeaturesByVehicleId", "Info", "Successfully Get  features Details by vehicle with id = " + vehicleId);
+                        var arr = result[0];
+                        arr.splice(0, 1);
                         res.status(200).json({
                             message: "Get features Details by vehicle Successfully!",
-                            result: { 'features': result[0], 'mandatoryFeature': data[0][1] }
+                            result: { 'features': arr, 'mandatoryFeature': data[0][1] }
                         });
                     });
             }
