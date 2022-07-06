@@ -99,7 +99,7 @@ exports.getMake = (req, res) => {
         .then(makeInfos => {
             logs("Make", "getMake", "Info", "Get all makes' Infos Successfully!");
             for (var i in makeInfos) {
-                data.push({ 'makeId': makeInfos[i].makeId, 'makeName': makeInfos[i].name });
+                data.push({ 'makeName': makeInfos[i].name, 'makeId': makeInfos[i].makeId });
             }
             res.status(200).json({
                 message: "Get all makes' Infos Successfully!",

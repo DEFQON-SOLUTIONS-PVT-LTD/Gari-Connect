@@ -604,7 +604,8 @@ exports.getVehicleBySearch = (req, res, next) => {
         // var arrStr = JSON.stringify({ days });
         var arrStr = "'" + "{" + day.join() + "}" + "'";
         let locationId = req.body.locationId;
-        db.sequelize.query('CALL get_vehiclesearch (' + locationId + ',' + arrStr + '); FETCH ALL FROM "rs_resultone";', res, next)
+        //db.sequelize.query('CALL get_vehiclesearch (' + locationId + ',' + arrStr + '); FETCH ALL FROM "rs_resultone";', res, next)
+        db.sequelize.query('CALL get_vehiclesearch (); FETCH ALL FROM "rs_resultone";', res, next)
             .then(result => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
                 var arr = result[0];

@@ -242,7 +242,7 @@ router.delete(
     model.deleteById
 );
 router.get(
-    '/api/model/getbymakeId',
+    '/api/model/getbymakeId/:id',
     [authJwt.verifyToken],
     model.getModelByMakeId
 );
@@ -259,7 +259,7 @@ router.put(
 );
 router.get(
     '/api/greenVehicle/all',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     greenVehicle.getGreenVehicle
 );
 router.get(
