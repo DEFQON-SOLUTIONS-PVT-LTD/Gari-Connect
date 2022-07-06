@@ -202,7 +202,7 @@ router.put(
 );
 router.get(
     '/api/make/all',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     make.getMake
 );
 router.get(
@@ -243,7 +243,7 @@ router.delete(
 );
 router.get(
     '/api/model/getbymakeId/:id',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     model.getModelByMakeId
 );
 
@@ -410,7 +410,7 @@ router.put(
 );
 router.get(
     '/api/vehicle/all',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     vehicle.getVehicle
 );
 router.get(
