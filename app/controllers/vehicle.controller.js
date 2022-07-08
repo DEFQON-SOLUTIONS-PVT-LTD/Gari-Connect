@@ -125,13 +125,22 @@ exports.create = async function (req, res) {
                     error: "404"
                 });
             } else {
-
+                var price_inc_driver = 0;
+                var additional_Price = 0;
+                if (req.body.setPrice.with_driver == "false") {
+                    price_inc_driver = 0;
+                    additional_Price = 0;
+                }
+                else {
+                    price_inc_driver = req.body.setPrice.price_inc_driver;
+                    additional_Price = req.body.setPrice.additional_Price;
+                }
                 let updatedObject = {
                     price: req.body.setPrice.price,
                     with_driver: req.body.setPrice.with_driver,
-                    price_inc_driver: req.body.setPrice.price_inc_driver,
+                    price_inc_driver: price_inc_driver,
                     pickAndDrop: req.body.setPrice.pickAndDrop,
-                    additional_Price: req.body.setPrice.additional_Price,
+                    additional_Price: additional_Price,
                     created_by: req.body.setPrice.created_by
                 }
                 await vehicle.update(updatedObject, { returning: true, where: { vehicleId: result.vehicleId } });

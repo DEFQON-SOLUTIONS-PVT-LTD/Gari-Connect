@@ -228,7 +228,7 @@ router.put(
 );
 router.get(
     '/api/model/all',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     model.getModel
 );
 router.get(
@@ -401,7 +401,7 @@ router.get('/api/vehicle/vehicleSearch', vehicle.getVehicleBySearch);
 router.get('/api/vehicle/vehicleDetails/:id', vehicle.getVehicleListDetail);
 router.post(
     '/api/vehicle/create',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     vehicle.create
 );
 router.put(

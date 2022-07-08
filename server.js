@@ -15,7 +15,8 @@ var fs = require('fs');
 // db.sequelize.sync().then(() => {
 //   console.log('Drop and Resync with { force: true }');
 // });
-
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
 let router = require('./app/routers/router.js');
 
 const cors = require('cors')
