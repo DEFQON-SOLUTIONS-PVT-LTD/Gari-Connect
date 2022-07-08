@@ -228,7 +228,7 @@ router.put(
 );
 router.get(
     '/api/model/all',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     model.getModel
 );
 router.get(
@@ -398,9 +398,10 @@ router.put('/api/vehicle/isfavourite', vehicle.IsFavourite);
 router.put('/api/vehicle/cancel', vehicle.CancelBooking);
 router.get('/api/vehicle/vehicleList', vehicle.getVehicleList);
 router.get('/api/vehicle/vehicleSearch', vehicle.getVehicleBySearch);
+router.get('/api/vehicle/vehicleDetails/:id', vehicle.getVehicleListDetail);
 router.post(
     '/api/vehicle/create',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     vehicle.create
 );
 router.put(

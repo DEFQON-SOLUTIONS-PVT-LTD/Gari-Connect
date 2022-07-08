@@ -125,12 +125,22 @@ exports.create = async function (req, res) {
                     error: "404"
                 });
             } else {
+                var price_inc_driver = 0;
+                var additional_Price = 0;
+                if (req.body.setPrice.with_driver == "false") {
+                    price_inc_driver = 0;
+                    additional_Price = 0;
+                }
+                else {
+                    price_inc_driver = req.body.setPrice.price_inc_driver;
+                    additional_Price = req.body.setPrice.additional_Price;
+                }
                 let updatedObject = {
                     price: req.body.setPrice.price,
                     with_driver: req.body.setPrice.with_driver,
-                    price_inc_driver: req.body.setPrice.price_inc_driver,
+                    price_inc_driver: price_inc_driver,
                     pickAndDrop: req.body.setPrice.pickAndDrop,
-                    additional_Price: req.body.setPrice.additional_Price,
+                    additional_Price: additional_Price,
                     created_by: req.body.setPrice.created_by
                 }
                 await vehicle.update(updatedObject, { returning: true, where: { vehicleId: result.vehicleId } });
@@ -641,6 +651,72 @@ exports.getVehicleById = (req, res, next) => {
         .catch(error => {
             // log on console
             logs("Vehicle", "getVehicleById", "Error", error.message);
+            res.status(500).json({
+                message: "Error!",
+                error: error
+            });
+        });
+}
+exports.getVehicleListDetail = (req, res, next) => {
+    let vehicleId = req.params.id;
+    db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
+        .then(result => {
+            if (result != null) {
+                db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultimg";', res, next)
+                    .then(data => {
+                        if (data != null) {
+                            db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultman_fea";', res, next)
+                                .then(data1 => {
+                                    if (data1 != null) {
+                                        db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultfea";', res, next)
+                                            .then(data2 => {
+                                                if (data2 != null) {
+                                                    db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultgui";', res, next)
+                                                        .then(data3 => {
+                                                            if (data3 != null) {
+                                                                db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resulthost";', res, next)
+                                                                    .then(data4 => {
+                                                                        logs("Vehicle", "getVehicleListDetail", "Info", "Successfully Get  vehicle Details by vehicle with id = " + vehicleId);
+                                                                        var arr1 = result[0];
+                                                                        arr1.splice(0, 1);
+                                                                        var arr2 = data[0];
+                                                                        arr2.splice(0, 1);
+                                                                        var arr3 = data1[0];
+                                                                        arr3.splice(0, 1);
+                                                                        var arr4 = data2[0];
+                                                                        arr4.splice(0, 1);
+                                                                        var arr5 = data3[0];
+                                                                        arr5.splice(0, 1);
+                                                                        var arr6 = data4[0];
+                                                                        arr6.splice(0, 1);
+                                                                        res.status(200).json({
+                                                                            message: "Get features Details by vehicle Successfully!",
+                                                                            result: {
+                                                                                'vehicleDetail': arr1,
+                                                                                'VehicleImg': arr2,
+                                                                                'Mandatory_feature': arr3,
+                                                                                'features': arr4,
+                                                                                'guideline': arr5,
+                                                                                "host": arr6
+                                                                            }
+                                                                        });
+                                                                    })
+                                                            }
+                                                        })
+                                                }
+                                            })
+
+
+                                    }
+                                })
+                        }
+                    })
+            }
+
+        })
+        .catch(error => {
+            // log on console
+            logs("Vehicle", "getVehicleListDetail", "Error", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error
