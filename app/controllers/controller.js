@@ -146,8 +146,6 @@ exports.whatsappVerification = (req, res) => {
     });
   }
 }
-
-
 exports.forgotpassword = (req, res) => {
   let forgotpwd = {};
   try {
@@ -157,7 +155,8 @@ exports.forgotpassword = (req, res) => {
           logs("MainController", "forgotpassword", "Info", "Phone No. does not exists with this No. = " + req.body.phone_no);
           errordetails = {
             message: "Phone No. does not exists with this No. = " + req.body.phone_no,
-            status: false
+            status: false,
+            type: "phone_no"
           }
           return res.status(400).send(errorResponse(errordetails, {}));
 
@@ -412,13 +411,14 @@ exports.signin = (req, res) => {
     .then(user => {
       if (!user) {
         logs("MainController", "signin", "Error", "User Not found.");
-        return res.status(404).send({ message: "User Not found." });
+        return res.status(404).send({ message: "User Not found.", type: "phoneno" });
       }
       if (!user.is_active) {
         logs("MainController", "signin", "Error", "User is not approved!");
         return res.status(401).send({
           accessToken: null,
-          message: "User is not approved!"
+          message: "User is not approved!",
+          type: "phoneno"
         });
       }
       if (user.isGoogleUser == 0 || user.isFacebookUser == 0) {

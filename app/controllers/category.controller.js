@@ -56,7 +56,8 @@ exports.updateCategory = async (req, res) => {
             res.status(404).json({
                 message: "Not Found for updating a category with id = " + categoryId,
                 category: "",
-                error: "404"
+                error: "404",
+                type: "categoryId"
             });
         } else {
             // update new change to database
@@ -75,6 +76,7 @@ exports.updateCategory = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not update a category with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    type: "categoryId"
                 });
             }
             logs("Category", "Update", "Info", "Update successfully a category with id = " + categoryId);
@@ -128,7 +130,9 @@ exports.getCategoryById = (req, res) => {
                 logs("Category", "getCategoryById", "Info", "No Category found against categoryId = " + categoryId);
                 res.status(404).json({
                     message: "No Category found against categoryId = " + categoryId,
+                    type: "categoryId",
                     category: category
+
                 });
             }
 
@@ -153,7 +157,8 @@ exports.deleteById = async (req, res) => {
             // return a response to client
             res.status(404).json({
                 message: "Not Found for Deleting a category with id = " + categoryId,
-                error: "404"
+                error: "404",
+                type: "categoryId"
             });
         } else {
             let updatedObject = {
@@ -166,6 +171,7 @@ exports.deleteById = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not delete a category with id = " + req.params.id,
                     error: "Id not Exists",
+                    type: "categoryId"
                 });
             }
             logs("Category", "deleteById", "Info", "delete successfully a category with id = " + categoryId);

@@ -68,7 +68,8 @@ exports.updateCardInfo = async (req, res) => {
             res.status(404).json({
                 message: "Not Found for updating a card information with id = " + userCardInformationId,
                 cardinfo: "",
-                error: "404"
+                error: "404",
+                type: "userCardInformationId"
             });
         } else {
             // update new change to database
@@ -88,6 +89,7 @@ exports.updateCardInfo = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not update a card information with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    type: "userCardInformationId"
                 });
             }
             logs("UserCardInformation", "updateCardInfo", "Info", "Update successfully a card information");
@@ -157,7 +159,8 @@ exports.deleteById = async (req, res) => {
             // return a response to client
             res.status(404).json({
                 message: "Not Found for Deleting a Card Information with id = " + userCardInformationId,
-                error: "404"
+                error: "404",
+                type: "userCardInformationId"
             });
         } else {
             let updatedObject = {
@@ -170,6 +173,7 @@ exports.deleteById = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not delete a Card Information with id = " + req.params.id,
                     error: "Id not Exists",
+                    type: "userCardInformationId"
                 });
             }
             logs("UserCardInformation", "deleteById", "Info", "delete successfully a Card Information with id = " + userCardInformationId);

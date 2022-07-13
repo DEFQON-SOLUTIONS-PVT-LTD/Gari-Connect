@@ -173,7 +173,8 @@ exports.updateVehicle = async (req, res) => {
             res.status(404).json({
                 message: "Not Found for updating a vehicle with id = " + vehicleId,
                 vehicle: "",
-                error: "404"
+                error: "404",
+                type: "vehicleId"
             });
         } else {
             // update new change to database
@@ -212,6 +213,7 @@ exports.updateVehicle = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not update a vehicle with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    type: "vehicleId"
                 });
             }
             logs("Vehicle", "updateVehicle", "Error", "Update successfully a vehicle with id = " + vehicleId);
@@ -690,7 +692,7 @@ exports.getVehicleListDetail = (req, res, next) => {
                                                                         var arr6 = data4[0];
                                                                         arr6.splice(0, 1);
                                                                         res.status(200).json({
-                                                                            message: "Get features Details by vehicle Successfully!",
+                                                                            message: "Get vehicle Details by vehicle Successfully!",
                                                                             result: {
                                                                                 'vehicleDetail': arr1,
                                                                                 'VehicleImg': arr2,

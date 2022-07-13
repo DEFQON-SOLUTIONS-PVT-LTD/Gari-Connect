@@ -56,7 +56,8 @@ exports.updateUserReview = async (req, res) => {
             res.status(404).json({
                 message: "Not Found for updating a user review with id = " + user_review_id,
                 review: "",
-                error: "404"
+                error: "404",
+                type: "user_review_id"
             });
         } else {
             // update new change to database
@@ -73,6 +74,7 @@ exports.updateUserReview = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not update a user review with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    type: "user_review_id"
                 });
             }
             logs("UserReview", "updateUserReview", "Info", "Update successfully a user review with id = " + user_review_id);
@@ -138,7 +140,8 @@ exports.deleteReviewById = async (req, res) => {
             // return a response to client
             res.status(404).json({
                 message: "Not Found for Deleting a user review with id = " + user_review_id,
-                error: "404"
+                error: "404",
+                type: "user_review_id"
             });
         } else {
             let result = await UserReviews.destroy({
@@ -152,6 +155,7 @@ exports.deleteReviewById = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not delete a user review with id = " + req.params.id,
                     error: "Id not Exists",
+                    type: "user_review_id"
                 });
             }
             logs("UserReview", "deleteById", "Info", "delete successfully a user review with id = " + user_review_id);
