@@ -175,6 +175,10 @@ router.put(
     users.createPassword
 );
 router.put(
+    '/api/user/updatePhoneNo',
+    users.updatePhoneNo
+);
+router.put(
     '/api/user/update',
     [authJwt.verifyToken],
     users.updateUser

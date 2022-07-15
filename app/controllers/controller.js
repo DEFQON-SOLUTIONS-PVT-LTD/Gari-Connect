@@ -19,7 +19,7 @@ const client = require('twilio')(accountSid, authToken);
 exports.makecall = (req, res) => {
   let twillioCall = {};
   try {
-    var rand = Math.floor(Math.random() * 10000) + 1;
+    var rand = Math.floor(1000 + Math.random() * 9000);
     const root = create({ version: '1.0', encoding: 'UTF-8' })
       .ele('Response')
       .ele('Say').txt('Welcome to Gari Connect! Your Shatay Taat is ' + rand + '. once again your Shatay Taat is ' + rand + '. Thanks!').up()
@@ -94,7 +94,7 @@ exports.whatsappVerification = (req, res) => {
   let whatsappVerify = {};
   try {
     var expiryTime = 60;
-    var rand = Math.floor(Math.random() * 10000) + 1;
+    var rand = Math.floor(1000 + Math.random() * 9000);
 
     let authUserPhone = Authuser.findOne({ where: { phone_no: req.body.userphone } }).then(function (userrow) {
       if (authUserPhone) {
@@ -176,7 +176,7 @@ exports.forgotpassword = (req, res) => {
           // Validate
           const { error } = saveAuthUserValidation(req.body);
           if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
-          var rand = Math.floor(Math.random() * 10000) + 1;
+          var rand = Math.floor(1000 + Math.random() * 9000);
           // two factor authentication
           client.messages.create({
             body: 'Your OTP code is : ' + rand + ' to reset your password. This code will expires in ' + expiryTime + ' Seconds',
@@ -219,65 +219,46 @@ exports.forgotpassword = (req, res) => {
 exports.authuser = (req, res) => {
   let authuser = {};
   try {
-    let checkUserByPhone = User.findOne({ where: { phoneno: req.body.phone_no } }).then(function (user_row) {
-      if (checkUserByPhone) {
-        if (user_row == null) {
-          logs("MainController", "authuser", "Info", "Phone No. Already in use try to login with this No. = " + req.body.phone_no);
-          errordetails = {
-            message: "Phone No. Already in use try to login with this No. = " + req.body.phone_no,
-            status: false
-          }
-          return res.status(400).send(errorResponse(errordetails, {}));
-
-        } else {
-          let authUserPhone = Authuser.findOne({ where: { phone_no: req.body.phone_no } }).then(function (userrow) {
-            if (authUserPhone) {
-              if (userrow != null) {
-                Authuser.destroy({
-                  where: {
-                    authuserId: userrow.authuserId
-                  }
-                });
-              }
+    let authUserPhone = Authuser.findOne({ where: { phone_no: req.body.phone_no } }).then(function (userrow) {
+      if (authUserPhone) {
+        if (userrow != null) {
+          Authuser.destroy({
+            where: {
+              authuserId: userrow.authuserId
             }
-          })
-          var expiryTime = 60;
-          // Validate
-          const { error } = saveAuthUserValidation(req.body);
-          if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
-          var rand = Math.floor(Math.random() * 10000) + 1;
-          // two factor authentication
-          client.messages.create({
-            body: 'Your OTP code is : ' + rand + ' Do not share with anyone at any risk. This code will expires in ' + expiryTime + ' Seconds',
-            from: env.TWILIO_PHONE_NUMBER,
-            to: req.body.phone_no
-          })
-            .then(message => console.log(message.sid));
-
-
-          var expiry_time;
-          expiry_time = new Date();
-          //expires in one minute.
-          expiry_time.setSeconds(expiry_time.getSeconds() + expiryTime);
-
-          authuser.phone_no = req.body.phone_no;
-          authuser.otp_code = rand;
-          authuser.otp_expiry = expiry_time;
-
-
-          // Save to MySQL database
-          Authuser.create(authuser).then(result => {
-            logs("MainController", "authuser", "Info", "Phone No. saved and otp sent to = " + req.body.phone_no);
-            // send uploading message to client
-            res.status(200).json({
-              message: "Phone No. saved and otp sent to = " + req.body.phone_no,
-              customer: successResponse(result),
-            });
           });
         }
       }
     })
+    var expiryTime = 60;
+    // Validate
+    const { error } = saveAuthUserValidation(req.body);
+    if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+    var rand = Math.floor(1000 + Math.random() * 9000);
+    // two factor authentication
+    client.messages.create({
+      body: 'Your OTP code is : ' + rand + ' Do not share with anyone at any risk. This code will expires in ' + expiryTime + ' Seconds',
+      from: env.TWILIO_PHONE_NUMBER,
+      to: req.body.phone_no
+    })
+      .then(message => console.log(message.sid));
+    var expiry_time;
+    expiry_time = new Date();
+    //expires in one minute.
+    expiry_time.setSeconds(expiry_time.getSeconds() + expiryTime);
 
+    authuser.phone_no = req.body.phone_no;
+    authuser.otp_code = rand;
+    authuser.otp_expiry = expiry_time;
+    // Save to MySQL database
+    Authuser.create(authuser).then(result => {
+      logs("MainController", "authuser", "Info", "Phone No. saved and otp sent to = " + req.body.phone_no);
+      // send uploading message to client
+      res.status(200).json({
+        message: "Phone No. saved and otp sent to = " + req.body.phone_no,
+        customer: successResponse(result),
+      });
+    });
   }
   catch (error) {
     logs("MainController", "authuser", "Error", error.message);

@@ -22,6 +22,7 @@ const Permissions = db.Permissions;
 const crypto = require('crypto');
 const { encrypt, decrypt } = require('../config/crypto_hash.js');
 const { type } = require('os');
+const { Users } = require('../config/db.config.js');
 const Op = db.Sequelize.Op;
 
 exports.addstaff = (req, res) => {
@@ -688,6 +689,36 @@ exports.createPassword = async (req, res) => {
         logs("MainController", "forgotpassword", "Error", error.message);
         res.status(403).json({
             message: "Forbidden!",
+            error: errorResponse(error.message)
+        });
+    }
+}
+exports.updatePhoneNo = async (req, res) => {
+    try {
+        let updatedObject = {
+            phoneno: '0'
+        }
+        let result = await Users.update(updatedObject, { returning: true, where: {} });
+        // return the response to client
+        if (!result) {
+            logs("User", "updatePhoneNo", "Error", "Error -> Can not update a phoneNo");
+            res.status(500).json({
+                message: "Error -> Can not update a PhoneNo",
+                error: "Can NOT Updated",
+                type: "PhoneNo"
+            });
+        }
+        logs("User", "updatePhoneNo", "Error", "Update successfully PhoneNo");
+        res.status(200).json({
+            message: "Update successfully PhoneNo ",
+            Users: updatedObject,
+        });
+    }
+    catch (error) {
+        logs("User", "updatePhoneNo", "Error", error.message);
+        res.status(500).json({
+            message: "Error -> Can not update a PhoneNo",
+            // error: error.message
             error: errorResponse(error.message)
         });
     }

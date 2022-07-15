@@ -13,6 +13,7 @@ const VehicleImages = db.vehicle_images;
 const crypto = require('crypto');
 const logs = require('../controllers/logging.js');
 const { count } = require('console');
+const { type } = require('os');
 //const Op = db.Sequelize.Op;
 
 exports.create = async function (req, res) {
@@ -26,7 +27,7 @@ exports.create = async function (req, res) {
     try {
         // Validate
         const { error } = saveVehicleValidation(req.body);
-        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, error.details[0].context.label, {}));
         // Building model object from upoading request's body
         //vehicle.locationId = req.body.locationId;
         vehicle.modelId = req.body.carDetail.modelId;
@@ -584,7 +585,7 @@ exports.getVehicleBySearch = (req, res, next) => {
         let startDate = req.body.startdate;
         let endDate = req.body.enddate;
         let days = [];
-        let dayName = [];
+        let daysName = [];
         let day = [];
         let end = new Date(endDate)
         for (let start = new Date(startDate); start <= end; start.setDate(start.getDate() + 1)) {
@@ -593,31 +594,33 @@ exports.getVehicleBySearch = (req, res, next) => {
                 days.push(new Date(start));
             }
         }
-        dayName = days.map(e => e.toLocaleString('en-US', { weekday: 'long' }));
-        for (let i = 0; i < dayName.length; i++) {
-            if (dayName[i] == 'Monday') {
+        daysName = days.map(e => e.toLocaleString('en-US', { weekday: 'long' }));
+        for (let i = 0; i < daysName.length; i++) {
+            if (daysName[i] == 'Monday') {
                 day.push(1);
             }
-            else if (dayName[i] == 'Tuesday') {
+            else if (daysName[i] == 'Tuesday') {
                 day.push(2);
             }
-            else if (dayName[i] == 'Wednesday') {
+            else if (daysName[i] == 'Wednesday') {
                 day.push(3);
-            } else if (dayName[i] == 'Thursday') {
+            } else if (daysName[i] == 'Thursday') {
                 day.push(4);
-            } else if (dayName[i] == 'Friday') {
+            } else if (daysName[i] == 'Friday') {
                 day.push(5);
-            } else if (dayName[i] == 'Saturday') {
+            } else if (daysName[i] == 'Saturday') {
                 day.push(6);
-            } else if (dayName[i] == 'Sunday') {
+            } else if (daysName[i] == 'Sunday') {
                 day.push(7);
             }
         }
-        // var arrStr = JSON.stringify({ days });
-        var arrStr = "'" + "{" + day.join() + "}" + "'";
-        let locationId = req.body.locationId;
-        //db.sequelize.query('CALL get_vehiclesearch (' + locationId + ',' + arrStr + '); FETCH ALL FROM "rs_resultone";', res, next)
-        db.sequelize.query('CALL get_vehiclesearch (); FETCH ALL FROM "rs_resultone";', res, next)
+        var totaldays = JSON.stringify({ days });
+        var totaldays = "'" + "{" + day.join() + "}" + "'";
+        let address = req.body.address;
+        let latitude = req.body.latitude;
+        let longitude = req.body.longitude;
+        db.sequelize.query('CALL get_vehiclesearchbylocation (' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + '); FETCH ALL FROM "rs_resultone";', res, next)
+            //  db.sequelize.query('CALL get_vehiclesearch (); FETCH ALL FROM "rs_resultone";', res, next)
             .then(result => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
                 var arr = result[0];
