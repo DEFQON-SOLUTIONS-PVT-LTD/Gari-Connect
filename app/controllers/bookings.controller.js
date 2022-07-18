@@ -72,7 +72,8 @@ exports.statusUpdate = async (req, res) => {
             res.status(404).json({
                 message: "Not Found for updating a booking with id = " + bookingId,
                 booking: "",
-                error: "404"
+                error: "404",
+                type: "bookingId"
             });
         } else {
             // update new change to database
@@ -88,6 +89,7 @@ exports.statusUpdate = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not update a ststus with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    type: "bookingId"
                 });
             }
             logs("Bookings", "statusUpdate", "Info", "Update successfully a status with id = " + bookingId);
@@ -157,7 +159,8 @@ exports.deleteById = async (req, res) => {
             // return a response to client
             res.status(404).json({
                 message: "Not Found for Deleting a booking with id = " + bookingId,
-                error: "404"
+                error: "404",
+                type: "bookingId"
             });
         } else {
             let updatedObject = {
@@ -170,6 +173,7 @@ exports.deleteById = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not delete a booking with id = " + req.params.id,
                     error: "Id not Exists",
+                    type: "bookingId"
                 });
             }
             logs("Bookings", "deleteById", "Info", "delete successfully a booking with id = " + bookingId);
@@ -209,7 +213,8 @@ exports.IsApproved = async (req, res) => {
             res.status(404).json({
                 message: "Booking Not Found with id = " + bookingId,
                 booking: "",
-                error: "404"
+                error: "404",
+                type: "bookingId"
             });
         } else {
             // update new change to database
@@ -226,6 +231,7 @@ exports.IsApproved = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> booking Can not Approved with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    type: "bookingId"
                 });
             }
             logs("Bookings", "IsApproved", "Info", "Booking successfully Approved with id = " + bookingId);
@@ -253,7 +259,8 @@ exports.IsReject = async (req, res) => {
             res.status(404).json({
                 message: "Booking Not Found with id = " + bookingId,
                 booking: "",
-                error: "404"
+                error: "404",
+                type: "bookingId"
             });
         } else {
             // update new change to database
@@ -270,6 +277,7 @@ exports.IsReject = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> booking Can not Reject with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    type: "bookingId"
                 });
             }
             logs("Bookings", "IsReject", "Info", "Booking successfully Reject with id = " + bookingId);

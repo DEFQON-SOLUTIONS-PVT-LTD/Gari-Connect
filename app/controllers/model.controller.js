@@ -57,7 +57,8 @@ exports.updateModel = async (req, res) => {
             res.status(404).json({
                 message: "Not Found for updating a model with id = " + modelId,
                 model: "",
-                error: "404"
+                error: "404",
+                type: "modelId"
             });
         } else {
             // update new change to database
@@ -78,6 +79,7 @@ exports.updateModel = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not update a model with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    type: "modelId"
                 });
             }
             logs("Model", "updateModel", "Error", "Update successfully a model with id = " + modelId);
@@ -148,7 +150,8 @@ exports.deleteById = async (req, res) => {
             // return a response to client
             res.status(404).json({
                 message: "Not Found for Deleting a model with id = " + modelId,
-                error: "404"
+                error: "404",
+                type: "modelId"
             });
         } else {
             let updatedObject = {
@@ -161,6 +164,7 @@ exports.deleteById = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not delete a model with id = " + req.params.id,
                     error: "Id not Exists",
+                    type: "modelId"
                 });
             }
             logs("Model", "deleteById", "Info", "delete successfully a model with id = " + modelId);

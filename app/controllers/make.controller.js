@@ -55,7 +55,8 @@ exports.updateMake = async (req, res) => {
             res.status(404).json({
                 message: "Not Found for updating a make with id = " + makeId,
                 make: "",
-                error: "404"
+                error: "404",
+                type: "makeId"
             });
         } else {
             // update new change to database
@@ -74,6 +75,7 @@ exports.updateMake = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not update a make with id = " + req.params.id,
                     error: "Can NOT Updated",
+                    typr: "makeId"
                 });
             }
             logs("Make", "updateMake", "Info", "Update successfully a make with id = " + makeId);
@@ -148,7 +150,8 @@ exports.deleteById = async (req, res) => {
             // return a response to client
             res.status(404).json({
                 message: "Not Found for Deleting a Make with id = " + makeId,
-                error: "404"
+                error: "404",
+                type: "makeId"
             });
         } else {
             let updatedObject = {
@@ -161,6 +164,7 @@ exports.deleteById = async (req, res) => {
                 res.status(500).json({
                     message: "Error -> Can not delete a Make with id = " + req.params.id,
                     error: "Id not Exists",
+                    type: "makeId"
                 });
             }
             logs("Make", "deleteById", "Info", "delete successfully a Make with id = " + makeId);
