@@ -22,7 +22,7 @@ exports.create = (req, res) => {
         model.created_by = req.body.created_by;
         model.createdAt = new Date();
         model.makeId = req.body.makeId;
-        model.uuid = crypto.randomUUID();
+        model.uuid = "ASDFF-" + Math.floor(Math.random() * 10000) + 1;
         model.IsDeleted = "0";
 
         // Save to MySQL database

@@ -22,7 +22,7 @@ exports.create = async (req, res) => {
         booking.vehicleId = req.body.vehicleId;
         booking.is_active = req.body.is_active;
         booking.userId = req.body.userId;
-        booking.uuid = crypto.randomUUID();
+        booking.uuid = "ASDFF-" + Math.floor(Math.random() * 10000) + 1;
         booking.statusId = req.body.statusId;
         booking.createdAt = new Date();
         booking.trip_startDate = (req.body.trip_startDate);

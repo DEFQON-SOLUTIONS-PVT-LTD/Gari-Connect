@@ -19,7 +19,7 @@ exports.create = (req, res) => {
         transmission.is_active = req.body.is_active;
         transmission.created_by = req.body.created_by;
         transmission.createdat = new Date();
-        transmission.uuid = crypto.randomUUID();
+        transmission.uuid = "ASDFF-" + Math.floor(Math.random() * 10000) + 1;
         transmission.IsDeleted = "0";
 
         // Save to MySQL database

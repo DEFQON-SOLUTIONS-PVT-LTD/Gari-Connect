@@ -20,7 +20,7 @@ exports.create = (req, res) => {
         review.created_on = new Date();
         review.is_active = req.body.is_active;
         review.userId = req.body.userId;
-        review.uuid = crypto.randomUUID();
+        review.uuid = "ASDFF-" + Math.floor(Math.random() * 10000) + 1;
         review.IsDeleted = "0";
 
         // Save to MySQL database

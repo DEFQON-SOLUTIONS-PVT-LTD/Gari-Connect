@@ -19,7 +19,7 @@ exports.create = (req, res) => {
         guideLine.is_active = req.body.is_active;
         guideLine.created_by = req.body.created_by;
         guideLine.createdAt = new Date();
-        guideLine.uuid = crypto.randomUUID();
+        guideLine.uuid = "ASDFF-" + Math.floor(Math.random() * 10000) + 1;
         guideLine.icon = req.body.icon;
         guideLine.IsDeleted = "0";
 

@@ -175,7 +175,7 @@ exports.deleteById = async (req, res) => {
 
 }
 exports.getLocationByVehicleId = (req, res, next) => {
-    let vehicleId = req.body.vehicleId;
+    let vehicleId = req.params.id;
     db.sequelize.query('CALL get_locationByVehicleId(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("location", "getLocationByVehicleId", "Info", "Successfully Get  location Details by vehicle with id = " + vehicleId);

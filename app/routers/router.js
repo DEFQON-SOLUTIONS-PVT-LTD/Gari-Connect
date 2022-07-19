@@ -554,7 +554,7 @@ router.put('/api/location/update', location.updateLocation);
 router.get('/api/location/all', location.getLocation);
 router.get('/api/location/getById/:id', location.getLocationById);
 router.delete('/api/location/delete/:id', location.deleteById);
-router.get('/api/location/getLocationByVehicleId', location.getLocationByVehicleId);
+router.get('/api/location/getLocationByVehicleId/:id', location.getLocationByVehicleId);
 router.put('/api/location/updateByVehicle', location.updateLocationByVehicle);
 
 router.post('/api/vehicleReviews/create', vehicleReviews.create);

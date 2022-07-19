@@ -20,7 +20,7 @@ exports.create = (req, res) => {
         make.is_active = req.body.is_active;
         make.created_by = req.body.created_by;
         make.createdAt = new Date();
-        make.uuid = crypto.randomUUID();
+        make.uuid = "ASDFF-" + Math.floor(Math.random() * 10000) + 1;
         make.IsDeleted = "0";
 
         // Save to MySQL database

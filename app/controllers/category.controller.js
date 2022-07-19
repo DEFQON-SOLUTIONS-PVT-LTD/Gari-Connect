@@ -18,7 +18,7 @@ exports.create = (req, res) => {
         category.name = req.body.name;
         category.is_active = req.body.is_active;
         category.createdAt = new Date();
-        category.uuid = crypto.randomUUID();
+        category.uuid = "ASDFF-" + Math.floor(Math.random() * 10000) + 1;
         category.created_by = req.body.created_by;
         category.IsDeleted = "0";
 

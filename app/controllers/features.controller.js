@@ -20,7 +20,7 @@ exports.create = (req, res) => {
         feature.is_active = req.body.is_active;
         feature.icon = req.body.icon;
         feature.created_by = req.body.created_by;
-        feature.uuid = crypto.randomUUID();
+        feature.uuid = "ASDFF-" + Math.floor(Math.random() * 10000) + 1;
         feature.IsDeleted = "0";
 
         // Save to PostgreSQL database

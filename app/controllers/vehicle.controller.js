@@ -621,14 +621,67 @@ exports.getVehicleBySearch = (req, res, next) => {
         let longitude = req.body.longitude;
         db.sequelize.query('CALL get_vehiclesearchbylocation (' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + '); FETCH ALL FROM "rs_resultone";', res, next)
             //  db.sequelize.query('CALL get_vehiclesearch (); FETCH ALL FROM "rs_resultone";', res, next)
-            .then(result => {
+            .then(results => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
-                var arr = result[0];
+                var arr = results[0];
                 arr.splice(0, 1);
-                res.status(200).json({
-                    message: "Get all getVehiclyeBySearch Infos Successfully! ",
-                    results: { 'query': arr, 'count': result[1][1].rowCount }
-                });
+                let vehicleId = arr[0].vehicleid;
+                db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
+                    .then(result => {
+                        if (result != null) {
+                            db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultimg";', res, next)
+                                .then(data => {
+                                    if (data != null) {
+                                        db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultman_fea";', res, next)
+                                            .then(data1 => {
+                                                if (data1 != null) {
+                                                    db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultfea";', res, next)
+                                                        .then(data2 => {
+                                                            if (data2 != null) {
+                                                                db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultgui";', res, next)
+                                                                    .then(data3 => {
+                                                                        if (data3 != null) {
+                                                                            db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resulthost";', res, next)
+                                                                                .then(data4 => {
+                                                                                    logs("Vehicle", "getVehicleListDetail", "Info", "Successfully Get  vehicle Details by vehicle with id = " + vehicleId);
+                                                                                    var arr1 = result[0];
+                                                                                    arr1.splice(0, 1);
+                                                                                    var arr2 = data[0];
+                                                                                    arr2.splice(0, 1);
+                                                                                    var arr3 = data1[0];
+                                                                                    arr3.splice(0, 1);
+                                                                                    var arr4 = data2[0];
+                                                                                    arr4.splice(0, 1);
+                                                                                    var arr5 = data3[0];
+                                                                                    arr5.splice(0, 1);
+                                                                                    var arr6 = data4[0];
+                                                                                    arr6.splice(0, 1);
+                                                                                    res.status(200).json({
+                                                                                        message: "Get vehicle Details by vehicle Successfully!",
+                                                                                        VehicleByLocation: { 'data': arr, 'count': result[1][1].rowCount },
+                                                                                        vehicleListDetails: {
+                                                                                            'vehicleDetail': arr1,
+                                                                                            'VehicleImg': arr2,
+                                                                                            'Mandatory_feature': arr3,
+                                                                                            'features': arr4,
+                                                                                            'guideline': arr5,
+                                                                                            "host": arr6
+                                                                                        }
+                                                                                    });
+                                                                                })
+                                                                        }
+                                                                    })
+                                                            }
+                                                        })
+
+
+                                                }
+                                            })
+                                    }
+                                })
+                        }
+
+                    })
             })
     }
     catch (error) {
