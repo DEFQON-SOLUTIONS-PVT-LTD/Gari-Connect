@@ -78,8 +78,6 @@ function initModels(sequelize) {
   State.hasMany(city, { as: "cities", foreignKey: "stateId"});
   vehicles.belongsTo(categories, { as: "category", foreignKey: "categoryId"});
   categories.hasMany(vehicles, { as: "vehicles", foreignKey: "categoryId"});
-  locations.belongsTo(city, { as: "city", foreignKey: "cityId"});
-  city.hasMany(locations, { as: "locations", foreignKey: "cityId"});
   users.belongsTo(city, { as: "city", foreignKey: "cityId"});
   city.hasMany(users, { as: "users", foreignKey: "cityId"});
   availability.belongsTo(days, { as: "day", foreignKey: "dayId"});

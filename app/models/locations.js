@@ -24,14 +24,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true
     },
-    cityId: {
-      type: DataTypes.SMALLINT,
-      allowNull: true,
-      references: {
-        model: 'city',
-        key: 'cityId'
-      }
-    },
     latitude: {
       type: DataTypes.DOUBLE,
       allowNull: true
@@ -54,6 +46,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     IsDeleted: {
       type: DataTypes.BOOLEAN,
+      allowNull: true
+    },
+    city: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    streetAddress: {
+      type: DataTypes.TEXT,
       allowNull: true
     }
   }, {

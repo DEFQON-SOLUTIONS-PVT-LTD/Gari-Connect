@@ -190,6 +190,10 @@ const saveVehicleValidation = (data) => {
             latitude: Joi.string().required(),
             longitude: Joi.string().required(),
             address: Joi.string().required(),
+            city: Joi.string().required(),
+            area: Joi.string().required(),
+            streetAddress: Joi.string().required(),
+            zip_code: Joi.string().required(),
         },
         features: {
             mandatoryFeatures: {
