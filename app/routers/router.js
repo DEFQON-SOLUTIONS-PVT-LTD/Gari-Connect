@@ -424,7 +424,7 @@ router.get(
     vehicle.getVehicleDetails
 );
 router.get(
-    '/api/vehicle/getvrhiclebyid',
+    '/api/vehicle/getvrhiclebyid/:id',
     [authJwt.verifyToken],
     vehicle.getVehicleById
 );
@@ -471,7 +471,7 @@ router.get(
 );
 router.get(
     '/api/vehicle/getvehiclebyfilter',
-    [authJwt.verifyToken],
+    //[authJwt.verifyToken],
     vehicle.getVehicleByFilters
 );
 router.get(

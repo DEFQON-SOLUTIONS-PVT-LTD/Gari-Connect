@@ -258,57 +258,86 @@ exports.getVehicle = (req, res) => {
         });
 }
 exports.getVehicleByFilters = (req, res, next) => {
-
-    let statusId = req.body.statusId;
     var makeId = 0;
-    var locationId = 0;
     var modelId = 0;
     var rating = 0;
-    var vehicle_type_id = 0;
-    var price_range1 = 0;
-    var price_range2 = 0;
+    var withdriver = true;
+    var pricerange1 = 0;
+    var pricerange2 = 0;
     var sorting = "";
+    let startDate = req.body.startdate;
+    let endDate = req.body.enddate;
+    let days = [];
+    let daysName = [];
+    let day = [];
+    let end = new Date(endDate)
+    for (let start = new Date(startDate); start <= end; start.setDate(start.getDate() + 1)) {
+        let day = start.getDay();
+        if (day != 6 && day != 0) {
+            days.push(new Date(start));
+        }
+    }
+    daysName = days.map(e => e.toLocaleString('en-US', { weekday: 'long' }));
+    for (let i = 0; i < daysName.length; i++) {
+        if (daysName[i] == 'Monday') {
+            day.push(1);
+        }
+        else if (daysName[i] == 'Tuesday') {
+            day.push(2);
+        }
+        else if (daysName[i] == 'Wednesday') {
+            day.push(3);
+        } else if (daysName[i] == 'Thursday') {
+            day.push(4);
+        } else if (daysName[i] == 'Friday') {
+            day.push(5);
+        } else if (daysName[i] == 'Saturday') {
+            day.push(6);
+        } else if (daysName[i] == 'Sunday') {
+            day.push(7);
+        }
+    }
+    var totaldays = JSON.stringify({ days });
+    var totaldays = "'" + "{" + day.join() + "}" + "'";
+    let address = req.body.address;
+    let latitude = req.body.latitude;
+    let longitude = req.body.longitude;
+    if (withdriver != null) {
+        withdriver = req.body.withdriver;
+    } else {
+        withdriver = false;
+    }
     if (makeId < req.body.makeId) {
         makeId = req.body.makeId;
     } else {
         makeId = 0;
-    }
-    if (locationId < req.body.locationId) {
-        locationId = req.body.locationId;
-    } else {
-        locationId = 0;
     }
     if (modelId < req.body.modelId) {
         modelId = req.body.modelId;
     } else {
         modelId = 0;
     }
-    if (vehicle_type_id < req.body.vehicle_type_id) {
-        vehicle_type_id = req.body.vehicle_type_id;
-    } else {
-        vehicle_type_id = 0;
-    }
     if (rating < req.body.rating) {
         rating = req.body.rating;
     } else {
         rating = 0;
     }
-    if (price_range1 < req.body.price_range1) {
-        price_range1 = req.body.price_range1;
+    if (pricerange1 < req.body.pricerange1) {
+        pricerange1 = req.body.pricerange1;
     } else {
-        price_range1 = 0;
+        pricerange1 = 0;
     }
-    if (price_range2 < req.body.price_range2) {
-        price_range2 = req.body.price_range2;
+    if (pricerange2 < req.body.pricerange2) {
+        pricerange2 = req.body.pricerange2;
     } else {
-        price_range2 = 0;
+        pricerange2 = 0;
     }
-    if (req.body.sorting != "") {
-        sorting = req.body.sorting;
-    } else {
-        sorting = "ASC";
-    }
-    db.sequelize.query('CALL get_vehicles_by_filter(' + statusId + ',' + makeId + ',' + locationId + ',' + modelId + ',' + vehicle_type_id + ',' + rating + ',' + price_range1 + ',' + price_range2 + ',' + sorting + '); FETCH ALL FROM "rs_resultone";', res, next)
+    // if (req.body.sorting != "") {
+    //     sorting = req.body.sorting;
+    // } else {
+    //     sorting = "ASC";
+    // }
+    db.sequelize.query('CALL get_vehicles_by_filter(' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + ',' + withdriver + ',' + makeId + ',' + modelId + ',' + rating + ',' + pricerange1 + ',' + pricerange2 + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicles", "getVehicleByFilters", "Info", "Get all filtered Lists Successfully! ");
             var arr = result[0];
@@ -585,7 +614,13 @@ exports.getVehicleList = (req, res, next) => {
 
 exports.getVehicleBySearch = (req, res, next) => {
     try {
-
+        var makeId = 0;
+        var modelId = 0;
+        var rating = 0;
+        var withdriver = true;
+        var pricerange1 = 0;
+        var pricerange2 = 0;
+        var sorting = "";
         let startDate = req.body.startdate;
         let endDate = req.body.enddate;
         let days = [];
@@ -623,9 +658,47 @@ exports.getVehicleBySearch = (req, res, next) => {
         let address = req.body.address;
         let latitude = req.body.latitude;
         let longitude = req.body.longitude;
-        db.sequelize.query('CALL get_vehiclesearchbylocation (' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + '); FETCH ALL FROM "rs_resultone";', res, next)
-            //  db.sequelize.query('CALL get_vehiclesearch (); FETCH ALL FROM "rs_resultone";', res, next)
+        if (withdriver != null) {
+            withdriver = req.body.withdriver;
+        } else {
+            withdriver = false;
+        }
+        if (makeId < req.body.makeId) {
+            makeId = req.body.makeId;
+        } else {
+            makeId = 0;
+        }
+        if (modelId < req.body.modelId) {
+            modelId = req.body.modelId;
+        } else {
+            modelId = 0;
+        }
+        if (rating < req.body.rating) {
+            rating = req.body.rating;
+        } else {
+            rating = 0;
+        }
+        if (pricerange1 < req.body.pricerange1) {
+            pricerange1 = req.body.pricerange1;
+        } else {
+            pricerange1 = 0;
+        }
+        if (pricerange2 < req.body.pricerange2) {
+            pricerange2 = req.body.pricerange2;
+        } else {
+            pricerange2 = 0;
+        }
+        // if (req.body.sorting != "") {
+        //     sorting = req.body.sorting;
+        // } else {
+        //     sorting = "ASC";
+        // }
+        db.sequelize.query('CALL get_vehicles_by_filter(' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + ',' + withdriver + ',' + makeId + ',' + modelId + ',' + rating + ',' + pricerange1 + ',' + pricerange2 + '); FETCH ALL FROM "rs_resultone";', res, next)
             .then(results => {
+                //if (results != null) {
+                // db.sequelize.query('CALL get_vehiclesearchbylocation (' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + '); FETCH ALL FROM "rs_resultone";', res, next)
+                //  db.sequelize.query('CALL get_vehiclesearch (); FETCH ALL FROM "rs_resultone";', res, next)
+                // .then(results => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
                 var arr = results[0];
                 arr.splice(0, 1);
@@ -660,9 +733,12 @@ exports.getVehicleBySearch = (req, res, next) => {
                                                                                     arr5.splice(0, 1);
                                                                                     var arr6 = data4[0];
                                                                                     arr6.splice(0, 1);
+                                                                                    //var filter = results[0];
+                                                                                    // filter.splice(0, 1);
                                                                                     res.status(200).json({
                                                                                         message: "Get vehicle Details by vehicle Successfully!",
-                                                                                        VehicleByLocation: { 'data': arr, 'count': result[1][1].rowCount },
+                                                                                        Vehiclefilter: { 'filterdata': arr, 'count': result[1][1].rowCount },
+                                                                                        //VehicleByLocation: { 'data': arr, 'count': result[1][1].rowCount },
                                                                                         vehicleListDetails: {
                                                                                             'vehicleDetail': arr1,
                                                                                             'VehicleImg': arr2,
@@ -671,6 +747,7 @@ exports.getVehicleBySearch = (req, res, next) => {
                                                                                             'guideline': arr5,
                                                                                             "host": arr6
                                                                                         }
+
                                                                                     });
                                                                                 })
                                                                         }
@@ -686,6 +763,8 @@ exports.getVehicleBySearch = (req, res, next) => {
                         }
 
                     })
+                //})
+                // }
             })
     }
     catch (error) {
@@ -699,7 +778,7 @@ exports.getVehicleBySearch = (req, res, next) => {
     };
 }
 exports.getVehicleById = (req, res, next) => {
-    let vehicleId = req.body.vehicleId;
+    let vehicleId = req.params.id;
     db.sequelize.query('CALL get_vehiclebyid(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicle", "getVehicleById", "Info", "Successfully Get a vehicle with id = " + vehicleId);
