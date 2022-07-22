@@ -469,7 +469,7 @@ router.get(
     [authJwt.verifyToken],
     bookings.getBooking
 );
-router.get(
+router.post(
     '/api/vehicle/getvehiclebyfilter',
     //[authJwt.verifyToken],
     vehicle.getVehicleByFilters

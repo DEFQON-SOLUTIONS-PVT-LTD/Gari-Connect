@@ -92,8 +92,6 @@ function initModels(sequelize) {
   fuel_type.hasMany(vehicle_mandatory_features, { as: "vehicle_mandatory_features", foreignKey: "fueltype"});
   vehicles.belongsTo(green_vehicles, { as: "green_vehicle", foreignKey: "green_vehicle_id"});
   green_vehicles.hasMany(vehicles, { as: "vehicles", foreignKey: "green_vehicle_id"});
-  vehicle_to_guidelines.belongsTo(guidelines, { as: "guideline", foreignKey: "guidelineId"});
-  guidelines.hasMany(vehicle_to_guidelines, { as: "vehicle_to_guidelines", foreignKey: "guidelineId"});
   vehicles.belongsTo(locations, { as: "location_location", foreignKey: "locationId"});
   locations.hasMany(vehicles, { as: "location_vehicles", foreignKey: "locationId"});
   models.belongsTo(makes, { as: "make", foreignKey: "makeId"});

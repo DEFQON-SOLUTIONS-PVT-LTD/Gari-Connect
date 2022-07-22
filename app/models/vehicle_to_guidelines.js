@@ -18,11 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     guidelineId: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'guidelines',
-        key: 'guidelineId'
-      }
+      allowNull: true
     }
   }, {
     sequelize,
