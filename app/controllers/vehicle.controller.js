@@ -58,7 +58,7 @@ exports.create = async function (req, res) {
             location.address = req.body.location.address;
             location.city = req.body.location.city;
             location.area = req.body.location.area;
-            location.streetAddress = req.body.location.address;
+            location.streetAddress = req.body.location.streetAddress;
             location.zip_code = req.body.location.zip_code;
             location.vehicleId = result.vehicleId;
             location.createdAt = new Date();
@@ -614,7 +614,6 @@ exports.getVehicleList = (req, res, next) => {
 
 exports.getVehicleBySearch = (req, res, next) => {
     try {
-        var makeId = 0;
         var modelId = 0;
         var rating = 0;
         var withdriver = true;
@@ -655,18 +654,22 @@ exports.getVehicleBySearch = (req, res, next) => {
         }
         var totaldays = JSON.stringify({ days });
         var totaldays = "'" + "{" + day.join() + "}" + "'";
-        let address = req.body.address;
         let latitude = req.body.latitude;
         let longitude = req.body.longitude;
+        if (latitude != null) {
+            latitude = req.body.latitude;
+        } else {
+            latitude = 0;
+        }
+        if (longitude != null) {
+            longitude = req.body.longitude;
+        } else {
+            longitude = 0;
+        }
         if (withdriver != null) {
             withdriver = req.body.withdriver;
         } else {
             withdriver = false;
-        }
-        if (makeId < req.body.makeId) {
-            makeId = req.body.makeId;
-        } else {
-            makeId = 0;
         }
         if (modelId < req.body.modelId) {
             modelId = req.body.modelId;
@@ -693,78 +696,15 @@ exports.getVehicleBySearch = (req, res, next) => {
         // } else {
         //     sorting = "ASC";
         // }
-        db.sequelize.query('CALL get_vehicles_by_filter(' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + ',' + withdriver + ',' + makeId + ',' + modelId + ',' + rating + ',' + pricerange1 + ',' + pricerange2 + '); FETCH ALL FROM "rs_resultone";', res, next)
-            .then(results => {
-                //if (results != null) {
-                // db.sequelize.query('CALL get_vehiclesearchbylocation (' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + '); FETCH ALL FROM "rs_resultone";', res, next)
-                //  db.sequelize.query('CALL get_vehiclesearch (); FETCH ALL FROM "rs_resultone";', res, next)
-                // .then(results => {
+        db.sequelize.query('CALL get_vehicles_by_filter(' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + ',' + withdriver + ',' + modelId + ',' + rating + ',' + pricerange1 + ',' + pricerange2 + '); FETCH ALL FROM "rs_resultone";', res, next)
+            .then(result => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
-                var arr = results[0];
+                var arr = result[0];
                 arr.splice(0, 1);
-                let vehicleId = arr[0].vehicleid;
-                db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
-                    .then(result => {
-                        if (result != null) {
-                            db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultimg";', res, next)
-                                .then(data => {
-                                    if (data != null) {
-                                        db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultman_fea";', res, next)
-                                            .then(data1 => {
-                                                if (data1 != null) {
-                                                    db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultfea";', res, next)
-                                                        .then(data2 => {
-                                                            if (data2 != null) {
-                                                                db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resultgui";', res, next)
-                                                                    .then(data3 => {
-                                                                        if (data3 != null) {
-                                                                            db.sequelize.query('CALL get_vehicledetail(' + vehicleId + '); FETCH ALL FROM "rs_resulthost";', res, next)
-                                                                                .then(data4 => {
-                                                                                    logs("Vehicle", "getVehicleListDetail", "Info", "Successfully Get  vehicle Details by vehicle with id = " + vehicleId);
-                                                                                    var arr1 = result[0];
-                                                                                    arr1.splice(0, 1);
-                                                                                    var arr2 = data[0];
-                                                                                    arr2.splice(0, 1);
-                                                                                    var arr3 = data1[0];
-                                                                                    arr3.splice(0, 1);
-                                                                                    var arr4 = data2[0];
-                                                                                    arr4.splice(0, 1);
-                                                                                    var arr5 = data3[0];
-                                                                                    arr5.splice(0, 1);
-                                                                                    var arr6 = data4[0];
-                                                                                    arr6.splice(0, 1);
-                                                                                    //var filter = results[0];
-                                                                                    // filter.splice(0, 1);
-                                                                                    res.status(200).json({
-                                                                                        message: "Get vehicle Details by vehicle Successfully!",
-                                                                                        Vehiclefilter: { 'filterdata': arr, 'count': result[1][1].rowCount },
-                                                                                        //VehicleByLocation: { 'data': arr, 'count': result[1][1].rowCount },
-                                                                                        vehicleListDetails: {
-                                                                                            'vehicleDetail': arr1,
-                                                                                            'VehicleImg': arr2,
-                                                                                            'Mandatory_feature': arr3,
-                                                                                            'features': arr4,
-                                                                                            'guideline': arr5,
-                                                                                            "host": arr6
-                                                                                        }
-
-                                                                                    });
-                                                                                })
-                                                                        }
-                                                                    })
-                                                            }
-                                                        })
-
-
-                                                }
-                                            })
-                                    }
-                                })
-                        }
-
-                    })
-                //})
-                // }
+                res.status(200).json({
+                    message: "Get vehicle Details by vehicle Successfully!",
+                    Data: { 'filterdata': arr, 'count': result[1][1].rowCount },
+                });
             })
     }
     catch (error) {

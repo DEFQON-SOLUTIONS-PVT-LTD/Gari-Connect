@@ -128,7 +128,7 @@ exports.getBooking = (req, res, next) => {
         });
 }
 exports.getBookingById = (req, res, next) => {
-    let bookingId = req.body.bookingId;
+    let bookingId = req.params.id;
     db.sequelize.query('CALL get_bookingbyid( ' + bookingId + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Bookings", "getBookingById", "Info", "Successfully Get a booking with id = " + bookingId);
