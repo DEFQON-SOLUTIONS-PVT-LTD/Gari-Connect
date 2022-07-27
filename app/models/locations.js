@@ -55,6 +55,14 @@ module.exports = function(sequelize, DataTypes) {
     IsDeleted: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    city: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    streetAddress: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,
