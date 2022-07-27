@@ -33,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     photo: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     cnic: {
@@ -61,7 +61,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     otp_expiry: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true
     },
     uuid: {

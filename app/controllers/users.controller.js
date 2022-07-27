@@ -14,11 +14,13 @@ const {
     updateStaffValidation,
     updatePasswordValidation,
     updatePersonalInfoValidation,
-    createPasswordValidation
+    createPasswordValidation,
+    saveUserDocumentsValidation
 } = require('../validations/validation');
 const User = db.Users;
 const Roles = db.Roles;
 const Permissions = db.Permissions;
+const UserDocuments = db.UserDocuments;
 const crypto = require('crypto');
 const { encrypt, decrypt } = require('../config/crypto_hash.js');
 const { type } = require('os');
@@ -719,6 +721,37 @@ exports.updatePhoneNo = async (req, res) => {
         res.status(500).json({
             message: "Error -> Can not update a PhoneNo",
             // error: error.message
+            error: errorResponse(error.message)
+        });
+    }
+}
+exports.UserDoc = async function (req, res) {
+    let userDoc = {};
+    try {
+        // Validate
+        const { error } = saveUserDocumentsValidation(req.body);
+        if (error) return res.status(400).send(errorResponse(error.details[0].message, {}));
+        // Building vehicleAvailability object from upoading request's body
+        let docdata = [];
+        var val = req.body.userDoc;
+        for (var i in val) {
+            docdata.push({ 'doc_number': val[i].doc_number, 'validity': val[i].validity, 'path': val[i].path, 'userId': val[i].userId, 'document_type': val[i].document_type });
+            userDoc.doc_number = docdata[i].doc_number;
+            userDoc.validity = docdata[i].validity;
+            userDoc.path = docdata[i].path;
+            userDoc.userId = docdata[i].userId;
+            userDoc.document_type = docdata[i].document_type;
+            await UserDocuments.create(userDoc);
+            // send uploading message to client
+            logs("User", "UserDoc", "Info", "Create Successfully a UserDoc ");
+            res.status(200).json({
+                message: "Create Successfully a UserDoc",
+            });
+        }
+    } catch (error) {
+        logs("User", "UserDoc", "Error", error.message);
+        res.status(500).json({
+            message: "Fail!",
             error: errorResponse(error.message)
         });
     }

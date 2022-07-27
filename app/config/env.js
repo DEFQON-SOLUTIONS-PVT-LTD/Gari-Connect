@@ -2,7 +2,7 @@
 const env = {
   database: 'GariConnect',
   username: 'postgres',
-  password: 'abc@123',
+  password: '@dmin123',
   host: '147.182.142.123',
   dialect: 'postgres',
   secretkey: 'iWillDoItNow',

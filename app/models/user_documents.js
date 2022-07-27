@@ -23,6 +23,14 @@ module.exports = function(sequelize, DataTypes) {
     document_type: {
       type: DataTypes.STRING(100),
       allowNull: true
+    },
+    doc_number: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    validity: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
     }
   }, {
     sequelize,

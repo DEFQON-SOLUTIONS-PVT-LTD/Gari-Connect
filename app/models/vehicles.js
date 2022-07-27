@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     vehicle_type_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'vehicle_types',
         key: 'vehicle_type_id'
@@ -42,7 +42,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     categoryId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'categories',
         key: 'categoryId'
@@ -50,7 +50,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     transmissionId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'transmissions',
         key: 'transmissionId'
@@ -78,7 +78,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     modelId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'models',
         key: 'modelId'
@@ -86,7 +86,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     uuid: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true
     },
     price: {
       type: DataTypes.DOUBLE,

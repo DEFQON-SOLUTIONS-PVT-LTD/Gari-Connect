@@ -62,6 +62,11 @@ router.put(
     [authJwt.verifyToken],
     users.updateStaff
 );
+router.post(
+    '/api/user/uploaduserdoc',
+    [authJwt.verifyToken],
+    users.UserDoc
+);
 router.put(
     '/api/user/personalinfo',
     [authJwt.verifyToken],
@@ -421,7 +426,7 @@ router.get(
 router.get(
     '/api/vehicle/getbyid',
     [authJwt.verifyToken],
-    vehicle.getVehicleDetails
+    vehicle.getVehicleByStatus
 );
 router.get(
     '/api/vehicle/getvrhiclebyid/:id',

@@ -258,7 +258,7 @@ exports.getVehicle = (req, res) => {
         });
 }
 exports.getVehicleByFilters = (req, res, next) => {
-    var makeId = 0;
+    var vehicletypeid = 0;
     var modelId = 0;
     var rating = 0;
     var withdriver = true;
@@ -307,11 +307,6 @@ exports.getVehicleByFilters = (req, res, next) => {
     } else {
         withdriver = false;
     }
-    if (makeId < req.body.makeId) {
-        makeId = req.body.makeId;
-    } else {
-        makeId = 0;
-    }
     if (modelId < req.body.modelId) {
         modelId = req.body.modelId;
     } else {
@@ -321,6 +316,11 @@ exports.getVehicleByFilters = (req, res, next) => {
         rating = req.body.rating;
     } else {
         rating = 0;
+    }
+    if (vehicletypeid < req.body.vehicletypeid) {
+        vehicletypeid = req.body.vehicletypeid;
+    } else {
+        vehicletypeid = 0;
     }
     if (pricerange1 < req.body.pricerange1) {
         pricerange1 = req.body.pricerange1;
@@ -337,7 +337,7 @@ exports.getVehicleByFilters = (req, res, next) => {
     // } else {
     //     sorting = "ASC";
     // }
-    db.sequelize.query('CALL get_vehicles_by_filter(' + "'" + address + "'" + ',' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + ',' + withdriver + ',' + makeId + ',' + modelId + ',' + rating + ',' + pricerange1 + ',' + pricerange2 + '); FETCH ALL FROM "rs_resultone";', res, next)
+    db.sequelize.query('CALL get_vehicles_by_filter(' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + ',' + withdriver + ',' + modelId + ',' + rating + ',' + vehicletypeid + ',' + pricerange1 + ',' + pricerange2 + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
             logs("Vehicles", "getVehicleByFilters", "Info", "Get all filtered Lists Successfully! ");
             var arr = result[0];
@@ -356,22 +356,22 @@ exports.getVehicleByFilters = (req, res, next) => {
             });
         });
 }
-exports.getVehicleDetails = (req, res, next) => {
-    let bookingStatusId = req.body.statusId;
-    let vehicleId = req.body.vehicleId;
-    db.sequelize.query('CALL getVehicleDetail(' + bookingStatusId + ',' + vehicleId + '); FETCH ALL FROM "rs_resultone";', res, next)
+exports.getVehicleByStatus = (req, res, next) => {
+    let id = req.body.id;
+    let vehicleid = req.body.vehicleid;
+    db.sequelize.query('CALL getvehiclebystatus(' + id + ',' + vehicleid + '); FETCH ALL FROM "rs_resultone";', res, next)
         .then(result => {
-            logs("Vehicle", "getVehicleDetails", "Info", "Successfully Get a vehicle with id = " + vehicleId);
+            logs("Vehicle", "getVehicleByStatus", "Info", "Successfully Get a vehicle with id = " + vehicleid);
             var arr = result[0];
             arr.splice(0, 1);
             res.status(200).json({
-                message: "Get Vehicle Detail Page Successfully!",
+                message: "Get Vehicle Detail Successfully!",
                 result: arr,
             });
         })
         .catch(error => {
             // log on console
-            logs("Vehicle", "getVehicleDetails", "Error", error.message);
+            logs("Vehicle", "getVehicleByStatus", "Error", error.message);
             res.status(500).json({
                 message: "Error!",
                 error: error
@@ -614,6 +614,7 @@ exports.getVehicleList = (req, res, next) => {
 
 exports.getVehicleBySearch = (req, res, next) => {
     try {
+        var vehicletypeid = 0;
         var modelId = 0;
         var rating = 0;
         var withdriver = true;
@@ -681,6 +682,11 @@ exports.getVehicleBySearch = (req, res, next) => {
         } else {
             rating = 0;
         }
+        if (vehicletypeid < req.body.vehicletypeid) {
+            vehicletypeid = req.body.vehicletypeid;
+        } else {
+            vehicletypeid = 0;
+        }
         if (pricerange1 < req.body.pricerange1) {
             pricerange1 = req.body.pricerange1;
         } else {
@@ -696,7 +702,7 @@ exports.getVehicleBySearch = (req, res, next) => {
         // } else {
         //     sorting = "ASC";
         // }
-        db.sequelize.query('CALL get_vehicles_by_filter(' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + ',' + withdriver + ',' + modelId + ',' + rating + ',' + pricerange1 + ',' + pricerange2 + '); FETCH ALL FROM "rs_resultone";', res, next)
+        db.sequelize.query('CALL get_vehicles_by_filter(' + "'" + latitude + "'" + ',' + "'" + longitude + "'" + ',' + totaldays + ',' + withdriver + ',' + modelId + ',' + rating + ',' + vehicletypeid + ',' + pricerange1 + ',' + pricerange2 + '); FETCH ALL FROM "rs_resultone";', res, next)
             .then(result => {
                 logs("Vehicle", "getVehicleBySearch", "Error", "Get all VehicleSearch Infos Successfully! ")
                 var arr = result[0];

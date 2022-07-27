@@ -172,6 +172,12 @@ const updateTransmissionValidation = (data) => {
     });
     return schema.validate(data);
 };
+const saveUserDocumentsValidation = (data) => {
+    const schema = Joi.object({
+        userDoc: Joi.array().items({ doc_number: Joi.string().required(), validity: Joi.string().required(), path: Joi.string().required(), userId: Joi.string().required(), document_type: Joi.string().required() }),
+    });
+    return schema.validate(data);
+};
 //VEHICLE VALIDATION
 const saveVehicleValidation = (data) => {
     const schema = Joi.object({
@@ -638,5 +644,6 @@ module.exports = {
     updatePasswordValidation,
     updatePersonalInfoValidation,
     saveSubscriberValidation,
-    createPasswordValidation
+    createPasswordValidation,
+    saveUserDocumentsValidation
 }
